@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) try
 	conn.send_event().connect(sigc::bind(sigc::ptr_fun(&on_server_send), sigc::ref(conn)) );
 	conn.close_event().connect(sigc::ptr_fun(&on_server_close) );
 
-	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::ERROR);
+	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::IOERROR);
 
 	net6::packet pack("message");
 	pack << std::string("Hallo, Welt!");
@@ -97,7 +97,7 @@ int client_main(int argc, char* argv[])
 	conn.send_event().connect(sigc::bind(sigc::ptr_fun(&on_client_send), sigc::ref(conn)) );
 	conn.close_event().connect(sigc::ptr_fun(&on_client_close) );
 
-	selector.add(conn.get_socket(), net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::ERROR);
+	selector.add(conn.get_socket(), net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::IOERROR);
 
 	net6::packet pack("message");
 	pack << "foobar";

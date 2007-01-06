@@ -44,7 +44,7 @@ void net6::selector::add(const socket& sock, socket::condition condition)
 		write_list.push_back(sock);
 	}
 
-	if(condition & socket::ERROR)
+	if(condition & socket::IOERROR)
 	{
 //		FD_SET(sock.cobj(), &error_set);
 		error_list.push_back(sock);
@@ -67,7 +67,7 @@ void net6::selector::remove(const socket& sock, socket::condition condition)
 		                 write_list.end(), sock), write_list.end() );
 	}
 
-	if(condition & socket::ERROR)
+	if(condition & socket::IOERROR)
 	{
 //		FD_CLR(sock.cobj(), &error_set);
 		error_list.erase(std::remove(error_list.begin(),
@@ -87,7 +87,7 @@ bool net6::selector::check(const socket& sock, socket::condition condition)
 		   write_list.end() )
 			return true;
 
-	if(condition & socket::ERROR)
+	if(condition & socket::IOERROR)
 		if(std::find(error_list.begin(), error_list.end(), sock) !=
 		   error_list.end() )
 			return true;
@@ -183,5 +183,5 @@ void net6::selector::select_impl(timeval* tv)
 			a->write_event().emit(*a, socket::OUTGOING);
 	for(a = error_event.begin(); a != error_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->error_event().emit(*a, socket::ERROR);
+			a->error_event().emit(*a, socket::IOERROR);
 }

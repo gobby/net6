@@ -180,7 +180,7 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 		}
 	}
 
-	if(io & socket::ERROR)
+	if(io & socket::IOERROR)
 	{
 		signal_close.emit();
 	}

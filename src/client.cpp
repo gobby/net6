@@ -34,7 +34,7 @@ net6::client::peer::~peer()
                ipv6_address::create_from_hostname(hostname, port) ),
    self(NULL)
 {
-	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::ERROR);
+	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::IOERROR);
 	conn.recv_event().connect(
 		sigc::mem_fun(*this, &client::on_client_recv) );
 	conn.close_event().connect(
@@ -44,7 +44,7 @@ net6::client::peer::~peer()
 net6::client::client(const address& addr)
  : conn(addr), self(NULL)
 {
-	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::ERROR);
+	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::IOERROR);
 	conn.recv_event().connect(
 		sigc::mem_fun(*this, &client::on_client_recv) );
 	conn.send_event().connect(

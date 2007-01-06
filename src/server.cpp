@@ -204,7 +204,7 @@ void net6::server::remove_client(peer* client)
 	peers.erase(std::remove(peers.begin(), peers.end(), client),
 	            peers.end() );
 
-	sock_sel.remove(client->get_socket(), socket::INCOMING | socket::ERROR);
+	sock_sel.remove(client->get_socket(), socket::INCOMING | socket::IOERROR);
 	if(sock_sel.check(client->get_socket(), socket::OUTGOING) )
 		sock_sel.remove(client->get_socket(), socket::OUTGOING);
 
@@ -228,7 +228,7 @@ void net6::server::on_server_read(socket& sock, socket::condition io)
 	delete new_addr;
 
 	peers.push_back(new_client);
-	sock_sel.add(new_sock, socket::INCOMING | socket::ERROR);
+	sock_sel.add(new_sock, socket::INCOMING | socket::IOERROR);
 
 	new_client->recv_event().connect(sigc::bind(
 		sigc::mem_fun(*this, &server::on_client_recv),

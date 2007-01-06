@@ -41,7 +41,7 @@ void on_server_io(net6::socket& sock, net6::socket::condition io)
 		tcp_sock.send("Hallo, Welt!", 12);
 		selector.remove(sock, net6::socket::OUTGOING);
 	}
-	if(io & net6::socket::ERROR)
+	if(io & net6::socket::IOERROR)
 	{
 		std::cout << "Another error occured" << std::endl;
 		quit = true;
@@ -77,7 +77,7 @@ void on_client_io(net6::socket& sock, net6::socket::condition io)
 		tcp_sock.send("Foobar!", 7);
 		selector.remove(sock, net6::socket::OUTGOING);
 	}
-	if(io & net6::socket::ERROR)
+	if(io & net6::socket::IOERROR)
 	{
 		std::cout << "Another error occured" << std::endl;
 		quit = true;
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) try
 	client.write_event().connect(sigc::ptr_fun(&on_server_io) );
 	client.error_event().connect(sigc::ptr_fun(&on_server_io) );
 
-	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::ERROR);
+	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::IOERROR);
 
 	while(!quit)
 		selector.select();
@@ -130,7 +130,7 @@ int client_main(int argc, char* argv[])
 	client.write_event().connect(sigc::ptr_fun(&on_client_io) );
 	client.error_event().connect(sigc::ptr_fun(&on_client_io) );
 
-	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::ERROR);
+	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::IOERROR);
 
 	while(!quit)
 		selector.select();
