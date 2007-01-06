@@ -88,7 +88,7 @@ public:
 
 	/** Send a packet to the network server.
 	 */
-	virtual void send(const packet& pack);
+	virtual void send(const packet& pack) const;
 
 	/** Returns the user object which represents the
 	 * local host in the network.
@@ -225,7 +225,7 @@ void basic_client<selector_type>::login(const std::string& username)
 }
 
 template<typename selector_type>
-void basic_client<selector_type>::send(const packet& pack)
+void basic_client<selector_type>::send(const packet& pack) const
 {
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
