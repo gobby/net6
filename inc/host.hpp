@@ -49,7 +49,7 @@ public:
 	 * the local peer.
 	 */
 	host(unsigned int port, const std::string& username, bool ipv6 = true);
-	~host();
+	virtual ~host();
 
 	/** Send a packet to all the connected and logined peers.
 	 */

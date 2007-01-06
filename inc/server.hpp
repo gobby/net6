@@ -138,7 +138,7 @@ public:
 	/** Creates a new server which will be opened on port <em>port</em>.
 	 */
 	server(unsigned int port, bool ipv6 = true);
-	~server();
+	virtual ~server();
 
 	/** Shuts down the server socket. New connections will no longer be
 	 * accepted, but already established connections stay open.
