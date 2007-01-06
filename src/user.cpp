@@ -23,6 +23,12 @@ net6::user::user(unsigned int unique_id, connection_base* remote_conn):
 	id(unique_id), logged_in(false), conn(remote_conn),
 	connection_encrypted(false)
 {
+	if(conn.get() != NULL)
+	{
+		conn->encryption_failed_event().connect(
+			sigc::mem_fun(*this, &user::on_encryption_failed)
+		);
+	}
 }
 
 void net6::user::login(const std::string& user_name)
@@ -45,6 +51,12 @@ bool net6::user::is_encrypted() const
 net6::user::signal_encrypted_type net6::user::encrypted_event() const
 {
 	return signal_encrypted;
+}
+
+net6::user::signal_encryption_failed_type
+net6::user::encryption_failed_event() const
+{
+	return signal_encryption_failed;
 }
 
 unsigned int net6::user::get_id() const
@@ -93,4 +105,9 @@ void net6::user::request_encryption() const
 
 	// When we have a direct connection to a client, we are server.
 	conn->request_encryption(false);
+}
+
+void net6::user::on_encryption_failed()
+{
+	signal_encryption_failed.emit();
 }

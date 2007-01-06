@@ -33,6 +33,7 @@ class user : private non_copyable
 {
 public:
 	typedef sigc::signal<void> signal_encrypted_type;
+	typedef sigc::signal<void> signal_encryption_failed_type;
 
 	user(unsigned int unique_id, connection_base* remote_conn);
 
@@ -55,6 +56,11 @@ public:
 	 * client has been established.
 	 */
 	signal_encrypted_type encrypted_event() const;
+
+	/** @brief Signal that is emitted when an encryption request has
+	 * been denied.
+	 */
+	signal_encryption_failed_type encryption_failed_event() const;
 
 	/** Returns the unique ID for this user.
 	 */
@@ -93,12 +99,16 @@ public:
 	void request_encryption() const;
 
 protected:
+	void on_encryption_failed();
+
 	unsigned int id;
 	std::string name;
 	bool logged_in;
 	std::auto_ptr<connection_base> conn;
 
 	signal_encrypted_type signal_encrypted;
+	signal_encryption_failed_type signal_encryption_failed;
+
 	bool connection_encrypted;
 };
 

@@ -114,9 +114,9 @@ void net6::connection_base::request_encryption(bool as_client)
 
 	// Wait for net6_encryption_ok or net6_encryption_failed
 	if(as_client)
-		state = ENCRYPTION_INITIATED_CLIENT;
+		state = ENCRYPTION_REQUESTED_CLIENT;
 	else
-		state = ENCRYPTION_INITIATED_SERVER;
+		state = ENCRYPTION_REQUESTED_SERVER;
 
 	// Block further outgoing traffic
 	sendqueue.block();
@@ -138,6 +138,12 @@ net6::connection_base::signal_encrypted_type
 net6::connection_base::encrypted_event() const
 {
 	return signal_encrypted;
+}
+
+net6::connection_base::signal_encryption_failed_type
+net6::connection_base::encryption_failed_event() const
+{
+	return signal_encryption_failed;
 }
 
 void net6::connection_base::on_sock_event(io_condition io)
@@ -343,6 +349,7 @@ void net6::connection_base::do_handshake()
 		set_select(flags);
 		signal_encrypted.emit();
 
+#ifdef WIN32
 		// This is required to call recv as a re-enabling function
 		// for asynchronous selection. Note that we cannot just
 		// call encrypted_sock->recv here and expect WSAEWOULDBLOCK
@@ -352,6 +359,7 @@ void net6::connection_base::do_handshake()
 		// TODO: We should not do this when the
 		// socket is in blocking mode!
 		do_io(IO_INCOMING);
+#endif
 	}
 	else
 	{
@@ -443,8 +451,8 @@ void net6::connection_base::net_encryption(const packet& pack)
 
 void net6::connection_base::net_encryption_ok(const packet& pack)
 {
-	if(state != ENCRYPTION_INITIATED_CLIENT &&
-	   state != ENCRYPTION_INITIATED_SERVER)
+	if(state != ENCRYPTION_REQUESTED_CLIENT &&
+	   state != ENCRYPTION_REQUESTED_SERVER)
 	{
 		throw bad_value(
 			"Received encryption reply without having "
@@ -454,7 +462,7 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 
 	set_select(IO_NONE);
 
-	if(state == ENCRYPTION_INITIATED_CLIENT)
+	if(state == ENCRYPTION_REQUESTED_CLIENT)
 		encrypted_sock = new tcp_encrypted_socket_client(*remote_sock);
 	else
 		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
@@ -468,8 +476,8 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 
 void net6::connection_base::net_encryption_failed(const packet& pack)
 {
-	if(state != ENCRYPTION_INITIATED_CLIENT &&
-	   state != ENCRYPTION_INITIATED_SERVER)
+	if(state != ENCRYPTION_REQUESTED_CLIENT &&
+	   state != ENCRYPTION_REQUESTED_SERVER)
 	{
 		throw bad_value(
 			"Received encryption reply without having "
@@ -483,6 +491,8 @@ void net6::connection_base::net_encryption_failed(const packet& pack)
 	net6::io_condition flags = net6::IO_INCOMING | net6::IO_ERROR;
 	if(sendqueue.get_size() > 0) flags |= net6::IO_OUTGOING;
 	set_select(flags);
+
+	signal_encryption_failed.emit();
 }
 
 void net6::connection_base::setup_signal()

@@ -39,6 +39,8 @@ public:
 		UNENCRYPTED,
 		ENCRYPTION_INITIATED_CLIENT,
 		ENCRYPTION_INITIATED_SERVER,
+		ENCRYPTION_REQUESTED_CLIENT,
+		ENCRYPTION_REQUESTED_SERVER,
 		ENCRYPTION_HANDSHAKING,
 		ENCRYPTED,
 		CLOSED
@@ -48,6 +50,7 @@ public:
 	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;
 	typedef sigc::signal<void> signal_encrypted_type;
+	typedef sigc::signal<void> signal_encryption_failed_type;
 
 	/** @brief Creates a new connection that is initially in closed
 	 * state.
@@ -98,6 +101,11 @@ public:
 	 */
 	signal_encrypted_type encrypted_event() const;
 
+	/** @brief Signal that will be emitted when an encryption request
+	 * has been denied.
+	 */
+	signal_encryption_failed_type encryption_failed_event() const;
+
 protected:
 	virtual void set_select(io_condition cond) = 0;
 	virtual io_condition get_select() const = 0;
@@ -112,6 +120,7 @@ protected:
 	signal_recv_type signal_recv;
 	signal_close_type signal_close;
 	signal_encrypted_type signal_encrypted;
+	signal_encryption_failed_type signal_encryption_failed;
 
 	std::auto_ptr<tcp_client_socket> remote_sock;
 	tcp_encrypted_socket_base* encrypted_sock;
