@@ -190,9 +190,14 @@ net6::server::signal_part_type net6::server::part_event() const
 	return signal_part;
 }
 
-net6::server::signal_login_type net6::server::login_event() const
+net6::server::signal_pre_login_type net6::server::pre_login_event() const
 {
-	return signal_login;
+	return signal_pre_login;
+}
+
+net6::server::signal_post_login_type net6::server::post_login_event() const
+{
+	return signal_post_login;
 }
 
 net6::server::signal_login_auth_type net6::server::login_auth_event() const
@@ -298,11 +303,11 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				send(pack, from);
 				return;
 			}
-	
-			from.login(name);
-			signal_login.emit(from, pack);
 
-			packet self_pack("net6_client_join", 10000);
+			from.login(name);
+			signal_pre_login.emit(from, pack);
+	
+			packet self_pack("net6_client_join");
 			self_pack << from.get_id() << name;
 			signal_login_extend.emit(from, self_pack);
 			send(self_pack, from);
@@ -313,7 +318,7 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				if(!( (*it)->is_logined()) ) continue;
 				if(*it == &from) continue;
 
-				packet join_pack("net6_client_join", 10000);
+				packet join_pack("net6_client_join");
 				join_pack << (*it)->get_id()
 				          << (*it)->get_name();
 				signal_login_extend.emit(**it, join_pack);
@@ -321,6 +326,9 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				send(join_pack, from);
 				send(self_pack, **it);
 			}
+
+			signal_post_login.emit(from, pack);
+
 		}
 	}
 	else

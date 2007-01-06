@@ -122,10 +122,11 @@ public:
 
 	typedef sigc::signal<void, peer&> signal_join_type;
 	typedef sigc::signal<void, peer&> signal_part_type;
-	typedef sigc::signal<void, peer&, const packet&> signal_login_type;
 	typedef sigc::signal<bool, peer&, const packet&,
 		std::string&>::accumulated<auth_accumulator>
 			signal_login_auth_type;
+	typedef sigc::signal<void, peer&, const packet&> signal_pre_login_type;
+	typedef sigc::signal<void, peer&, const packet&> signal_post_login_type;
 	typedef sigc::signal<void, peer&, packet&> signal_login_extend_type;
 	typedef sigc::signal<void, const packet&, peer&> signal_data_type;
 
@@ -191,9 +192,14 @@ public:
 	signal_part_type part_event() const;
 
 	/** Signal which is emitted when a client logs in with a valid user
-	 * name
+	 * name. It is emitted before login_extend signals are emitted.
 	 */
-	signal_login_type login_event() const;
+	signal_pre_login_type pre_login_event() const;
+
+	/** Signal which is emitted when a client loggs in with a valid user
+	 * name. It is emitted after login_extend signals are emitted.
+	 */
+	signal_post_login_type post_login_event() const;
 
 	/** Signal used for user authentication. If the signal handler returns
 	 * false, the login will be denied. The signal handler may set the
@@ -230,7 +236,8 @@ protected:
 
 	signal_join_type signal_join;
 	signal_part_type signal_part;
-	signal_login_type signal_login;
+	signal_pre_login_type signal_pre_login;
+	signal_post_login_type signal_post_login;
 	signal_login_auth_type signal_login_auth;
 	signal_login_extend_type signal_login_extend;
 	signal_data_type signal_data;

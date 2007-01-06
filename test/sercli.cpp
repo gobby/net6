@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) try
 	net6::server server(port, false);
 
 	server.join_event().connect(sigc::bind(sigc::ptr_fun(&on_server_join), sigc::ref(server)) );
-	server.login_event().connect(sigc::bind(sigc::ptr_fun(&on_server_login), sigc::ref(server)) );
+	server.pre_login_event().connect(sigc::bind(sigc::ptr_fun(&on_server_login), sigc::ref(server)) );
 	server.login_auth_event().connect(sigc::ptr_fun(&on_server_auth) );
 	server.part_event().connect(sigc::bind(sigc::ptr_fun(&on_server_part), sigc::ref(server)) );
 	server.data_event().connect(sigc::bind(sigc::ptr_fun(&on_server_data), sigc::ref(server)) );
