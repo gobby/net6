@@ -30,6 +30,9 @@ AC_CACHE_SAVE
 # Use C++ compiler for the tests.
 AC_LANG([C++])
 
+# Check for headers.
+AC_CHECK_HEADERS([sys/select.h])
+
 # Check for MSG_NOSIGNAL
 AC_MSG_CHECKING(for MSG_NOSIGNAL)
 AC_TRY_COMPILE([#include <sys/socket.h>],

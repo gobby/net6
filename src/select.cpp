@@ -18,7 +18,9 @@
 
 #include <ctime>
 #include <limits>
-#include <sys/select.h>
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
 
 #include "error.hpp"
 #include "select.hpp"
