@@ -135,8 +135,10 @@ namespace
 			return net6::error::OPERATION_IN_PROGRESS;
 		case EBADF:
 			return net6::error::NOT_SOCKET;
-		case EBADMSG: // TODO: What is bad message..?
-			return net6::error::MESSAGE_TOO_LONG;
+		// TODO: What is bad message..?
+		// deactivated 2005-04-15 by phil: not BSD-compatible
+//		case EBADMSG:
+//			return net6::error::MESSAGE_TOO_LONG;
 		case ECONNABORTED:
 			return net6::error::CONNECTION_ABORTED;
 		case ECONNREFUSED:
@@ -171,8 +173,9 @@ namespace
 			return net6::error::TOO_MANY_FILES;
 		case ENOBUFS:
 			return net6::error::NO_BUFFER_SPACE;
-		case ENODATA:
-			return net6::error::NO_DATA_RECORD;
+		// deactivated 2005-04-15 by phil: not BSD-compatible
+//		case ENODATA:
+//			return net6::error::NO_DATA_RECORD;
 		case ENODEV:
 			return net6::error::NO_DEVICE;
 		case ENOMEM:
