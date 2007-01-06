@@ -147,6 +147,8 @@ void net6::packet::param::clear_memory()
 		delete data.s;
 }
 
+const unsigned int net6::packet::DEFAULT_PRIORITY = 1000;
+
 net6::packet::packet(unsigned int priority)
  : prio(priority)
 {

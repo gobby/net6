@@ -114,15 +114,24 @@ public:
 		data_type data;
 	};
 
+	/** Default priority for packets.
+	 */
+	static const unsigned int DEFAULT_PRIORITY;
+
 	/** Creates an empty packet.
 	 */
-	packet(unsigned int priority = 1000);
+	packet(unsigned int priority = DEFAULT_PRIORITY);
 
-	/** Creates a new packet with command <em>command</em>, priority
-	 * <em>priority</em> and preallocates memory for <size> parameters.
+	/** Creates a new packet.
+	 * @param command Command for the packet.
+	 * @param priority Packet priority. Packets with higher priority are
+	 * sent before packets with lower priority.
+	 * @param size Number of parameters the packet will preallocate memory
+	 * for.
 	 */
-	packet(const std::string& command, unsigned int priority = 1000,
-				 unsigned int size = 0);
+	packet(const std::string& command,
+	       unsigned int priority = DEFAULT_PRIORITY,
+	       unsigned int size = 0);
 
 	/** Creates a copy of <em>other</em>.
 	 */
