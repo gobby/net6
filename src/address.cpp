@@ -23,6 +23,7 @@
 
 #include <sstream>
 
+#include "common.hpp"
 #include "error.hpp"
 #include "address.hpp"
 
