@@ -182,7 +182,13 @@ net6::tcp_client_socket::~tcp_client_socket()
 net6::socket::size_type net6::tcp_client_socket::send(const void* buf,
                                                       size_type len) const
 {
+#ifdef MSG_NOSIGNAL
+	ssize_t result =
+		::send(cobj(), WIN32_CCAST_FIX(buf), len, MSG_NOSIGNAL);
+#else
 	ssize_t result = ::send(cobj(), WIN32_CCAST_FIX(buf), len, 0);
+#endif
+
 	if(result < 0)
 		throw error(net6::error::SYSTEM);
 
@@ -192,7 +198,12 @@ net6::socket::size_type net6::tcp_client_socket::send(const void* buf,
 net6::socket::size_type net6::tcp_client_socket::recv(void* buf,
                                                       size_type len) const
 {
+#ifdef MSG_NOSIGNAL
+	ssize_t result = ::recv(cobj(), WIN32_CAST_FIX(buf), len, MSG_NOSIGNAL);
+#else
 	ssize_t result = ::recv(cobj(), WIN32_CAST_FIX(buf), len, 0);
+#endif
+
 	if(result < 0)
 		throw error(net6::error::SYSTEM);
 
@@ -467,4 +478,3 @@ net6::udp_socket::recv(void* buf, size_type len, address& from) const
 
 	return result;
 }
-
