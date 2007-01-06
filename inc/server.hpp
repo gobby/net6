@@ -83,20 +83,21 @@ public:
 		signal_data_type;
 
 	/** Creates a new basic_server object.
-	 * @param ipv6 Whether to use IPv6.
+	 * @param ipv6 Whether to use IPv6 when no ipv6 parameter is given
+	 * to reopen.
 	 */
-	basic_server();
+	basic_server(bool ipv6 = true);
 
 	/** Creates a new basic_server which will be opened on port
 	 * <em>port</em>.
 	 */
-	basic_server(unsigned int port, bool use_ipv6);
+	basic_server(unsigned int port, bool ipv6 = true);
 	virtual ~basic_server();
 
 	/** (re)opens the server socket on port <em>port</em>, if it has
 	 * been shut down before.
 	 */
-	virtual void reopen(unsigned int port, bool use_ipv6);
+	virtual void reopen(unsigned int port, bool ipv6 = get_ipv6_default());
 
 	/** Shuts down the server socket. New connections will no longer be
 	 * accepted, but already established connections stay open.
@@ -238,19 +239,27 @@ protected:
 private:
 	void shutdown_impl();
 	void reopen_impl(unsigned int port, bool use_ipv6);
+
+	// This is required for the default parameter in reopen. C++ does not
+	// allow to use a member variable as default initializer, but it
+	// seems to allow member function calls. Plase do not ask me why...
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+	bool get_ipv6_default() const { return use_ipv6; }
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 };
 
 typedef basic_server<selector> server;
 
 template<typename selector_type>
-basic_server<selector_type>::basic_server()
- : id_counter(0)
+basic_server<selector_type>::basic_server(bool ipv6)
+ : id_counter(0), use_ipv6(ipv6)
 {
 }
 
 template<typename selector_type>
 basic_server<selector_type>::basic_server(unsigned int port, bool ipv6)
- : id_counter(0)
+ : id_counter(0), use_ipv6(ipv6)
 {
 	reopen_impl(port, ipv6);
 }
@@ -264,9 +273,9 @@ basic_server<selector_type>::~basic_server()
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::reopen(unsigned int port, bool use_ipv6)
+void basic_server<selector_type>::reopen(unsigned int port, bool ipv6)
 {
-	reopen_impl(port, use_ipv6);
+	reopen_impl(port, ipv6);
 }
 
 template<typename selector_type>
@@ -646,12 +655,12 @@ void basic_server<selector_type>::shutdown_impl()
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::reopen_impl(unsigned int port, bool use_ipv6)
+void basic_server<selector_type>::reopen_impl(unsigned int port, bool ipv6)
 {
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Open IPv4 socket on local port
-	if(!use_ipv6)
+	if(!ipv6)
 	{
 		ipv4_address bind_addr(port);
 		serv_sock.reset(new tcp_server_socket(bind_addr) );

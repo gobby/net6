@@ -36,9 +36,10 @@ class basic_host
 public:
 	/** Creates a new basic_host object.
 	 * @param username user name to use for the local user.
-	 * @param ipv6 Whether to use IPv6.
+	 * @param ipv6 Whether to use IPv6 when no parameter is given to
+	 * reopen.
 	 */
-	basic_host(const std::string& username);
+	basic_host(const std::string& username, bool ipv6 = true);
 
 	/** Creates a new basic_host object which will accept incoming
 	 * connections on port <em>port</em> and use the user name
@@ -77,10 +78,10 @@ protected:
 typedef basic_host<selector> host;
 
 template<typename selector_type>
-basic_host<selector_type>::basic_host(const std::string& username)
+basic_host<selector_type>::basic_host(const std::string& username, bool ipv6)
  : basic_object<selector_type>(),
    basic_local<selector_type>(),
-   basic_server<selector_type>(),
+   basic_server<selector_type>(ipv6),
    self(new user(++ basic_server<selector_type>::id_counter, NULL) )
 {
 	self->login(username);
