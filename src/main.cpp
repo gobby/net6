@@ -17,17 +17,16 @@
  */
 
 #include "config.hpp"
+#include "common.hpp"
 #ifdef WIN32
 #include <winsock2.h>
-#endif
-#ifdef ENABLE_NLS
-#include <libintl.h>
 #endif
 #include <signal.h>
 #include "error.hpp"
 #include "main.hpp"
 
 unsigned int net6::main::refcount = 0;
+net6::gettext_package* net6::main::package = NULL;
 
 net6::main::main()
 {
@@ -46,8 +45,14 @@ net6::main::main()
 	refcount ++;
 
 #ifdef ENABLE_NLS
+	package = new gettext_package(PACKAGE, LOCALEDIR);
+	init_gettext(*package);
+#endif
+#if 0
+#ifdef ENABLE_NLS
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
+#endif
 #endif
 }
 
@@ -57,6 +62,9 @@ net6::main::~main()
 #ifdef WIN32
 	if(refcount == 0)
 	{
+#ifdef ENABLE_NLS
+		delete package;
+#endif
 		WSACleanup();
 	}
 #endif

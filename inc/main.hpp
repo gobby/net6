@@ -20,6 +20,7 @@
 #define _NET6_MAIN_HPP_
 
 #include "non_copyable.hpp"
+#include "gettext_package.hpp"
 
 /** The main net6 namespace where all net6 stuff belongs to.
  */
@@ -38,6 +39,7 @@ public:
 
 private:
 	static unsigned int refcount;
+	static gettext_package* package;
 };
 
 }

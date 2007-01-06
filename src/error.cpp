@@ -47,6 +47,13 @@ std::string net6::login::errstring(error err)
 
 namespace
 {
+	/** Translates a message without being in the net6 namespace.
+	 */
+	const char* _(const char* msgid)
+	{
+		return net6::_(msgid);
+	}
+
 	/** Translates a system dependant error value to net6 error codes.
 	 */
 	net6::error::code system_to_net6(int error_code)

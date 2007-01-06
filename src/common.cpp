@@ -16,22 +16,30 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef _NET6_COMMON_HPP_
-#define _NET6_COMMON_HPP_
-
+#include "config.hpp"
+#include "common.hpp"
 #include "gettext_package.hpp"
 
-namespace net6
+#ifdef ENABLE_NLS
+namespace
 {
+	net6::gettext_package* local_package = NULL;
+}
+#endif
 
-/** Call to initialise gettext and to be able to get translated messages by _()
- */
-void init_gettext(gettext_package& package);
-
-/** Translates the given message in the net6 message catalog.
- */
-const char* _(const char* msgid);
-
+void net6::init_gettext(gettext_package& package)
+{
+#ifdef ENABLE_NLS
+	local_package = &package;
+#endif
 }
 
-#endif // _NET6_COMMON_HPP_
+const char* net6::_(const char* msgid)
+{
+#ifdef ENABLE_NLS
+	return local_package->gettext(msgid);
+#else
+	return msgid;
+#endif
+}
+
