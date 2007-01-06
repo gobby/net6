@@ -42,8 +42,6 @@ net6::main::main()
 	WSAData data;
 	if(WSAStartup(MAKEWORD(2, 2), &data) != 0)
 		throw error(error::SYSTEM, WSAGetLastError() );
-#else
-	signal(SIGPIPE, SIG_IGN);
 #endif
 
 	// Register basic types

@@ -16,35 +16,5 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <sigc++/bind.h>
 #include "host.hpp"
-
-net6::host::host(const std::string& username, bool ipv6)
- : server(ipv6), self(new peer(++ id_counter) )
-{
-	self->login(username);
-	peers.push_back(self);
-}
-
-net6::host::host(unsigned int port, const std::string& username, bool ipv6)
- : server(port, ipv6), self(new peer(++ id_counter) )
-{
-	self->login(username);
-	peers.push_back(self);
-}
-
-net6::host::~host()
-{
-}
-
-void net6::host::send(const packet& pack, peer& to)
-{
-	if(&to != self)
-		server::send(pack, to);
-}
-
-net6::host::peer* net6::host::get_self() const
-{
-	return self;
-}
 

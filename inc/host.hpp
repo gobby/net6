@@ -19,50 +19,95 @@
 #ifndef _NET6_HOST_HPP_
 #define _NET6_HOST_HPP_
 
-#include <sigc++/signal.h>
-
+#include "local.hpp"
 #include "server.hpp"
 
 namespace net6
 {
 
-/** High-level TCP host object that is used as a server with a local peer.
+/** High-level TCP host object that is used as a server with a local user.
  */
-	
-class host : virtual public server
+
+template<typename selector_type = net6::selector>
+class basic_host
+ : public basic_local<selector_type>,
+   public basic_server<selector_type>
 {
 public:
-	/** Participiant in a client/server network. Necessary changes
-	 * to this object are performed by the net6::host object.
-	 */
-	typedef server::peer peer;
-
-	/** Creates a new host object.
-	 * @param username user name to use for the local peer.
+	/** Creates a new basic_host object.
+	 * @param username user name to use for the local user.
 	 * @param ipv6 Whether to use IPv6.
 	 */
-	host(const std::string& username, bool ipv6 = true);
+	basic_host(const std::string& username, bool ipv6 = true);
 
-	/** Creates a new host object which will accept incoming connections
-	 * on port <em>port</em> and use the user name <em>username</em> for
-	 * the local peer.
+	/** Creates a new basic_host object which will accept incoming
+	 * connections on port <em>port</em> and use the user name
+	 * <em>username</em> for the local user.
 	 */
-	host(unsigned int port, const std::string& username, bool ipv6 = true);
-	virtual ~host();
+	basic_host(unsigned int port, const std::string& username,
+	           bool ipv6 = true);
 
-	/** Send a packet to all the connected and logined peers.
+	/** Sends a packet to a single user. The request is ignored if
+	 * <em>to</em> is the local user.
 	 */
-	virtual void send(const packet& pack, peer& to);
+	virtual void send(const packet& pack, const user& to);
 
-	/** Returns the local peer
+	/** Returns the local user.
 	 */
-	peer* get_self() const;
+	virtual user& get_self();
+
+	/** Returns the local user.
+	 */
+	virtual const user& get_self() const;
 
 protected:
-	peer* self;
+	user* self;
 };
-	
+
+typedef basic_host<selector> host;
+
+template<typename selector_type>
+basic_host<selector_type>::basic_host(const std::string& username, bool ipv6)
+ : basic_object<selector_type>(),
+   basic_local<selector_type>(),
+   basic_server<selector_type>(ipv6),
+   self(new user(++ basic_server<selector_type>::id_counter, NULL) )
+{
+	self->login(username);
+	basic_object<selector_type>::user_add(self);
 }
 
-#endif
+template<typename selector_type>
+basic_host<selector_type>::
+	basic_host(unsigned int port, const std::string& username, bool ipv6)
+ : basic_object<selector_type>(),
+   basic_local<selector_type>(),
+   basic_server<selector_type>(port, ipv6),
+   self(new user(++ basic_server<selector_type>::id_counter, NULL) )
+{
+	self->login(username);
+	basic_object<selector_type>::user_add(self);
+}
+
+template<typename selector_type>
+void basic_host<selector_type>::send(const packet& pack, const user& to)
+{
+	if(&to != self) basic_server<selector_type>::send(pack, to);
+}
+
+template<typename selector_type>
+user& basic_host<selector_type>::get_self()
+{
+	return *self;
+}
+
+template<typename selector_type>
+const user& basic_host<selector_type>::get_self() const
+{
+	return *self;
+}
+
+} // namespace net6
+
+#endif // _NET6_HOST_HPP_
 

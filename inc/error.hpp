@@ -50,9 +50,8 @@ namespace login
 	std::string errstring(error err);
 }
 
-/** Common net6 error reporting class.
+/** Common net6 error reporting class for low-level system errors.
  */
-	
 class error : public std::runtime_error
 {
 public:
@@ -137,6 +136,24 @@ public:
 
 private:
 	code errcode;
+};
+
+/** Error class that is thrown if a requested operation requires that the
+ * object (e.g. basic_client) is currently not connected, but it is. */
+class connected_error : public std::logic_error
+{
+public:
+	connected_error(const std::string& message)
+	 : std::logic_error(message) { }
+};
+
+/** Error class that is thrown if a requested operation requires that the
+ * object (e.g. basic_client) has a connection to somewhere but it has not. */
+class not_connected_error : public std::logic_error
+{
+public:
+	not_connected_error(const std::string& message)
+	 : std::logic_error(message) { }
 };
 
 }

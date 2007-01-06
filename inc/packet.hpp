@@ -156,7 +156,9 @@ protected:
  * a specialised version of this class with your type and overwrite
  * basic_parameter::clone and basic_parameter::to_string. The type_id that
  * is given to the base class (basic_parameter) must not be in use by another
- * type. net6 occupies 'i', 's' and 'f'. Finally call packet::register_type
+ * type. net6 occupies 'b', 'i', 's' and 'f'.
+ *
+ * Finally call packet::register_type
  * with this ID and a function that converts the string representation of the
  * type back to a parameter object. This function may throw
  * basic_parameter::bad_format if the string has a bad format that does not
@@ -194,7 +196,7 @@ public:
 		if(str == "0") return new parameter<bool>(false);
 
 		throw basic_parameter::bad_format(
-			"Boolean value is neither 1 nor 0"
+			"Boolean value is neither 0 nor 1"
 		);
 	}
 
@@ -427,10 +429,10 @@ public:
 	void set_raw_string(const std::string& raw_string);
 
 	/** Registers a new type. If you decide to write a parameter for a type
-	 * that is not already supported by net6 (which, in fact, is int and
-	 * string), you have to call this function with the type ID you chose
-	 * (see net6::parameter) and a function which translates a string back
-	 * to an object of the given type.
+	 * that is not already supported by net6 (which, in fact, is bool, int,
+	 * float and std::string) you have to call this function with the
+	 * type ID you chose (see net6::parameter) and a function which
+	 * translates a string back to an object of the given type.
 	 */
 	static void register_type(identification_type type,
 	                          type_lookup_slot slot);

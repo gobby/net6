@@ -21,11 +21,13 @@
 
 #include "non_copyable.hpp"
 
+/** The main net6 namespace where all net6 stuff belongs to.
+ */
 namespace net6
 {
 
 /** net6 main object. Every net6 capable program needs one of these objects
- * to (de)initialize the library
+ * to (de)initialise the library.
  */
 	
 class main : private non_copyable

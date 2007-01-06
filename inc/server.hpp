@@ -19,157 +19,97 @@
 #ifndef _NET6_SERVER_HPP_
 #define _NET6_SERVER_HPP_
 
+#include <memory>
 #include <sigc++/signal.h>
+#include <sigc++/bind.h>
 
 #include "non_copyable.hpp"
 #include "default_accumulator.hpp"
 #include "error.hpp"
-#include "peer.hpp"
+#include "user.hpp"
 #include "address.hpp"
 #include "socket.hpp"
 #include "select.hpp"
 #include "packet.hpp"
 #include "connection.hpp"
+#include "object.hpp"
 
 namespace net6
 {
 
 /** High-level TCP dedicated server object.
  */
-
-class server : public sigc::trackable, private non_copyable
+template<typename selector_type>
+class basic_server : virtual public basic_object<selector_type>
 {
 public:
-	/** Participiant in a client/server network. Necessary changes
-	 * to this object are performed by the net6::server object.
-	 */
-	class peer : public net6::peer
-	{
-		friend class server;
-	public:
-		typedef connection::signal_send_type signal_send_type;
-		typedef connection::signal_recv_type signal_recv_type;
-		typedef connection::signal_close_type signal_close_type;
-
-		peer(unsigned int id);
-		peer(unsigned int id, const tcp_client_socket& sock,
-		     const address& addr);
-		~peer();
-
-		/** Login this peer with the specified user name.
-		 */
-		void login(const std::string& username);
-
-		/** Checks if this peer has been logged in successfully.
-		 */
-		bool is_logged_in() const;
-
-		/** Returns the socket which is used to communicate with
-		 * this peer.
-		 */
-		const tcp_client_socket& get_socket() const;
-
-		/** Returns the remote address of this peer.
-		 */
-		const address& get_address() const;
-
-		/** Signal which is emitted when data has been completely
-		 * sent to this peer.
-		 */
-		signal_send_type send_event() const;
-
-		/** Signal which is emitted when data has been received from
-		 * this peer.
-		 */
-		signal_recv_type recv_event() const;
-
-		/** Signal which is emitted when the connection to this peer
-		 * has been lost.
-		 */
-		signal_close_type close_event() const;
-	protected:
-		/** Enqueues a packet to send it to this peer. Use
-		 * net6::server::send instead, which is a wrapper around
-		 * this function.
-		 */
-		void send(const packet& pack);
-
-		bool logged_in;
-		connection* conn;
-	};
-
 	typedef default_accumulator<unsigned int, 0> login_accumulator;
 	typedef default_accumulator<bool, true> auth_accumulator;
 
-	typedef sigc::signal<void, peer&> signal_connect_type;
-	typedef sigc::signal<void, peer&> signal_disconnect_type;
+	typedef sigc::signal<void, const user&>
+		signal_connect_type;
+	typedef sigc::signal<void, const user&>
+		signal_disconnect_type;
 
-	typedef sigc::signal<void, peer&> signal_join_type;
-	typedef sigc::signal<void, peer&> signal_part_type;
+	typedef sigc::signal<void, const user&>
+		signal_join_type;
+	typedef sigc::signal<void, const user&>
+		signal_part_type;
 
-	typedef sigc::signal<bool, peer&, const packet&, login::error&>
-		::accumulated<auth_accumulator> signal_login_auth_type;
-	typedef sigc::signal<unsigned int, peer&, const packet&>
-		::accumulated<login_accumulator> signal_login_type;
-	typedef sigc::signal<void, peer&, packet&> signal_login_extend_type;
+	typedef typename
+		sigc::signal<bool, const user&, const packet&, login::error&>::
+		template accumulated<auth_accumulator> signal_login_auth_type;
+	typedef typename
+		sigc::signal<unsigned int, const user&, const packet&>::
+		template accumulated<login_accumulator> signal_login_type;
 
-	typedef sigc::signal<void, peer&, const packet&> signal_data_type;
+	typedef sigc::signal<void, const user&, packet&>
+		signal_login_extend_type;
+
+	typedef sigc::signal<void, const user&, const packet&>
+		signal_data_type;
 	
-	/** Creates a new server object.
+	/** Creates a new basic_server object.
 	 * @param ipv6 Whether to use IPv6.
 	 */
-	server(bool ipv6 = true);
+	basic_server(bool ipv6 = true);
 
-	/** Creates a new server which will be opened on port <em>port</em>.
+	/** Creates a new basic_server which will be opened on port
+	 * <em>port</em>.
 	 */
-	server(unsigned int port, bool ipv6 = true);
-	virtual ~server();
-
-	/** Shuts down the server socket. New connections will no longer be
-	 * accepted, but already established connections stay open.
-	 */
-	virtual void shutdown();
+	basic_server(unsigned int port, bool ipv6 = true);
+	virtual ~basic_server();
 
 	/** (re)opens the server socket on port <em>port</em>, if it has
 	 * been shut down before.
 	 */
 	virtual void reopen(unsigned int port);
 
-	/** Removes the connection to the given peer.
+	/** Shuts down the server socket. New connections will no longer be
+	 * accepted, but already established connections stay open.
 	 */
-	void kick(peer& client);
+	virtual void shutdown();
 
-	/** Wait infinitely for incoming events. The events themselves
-	 * are handled by the server.
+	/** Returns whether the server socket has been opened. Note that the
+	 * socket may not be open but there are still client connections if the
+	 * server has been shut down when clients were connected.
 	 */
-	virtual void select();
+	bool is_open() const;
 
-	/** Wait for incoming events or until <em>timeout</em> exceeds. The
-	 * events themselves are handled by the server.
+	/** Removes the connection to the given user.
 	 */
-	virtual void select(unsigned int timeout);
+	void kick(const user& user);
 
-	/** Send a packet to all the connected and logined peers.
+	/** Send a packet to all the connected and logged in users.
 	 */
-	void send(const packet& pack);
+	virtual void send(const packet& pack);
 
-	/** Send a packet to a single peer.
+	/** Send a packet to a single user.
 	 */
-	virtual void send(const packet& pack, peer& to);
+	virtual void send(const packet& pack, const user& to);
 
-	/** Lookup a peer with the given id. If the peer is not connected to
-	 * the server, NULL is returned.
-	 */
-	peer* find(unsigned int id) const;
-
-	/** Look for a peer whose user name is <em>name</em>. If no one is
-	 * found, NULL is returned.
-	 */
-	peer* find(const std::string& name) const;
-
-	/** Returns the underlaying TCP server socket object. Note that this
-	 * function will cause a segmentation fault if the server has not
-	 * been opened.
+	/** Returns the underlaying TCP server socket object. The function
+	 * throws not_connected_error if the server has not been opened.
 	 */
 	const tcp_server_socket& get_socket() const;
 
@@ -226,8 +166,8 @@ public:
 	/** Signal which may be used to append parameters to a client_join
 	 * packet which will be sent to existing users to announce the new join.
 	 * The first parameter is the new client's ID number, the second one
-	 * its user name, other parameters may be appended by you. The peer
-	 * given to the signal handler is the peer for which information has
+	 * its user name, other parameters may be appended by you. The user
+	 * given to the signal handler is the use for which information has
 	 * to be appended, not the one to which they will be sent.
 	 */
 	signal_login_extend_type login_extend_event() const;
@@ -238,28 +178,31 @@ public:
 	signal_data_type data_event() const;
 	
 protected:
-	virtual void remove_client(peer* client);
+	virtual void remove_client(const user* client);
 
 	virtual void on_accept_event(socket::condition io);
-	virtual void on_send_event(peer& to);
-	virtual void on_recv_event(const packet& pack, peer& from);
-	virtual void on_close_event(peer& from);
+	virtual void on_send_event(user& to);
+	virtual void on_recv_event(const packet& pack,
+	                           user& from);
+	virtual void on_close_event(user& user);
 
-	virtual void on_connect(peer& client);
-	virtual void on_disconnect(peer& client);
-	virtual void on_join(peer& client);
-	virtual void on_part(peer& client);
-	virtual bool on_login_auth(peer& client, const packet& pack,
+	virtual void on_connect(const user& user);
+	virtual void on_disconnect(const user& user);
+	virtual void on_join(const user& user);
+	virtual void on_part(const user& user);
+	virtual bool on_login_auth(const user& user,
+	                           const packet& pack,
 	                           login::error& error);
-	virtual unsigned int on_login(peer& client, const packet& pack);
-	virtual void on_login_extend(peer& client, packet& pack);
-	virtual void on_data(peer& client, const packet& pack);
+	virtual unsigned int on_login(const user& user,
+	                              const packet& pack);
+	virtual void on_login_extend(const user& user,
+	                             packet& pack);
+	virtual void on_data(const user& user,
+	                     const packet& pack);
 
-	virtual void net_client_login(peer& from, const packet& pack);
+	virtual void net_client_login(user& from, const packet& pack);
 
-	tcp_server_socket* serv_sock;
-	std::list<peer*> peers;
-	selector sock_sel;
+	std::auto_ptr<tcp_server_socket> serv_sock;
 	bool use_ipv6;
 	unsigned int id_counter;
 
@@ -273,23 +216,423 @@ protected:
 	signal_data_type signal_data;
 	
 private:
-	/** Private implementations for the shutdown() and reopen() functions.
-	 * They are used by shutdown() and reopen() as well as by the
-	 * constructor/destructor. They are necessary because a normal
-	 * reopen()-Call in the constructor is not treated virtual because a
-	 * derived object is not instanciated at this point. The code in these
-	 * functions can not be executed directly by reopen() or shutdown()
-	 * because those are virtual functions, so they would be called twice
-	 * in a derived object (net6::server::server would call
-	 * net6::server::reopen, and derived::derived would call derived::reopen
-	 * which would call its base function, net6::server::reopen to provide
-	 * its functionallity in the case that it is not called by a constructor
-	 */
 	void shutdown_impl();
 	void reopen_impl(unsigned int port);
 };
-	
+
+typedef basic_server<selector> server;
+
+template<typename selector_type>
+basic_server<selector_type>::basic_server(bool ipv6)
+ : use_ipv6(ipv6), id_counter(0)
+{
 }
 
-#endif
+template<typename selector_type>
+basic_server<selector_type>::basic_server(unsigned int port, bool ipv6)
+ : use_ipv6(ipv6), id_counter(0)
+{
+	reopen_impl(port);
+}
+
+template<typename selector_type>
+basic_server<selector_type>::~basic_server()
+{
+	if(is_open() )
+		shutdown_impl();
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::reopen(unsigned int port)
+{
+	reopen_impl(port);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::shutdown()
+{
+	shutdown_impl();
+}
+
+template<typename selector_type>
+bool basic_server<selector_type>::is_open() const
+{
+	return serv_sock.get() != NULL;
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::kick(const user& user)
+{
+	remove_client(&user);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::send(const packet& pack)
+{
+	for(typename basic_object<selector_type>::user_iterator i =
+		basic_object<selector_type>::users.begin();
+	    i != basic_object<selector_type>::users.end();
+	    ++ i)
+	{
+		if(i->second->is_logged_in() )
+			send(pack, *i->second);
+	}
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::send(const packet& pack, const user& to)
+{
+	// Get selector from base class
+	selector_type& selector = basic_object<selector_type>::get_selector();
+	const tcp_client_socket& user_socket = to.get_connection().get_socket();
+
+	// Set OUTGOING flag if it isn't already
+	if(!selector.check(user_socket, socket::OUTGOING) )
+		selector.add(user_socket, socket::OUTGOING);
+
+	// Enqueue packet
+	to.send(pack);
+}
+
+template<typename selector_type>
+const tcp_server_socket& basic_server<selector_type>::get_socket() const
+{
+	if(!is_open() )
+		throw not_connected_error("net6::basic_server::get_socket");
+
+	return *serv_sock;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_connect_type
+basic_server<selector_type>::connect_event() const
+{
+	return signal_connect;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_disconnect_type
+basic_server<selector_type>::disconnect_event() const
+{
+	return signal_disconnect;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_join_type
+basic_server<selector_type>::join_event() const
+{
+	return signal_join;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_part_type
+basic_server<selector_type>::part_event() const
+{
+	return signal_part;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_login_auth_type
+basic_server<selector_type>::login_auth_event() const
+{
+	return signal_login_auth;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_login_type
+basic_server<selector_type>::login_event() const
+{
+	return signal_login;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_login_extend_type
+basic_server<selector_type>::login_extend_event() const
+{
+	return signal_login_extend;
+}
+
+template<typename selector_type>
+typename basic_server<selector_type>::signal_data_type
+basic_server<selector_type>::data_event() const
+{
+	return signal_data;
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::remove_client(const user* user)
+{
+	// Emit part/disconnect signals
+	if(user->is_logged_in() )
+		on_part(*user);
+	on_disconnect(*user);
+
+	// Get selector from base class
+	selector_type& selector = basic_object<selector_type>::get_selector();
+	const tcp_client_socket& user_socket = 
+		user->get_connection().get_socket();
+
+	// Remove dead client from selector
+	selector.remove(user_socket, socket::INCOMING | socket::IOERROR);
+	if(selector.check(user_socket, socket::OUTGOING) )
+		selector.remove(user_socket, socket::OUTGOING);
+
+	// Build packet for other clients
+	packet pack("net6_client_part");
+	pack << user->get_id();
+
+	// Remove user to prevent server from sending the packet to the user
+	// we are currently removing
+	basic_object<selector_type>::user_remove(user);
+
+	send(pack);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_accept_event(socket::condition io)
+{
+	// Accept new client connection
+	user* client;
+	if(use_ipv6)
+	{
+		ipv6_address addr;
+		tcp_client_socket new_sock = serv_sock->accept(addr);
+		client = new user(
+			++ id_counter,
+			new connection(new_sock, addr)
+		);
+	}
+	else
+	{
+		ipv4_address addr;
+		tcp_client_socket new_sock = serv_sock->accept(addr);
+		client = new user(
+			++ id_counter,
+			new connection(new_sock, addr)
+		);
+	}
+
+	// Get selector from base class
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
+	// Add new client into user list
+	basic_object<selector_type>::user_add(client);
+
+	// Add to selector to receive data from this client
+	connection& conn = client->get_connection();
+	selector.add(conn.get_socket(), socket::INCOMING | socket::IOERROR);
+
+	// Connect signal handlers
+	conn.send_event().connect(
+		sigc::bind(
+			sigc::mem_fun(*this, &basic_server::on_send_event),
+			sigc::ref(*client)
+		)
+	);
+
+	conn.recv_event().connect(
+		sigc::bind(
+			sigc::mem_fun(*this, &basic_server::on_recv_event),
+			sigc::ref(*client)
+		)
+	);
+
+	conn.close_event().connect(
+		sigc::bind(
+			sigc::mem_fun(*this, &basic_server::on_close_event),
+			sigc::ref(*client)
+		)
+	);
+
+	// Emit connection signal for new client
+	on_connect(*client);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_send_event(user& to)
+{
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
+	// Remove OUTGOING from selector as no more data has to be sent
+	selector.remove(to.get_connection().get_socket(), socket::OUTGOING);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_recv_event(const packet& pack, user& from)
+{
+	if(pack.get_command() == "net6_client_login")
+		net_client_login(from, pack);
+	else
+		if(from.is_logged_in() )
+			on_data(from, pack);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_close_event(user& user)
+{
+	remove_client(&user);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_connect(const user& user)
+{
+	signal_connect.emit(user);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_disconnect(const user& user)
+{
+	signal_disconnect.emit(user);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_join(const user& user)
+{
+	signal_join.emit(user);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_part(const user& user)
+{
+	signal_part.emit(user);
+}
+
+template<typename selector_type>
+bool basic_server<selector_type>::
+	on_login_auth(const user& user, const packet& pack, login::error& error)
+{
+	return signal_login_auth.emit(user, pack, error);
+}
+
+template<typename selector_type>
+unsigned int basic_server<selector_type>::
+	on_login(const user& user, const packet& pack)
+{
+	return signal_login.emit(user, pack);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_login_extend(const user& user, packet& pack)
+{
+	signal_login_extend.emit(user, pack);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_data(const user& user, const packet& pack)
+{
+	signal_data.emit(user, pack);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::net_client_login(user& user, const packet& pack)
+{
+	// Is already logged in
+	if(user.is_logged_in() ) return;
+
+	// Get wished user name
+	// TODO: trim name?
+	const std::string& name =
+		pack.get_param(0).basic_parameter::as<std::string>();
+
+	// Check for valid user name
+	if(name.empty() )
+	{
+		packet pack("net6_login_failed");
+		pack << static_cast<int>(login::ERROR_NAME_INVALID);
+		send(pack, user);
+	}
+	// Check for existing user name
+	else if(basic_object<selector_type>::user_find(name) != NULL)
+	{
+		packet pack("net6_login_failed");
+		pack << static_cast<int>(login::ERROR_NAME_IN_USE);
+		send(pack, user);
+	}
+	else
+	{
+		// Check for login_auth
+		login::error reason;
+		if(!on_login_auth(user, pack, reason) )
+		{
+			packet pack("net6_login_failed");
+			pack << static_cast<int>(reason);
+			send(pack, user);
+			return;
+		}
+
+		// Login succeeded
+		user.login(name);
+		unsigned int new_id = on_login(user, pack);
+
+		// TODO: Check if this ID is already in use
+		if(new_id != 0)
+		{
+			user.login(name, new_id);
+			if(id_counter < new_id)
+				id_counter = new_id;
+		}
+
+		// Synchronise with other clients
+		packet self_pack("net6_client_join");
+		self_pack << user.get_id() << name;
+		on_login_extend(user, self_pack);
+		send(self_pack, user);
+
+		for(typename basic_object<selector_type>::user_const_iterator
+			iter = basic_object<selector_type>::users.begin();
+		    iter != basic_object<selector_type>::users.end();
+		    ++ iter)
+		{
+			if(!iter->second->is_logged_in() ) continue;
+			if(iter->second == &user) continue;
+
+			packet join_pack("net6_client_join");
+			join_pack << iter->second->get_id()
+			          << iter->second->get_name();
+			on_login_extend(*iter->second, join_pack);
+
+			send(join_pack, user);
+			send(self_pack, *iter->second);
+		}
+
+		// Join complete
+		on_join(user);
+	}
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::shutdown_impl()
+{
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
+	selector.remove(*serv_sock, socket::INCOMING);
+	serv_sock.reset(NULL);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::reopen_impl(unsigned int port)
+{
+	// Open socket on local port
+	if(use_ipv6)
+	{
+		ipv6_address bind_addr(port);
+		serv_sock.reset(new tcp_server_socket(bind_addr) );
+	}
+	else
+	{
+		ipv4_address bind_addr(port);
+		serv_sock.reset(new tcp_server_socket(bind_addr) );
+	}
+
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
+	// Add incoming flag to selector to accept client connections
+	selector.add(*serv_sock, socket::INCOMING);
+	serv_sock->io_event().connect(
+		sigc::mem_fun(*this, &basic_server::on_accept_event) );
+}
+
+} // namespace net6
+
+#endif // _NET6_SERVER_HPP_
 
