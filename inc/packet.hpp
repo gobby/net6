@@ -70,8 +70,8 @@ public:
 	 */
 	template<typename data_type>
 	parameter(const data_type& type,
-	          const serialise::context<data_type>& ctx =
-	          serialise::hex_context<data_type>());
+	          const serialise::context_base_to<data_type>& ctx =
+	          serialise::hex_context_to<data_type>());
 
 	/** Returns the serialised data.
 	 */
@@ -80,8 +80,8 @@ public:
 	/** Deserialises the parameter value with the given context.
 	 */
 	template<typename data_type>
-	data_type as(const serialise::context<data_type>& ctx =
-	             serialise::hex_context<data_type>()) const;
+	data_type as(const serialise::context_base_from<data_type>& ctx =
+	             serialise::hex_context_from<data_type>()) const;
 
 protected:
 	serialise::data m_value;
@@ -89,13 +89,14 @@ protected:
 
 template<typename data_type>
 parameter::parameter(const data_type& type,
-                     const serialise::context<data_type>& ctx):
+                     const serialise::context_base_to<data_type>& ctx):
 	m_value(type, ctx)
 {
 }
 
 template<typename data_type>
-data_type parameter::as(const serialise::context<data_type>& ctx) const
+data_type parameter::
+	as(const serialise::context_base_from<data_type>& ctx) const
 {
 	try
 	{
@@ -145,8 +146,8 @@ public:
 	 */
 	template<typename data_type>
 	void add_param(const data_type& value,
-	               const serialise::context<data_type>& ctx =
-	               serialise::hex_context<data_type>() );
+	               const serialise::context_base_to<data_type>& ctx =
+	               serialise::hex_context_to<data_type>() );
 
 	/** Shortcut for add_param(T)
 	 */
@@ -180,7 +181,7 @@ protected:
 
 template<typename data_type>
 void packet::add_param(const data_type& value,
-                       const serialise::context<data_type>& ctx)
+                       const serialise::context_base_to<data_type>& ctx)
 {
 	params.push_back(parameter(value, ctx) );
 }

@@ -37,50 +37,144 @@ public:
 	conversion_error(const std::string& message);
 };
 
-/** Context to convert a specified type to or from a string.
+/** @brief Several built-in type names.
+ */
+template<typename data_type> struct type_name {};
+
+template<> struct type_name<int> { static const char* name; };
+template<> struct type_name<long> { static const char* name; };
+template<> struct type_name<short> { static const char* name; };
+template<> struct type_name<char> { static const char* name; };
+template<> struct type_name<unsigned int> { static const char* name; };
+template<> struct type_name<unsigned long> { static const char* name; };
+template<> struct type_name<unsigned short> { static const char* name; };
+template<> struct type_name<unsigned char> { static const char* name; };
+template<> struct type_name<float> { static const char* name; };
+template<> struct type_name<double> { static const char* name; };
+template<> struct type_name<long double> { static const char* name; };
+template<> struct type_name<bool> { static const char* name; };
+
+/** Abstract base context type to convert something to a string.
  */
 template<typename data_type>
-class context
+class context_base_to
 {
 public:
-	/** Converts something to a string.
+	/** @brief Converts the given data type to a string.
+	 */
+	virtual std::string to_string(const data_type& from) const = 0;
+};
+
+/** Abstract base context type to convert a string to another type.
+ */
+template<typename data_type>
+class context_base_from
+{
+public:
+	/** @brief Converts a string to a data type. Might throw
+	 * serialise::conversion_error.
+	 */
+	virtual data_type from_string(const std::string& from) const = 0;
+};
+
+/** Default context to convert something literally to a string.
+ */
+template<typename data_type>
+class default_context_to: public context_base_to<data_type>
+{
+public:
+	/** @brief Converts the given data type to a string.
 	 */
 	virtual std::string to_string(const data_type& from) const;
 
-	/** Converts a string back to the data type of this context. May
-	 * throw a conversion error if the string is illegally formatted for
-	 * the result type.
-	 */
-	virtual data_type from_string(const std::string& string) const;
-
 protected:
-	/** Internal function that is called before data is converted. Derived
-	 * classes may use this to modify stream stuff to format output.
+	/** Method derived classes may overload to alter the conversion.
 	 */
 	virtual void on_stream_setup(std::stringstream& stream) const;
 };
 
-/** Special context that uses a hexadecimal representation for numerical types.
+/** Default context to convert a string literally to a type.
  */
 template<typename data_type>
-class hex_context: public context<data_type>
+class default_context_from: public context_base_from<data_type>
 {
+public:
+	/** @brief Converts the given string to the type specified
+	 * as template parameter.
+	 *
+	 * May throw serialise::conversion_error().
+	 */
+	virtual data_type from_string(const std::string& from) const;
+
 protected:
-	/** Internal function that is called before data is converted. Derived
-	 * classes may use this to modify stream stuff to format output.
+	/** Method derived classes may overload to alter the conversion.
 	 */
 	virtual void on_stream_setup(std::stringstream& stream) const;
 };
 
-/** String serialisation does not need any conversions.
+/** Context that uses hexadecimal representation for numerical types.
  */
+template<typename data_type>
+class hex_context_to: public default_context_to<data_type>
+{
+protected:
+	virtual void on_stream_setup(std::stringstream& stream) const;
+};
+
+/** Context that uses hexadecimal representation for numerical types.
+ */
+template<typename data_type>
+class hex_context_from: public default_context_from<data_type>
+{
+public:
+	virtual void on_stream_setup(std::stringstream& stream) const;
+};
+
 template<>
-class context<std::string>
+class default_context_to<std::string>: public context_base_to<std::string>
 {
 public:
 	typedef std::string data_type;
 
-	// TODO: Return const string ref here?
+	virtual std::string to_string(const data_type& from) const;
+};
+
+template<>
+class default_context_from<std::string>: public context_base_from<std::string>
+{
+public:
+	typedef std::string data_type;
+
+	virtual data_type from_string(const std::string& from) const;
+};
+
+template<>
+class default_context_to<const char*>: public context_base_to<const char*>
+{
+public:
+	typedef const char* data_type;
+
+	virtual std::string to_string(const data_type& from) const;
+};
+
+template<std::size_t N>
+class default_context_to<char[N]>: public context_base_to<char[N]>
+{
+public:
+	typedef char data_type[N];
+
+	virtual std::string to_string(const data_type& from) const;
+};
+
+#if 0
+/** String serialisation does not need any conversions.
+ */
+template<>
+class context<std::string>: public context_base<std::string>
+{
+public:
+	typedef std::string data_type;
+
 	virtual std::string to_string(const data_type& from) const;
 	virtual data_type from_string(const std::string& string) const;
 };
@@ -90,12 +184,17 @@ public:
  * get it as std::string and call c_str() on it.
  */
 template<>
-class context<const char*>
+class context<const char*>: public context_base<const char*>
 {
 public:
 	typedef const char* data_type;
 
 	virtual std::string to_string(const data_type& from) const;
+
+	/** This method must not be instanciated. Use context<std::string>
+	 * instead!
+	 */
+	virtual data_type from_string(const std::string& from) const;
 };
 
 /** char array serialisation is only supported in one direction
@@ -103,13 +202,19 @@ public:
  * it as std::string and call c_str() on it.
  */
 template<size_t N>
-class context<char[N]>
+class context<char[N]>: public context_base<char[N]>
 {
 public:
 	typedef const char data_type[N];
 
 	virtual std::string to_string(const data_type& from) const;
+
+	/** This method must not be instanciated. Use context<std::string>
+	 * instead!
+	 */
+	virtual data_type from_string(const std::string& from) const;
 };
+#endif
 
 /** A serialised object.
  */
@@ -124,7 +229,8 @@ public:
 	 * context is used if no one is given.
 	 */
 	template<typename type>
-	data(const type& data, const context<type>& ctx = context<type>());
+	data(const type& data,
+	     const context_base_to<type>& ctx = default_context_to<type>());
 
 	/** Returns the serialised data.
 	 */
@@ -134,60 +240,84 @@ public:
 	 * is used of no one is given.
 	 */
 	template<typename type>
-	type as(const context<type>& ctx = context<type>()) const;
+	type as(const context_base_from<type>& ctx =
+		default_context_from<type>()) const;
 
 protected:
 	std::string m_serialised;
 };
 
 template<typename data_type>
-std::string context<data_type>::to_string(const data_type& data) const
+std::string default_context_to<data_type>::
+	to_string(const data_type& from) const
 {
 	std::stringstream stream;
 	on_stream_setup(stream);
-	stream << data;
+	stream << from;
 	return stream.str();
 }
 
 template<typename data_type>
-data_type context<data_type>::from_string(const std::string& string) const
+data_type default_context_from<data_type>::
+	from_string(const std::string& from) const
 {
-	std::stringstream stream(string);
+	std::stringstream stream(from);
 	on_stream_setup(stream);
 	data_type data;
 	stream >> data;
 
 	if(stream.bad() )
-		throw conversion_error("Type conversion failed");
+	{
+		throw conversion_error(
+			"Could not convert \"" + from + "\" to " +
+			type_name<data_type>::name
+		);
+	}
 
 	return data;
 }
 
 template<typename data_type>
-void context<data_type>::on_stream_setup(std::stringstream& stream) const
+void default_context_to<data_type>::
+	on_stream_setup(std::stringstream& stream) const
 {
 }
 
 template<typename data_type>
-void hex_context<data_type>::on_stream_setup(std::stringstream& stream) const
+void default_context_from<data_type>::
+	on_stream_setup(std::stringstream& stream) const
+{
+}
+
+template<typename data_type>
+void hex_context_to<data_type>::
+	on_stream_setup(std::stringstream& stream) const
+{
+	stream << std::hex;
+}
+
+template<typename data_type>
+void hex_context_from<data_type>::
+	on_stream_setup(std::stringstream& stream) const
 {
 	stream >> std::hex;
 }
 
 template<typename data_type>
-data::data(const data_type& data, const context<data_type>& ctx):
+data::data(const data_type& data, const context_base_to<data_type>& ctx):
 	m_serialised(ctx.to_string(data) )
 {
 }
 
 template<typename data_type>
-data_type data::as(const context<data_type>& ctx) const
+data_type data::as(const context_base_from<data_type>& ctx) const
 {
 	return ctx.from_string(m_serialised);
 }
 
 template<size_t N>
-std::string context<char[N]>::to_string(const data_type& from) const
+std::string default_context_to<char[N]>::
+	to_string(const data_type& from) const
 {
 	return from;
 }
@@ -195,4 +325,3 @@ std::string context<char[N]>::to_string(const data_type& from) const
 } // namespace serialise
 
 #endif // _NET6_SERIALISE_HPP_
-
