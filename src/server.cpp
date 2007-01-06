@@ -300,7 +300,9 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 			}
 	
 			from.login(name);
-			packet self_pack("net6_client_join");
+			signal_login.emit(from, pack);
+
+			packet self_pack("net6_client_join", 10000);
 			self_pack << from.get_id() << name;
 			signal_login_extend.emit(from, self_pack);
 			send(self_pack, from);
@@ -311,7 +313,7 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				if(!( (*it)->is_logined()) ) continue;
 				if(*it == &from) continue;
 
-				packet join_pack("net6_client_join");
+				packet join_pack("net6_client_join", 10000);
 				join_pack << (*it)->get_id()
 				          << (*it)->get_name();
 				signal_login_extend.emit(**it, join_pack);
@@ -319,8 +321,6 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				send(join_pack, from);
 				send(self_pack, **it);
 			}
-
-			signal_login.emit(from, pack);
 		}
 	}
 	else
