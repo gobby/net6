@@ -162,9 +162,6 @@ void net6::connection_base::on_sock_event(io_condition io)
 	try
 	{
 		do_io(io);
-
-		while(encrypted_sock && encrypted_sock->get_pending() > 0)
-			do_io(IO_INCOMING);
 	}
 	catch(net6::error& e)
 	{
@@ -204,6 +201,28 @@ void net6::connection_base::do_io(io_condition io)
 
 		recvqueue.append(buffer, bytes);
 
+		// Clear remaining data in GnuTLS cache
+		if(encrypted_sock != NULL && encrypted_sock->get_pending() > 0)
+		{
+			tcp_encrypted_socket_base::size_type size =
+				encrypted_sock->get_pending();
+
+			char* ch_buf = new char[size];
+			bytes = remote_sock->recv(ch_buf, size);
+
+			recvqueue.append(ch_buf, size);
+			delete[] ch_buf;
+
+			if(bytes != size)
+			{
+				throw std::logic_error(
+					"net6::connection::do_io:\n"
+					"Did not receive all data from "
+					"GnuTLS cache"
+				);
+			}
+		}
+
 		// Store packets first to allow signal handlers to
 		// delete the connection object
 		std::list<packet> packet_list;
@@ -237,7 +256,7 @@ void net6::connection_base::do_io(io_condition io)
 		if(sendqueue.get_size() == 0)
 		{
 			throw std::logic_error(
-				"net6::connection::on_sock_event:\n"
+				"net6::connection::do_io:\n"
 				"Nothing to send in send queue"
 			);
 		}
