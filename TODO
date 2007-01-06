@@ -13,6 +13,8 @@ Normal:
  * Provide on_*-Methods for signals being emitted to allow derived classes
    to overwrite these methods to do things before/after signals have been
    emitted (server/client/host)
+ * host::shutdown will not work correctly since the self object will be
+   destroyed as well and no longer be in the peer list after a reopen()
 
 Minor:
 
