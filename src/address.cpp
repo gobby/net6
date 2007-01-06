@@ -502,11 +502,11 @@ std::string net6::ipv6_address::get_name() const
 {
 #ifdef _WIN32
 	// No call to inet_ntop on WIN32 since inet_ntop is not defined
-	// on Win32. Use WSAAdressToString instead.
+	// on Win32. Use WSAAddressToString instead.
 	char destbuf[INET6_ADDRSTRLEN + 6];
 	DWORD len = INET6_ADDRSTRLEN + 6;
 
-	WSAAdressToStringA(
+	WSAAddressToStringA(
 		addr,
 		sizeof(sockaddr_in6),
 		NULL,

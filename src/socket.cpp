@@ -170,11 +170,23 @@ bool net6::tcp_encrypted_socket_base::handshake()
 
 	if(state == DEFAULT)
 	{
+#ifdef WIN32
+		u_long iMode = 1;
+		if(ioctlsocket(cobj(), FIONBIO, &iMode) == SOCKET_ERROR)
+			throw net6::error(net6::error::SYSTEM);
+
+		// TODO: How to find out whether the socket is in blocking
+		// mode?
+		was_blocking = false;
+#else
 		// Make socket nonblocking to allow to call handshake
 		// multiple times
 		int flags = fcntl(cobj(), F_GETFL);
 		if(fcntl(cobj(), F_SETFL, flags | O_NONBLOCK) == -1)
 			throw net6::error(net6::error::SYSTEM);
+
+		was_blocking = ((flags & O_NONBLOCK) == 0);
+#endif
 
 		state = HANDSHAKING;
 	}
@@ -183,11 +195,21 @@ bool net6::tcp_encrypted_socket_base::handshake()
 
 	if(ret == 0)
 	{
-		// Remove nonblocking state for further handling, so the
-		// socket behaves like a nonencrypted tcp client socket.
-		int flags = fcntl(cobj(), F_GETFL);
-		if(fcntl(cobj(), F_SETFL, flags & ~O_NONBLOCK) == -1)
+		if(was_blocking)
+		{
+			// Remove nonblocking state for further handling,
+			// so the socket behaves like a nonencrypted tcp
+			// client socket.
+#ifdef WIN32
+		u_long iMode = 0;
+		if(ioctlsocket(cobj(), FIONBIO, &iMode) == SOCKET_ERROR)
 			throw net6::error(net6::error::SYSTEM);
+#else
+			int flags = fcntl(cobj(), F_GETFL);
+			if(fcntl(cobj(), F_SETFL, flags & ~O_NONBLOCK) == -1)
+				throw net6::error(net6::error::SYSTEM);
+#endif
+		}
 
 		state = HANDSHAKED;
 		return true;

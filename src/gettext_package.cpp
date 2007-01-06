@@ -19,6 +19,10 @@
 #include "config.hpp"
 #include "gettext_package.hpp"
 
+#ifdef WIN32
+# include <windows.h>
+#endif
+
 #ifdef ENABLE_NLS
 
 #include <libintl.h>
@@ -31,7 +35,7 @@ net6::gettext_package::gettext_package(const std::string& package,
 #ifdef WIN32
 	char buf[256 + 1];
 	GetModuleFileNameA(NULL, buf, 256);
-	char* last_sep = strrchr(buf, "\\");
+	char* last_sep = strrchr(buf, '\\');
 	strcpy(last_sep + 1, "locale");
 	locale_dir = buf;
 #endif

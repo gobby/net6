@@ -195,6 +195,7 @@ protected:
 
 	gnutls_session_t session;
 	handshake_state state;
+	bool was_blocking;
 };
 
 class tcp_encrypted_socket_client: public tcp_encrypted_socket_base
