@@ -108,7 +108,7 @@ namespace
 			static_cast<int>(reinterpret_cast<intptr_t>(ptr)),
 			data,
 			size,
-#if HAVE_MSG_NOSIGNAL
+#ifdef HAVE_MSG_NOSIGNAL
 			// Linux
 			MSG_NOSIGNAL
 #else
