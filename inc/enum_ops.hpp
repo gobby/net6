@@ -45,17 +45,20 @@
                                                                              \
 	inline type& operator|=(type& lhs, type rhs)                         \
 	{                                                                    \
-		return lhs = (lhs | rhs);                                    \
+		lhs = (lhs | rhs);                                           \
+		return lhs;                                                  \
 	}                                                                    \
                                                                              \
 	inline type& operator&=(type& lhs, type rhs)                         \
 	{                                                                    \
-		return lhs = (lhs & rhs);                                    \
+		lhs = (lhs & rhs);                                           \
+		return lhs;                                                  \
 	}                                                                    \
                                                                              \
 	inline type& operator^=(type& lhs, type rhs)                         \
 	{                                                                    \
-		return lhs = (lhs ^ rhs);                                    \
+		lhs = (lhs ^ rhs);                                           \
+		return lhs;                                                  \
 	}                                                                    \
                                                                              \
 	inline type operator~(type rhs)                                      \
