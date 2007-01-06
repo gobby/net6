@@ -56,18 +56,34 @@ namespace
 
 #ifdef WIN32
 	// Required to turn WSA error codes into errno.
-	template<
-		typename buffer_type,
-		typename cast_type,
-		ssize_t(*io_func)(SOCKET, cast_type, size_t, int)
-	>
-	ssize_t net6_win32_io_func(gnutls_transport_ptr_t ptr,
-	                           buffer_type data,
-	                           size_t size)
+	ssize_t net6_win32_send_func(gnutls_transport_ptr_t ptr,
+	                             const void* data,
+	                             size_t size)
 	{
-		ssize_t ret = io_func(
+		ssize_t ret = ::send(
 			reinterpret_cast<SOCKET>(ptr),
-			static_cast<cast_type>(data),
+			WIN32_CCAST_FIX(data),
+			size,
+			0
+		);
+
+		int error = WSAGetLastError();
+		if(error == WSAEWOULDBLOCK) errno = EAGAIN;
+		if(error == WSAEINTR) errno = EINTR;
+
+		// Ensures that a second call to WSAGetLastError
+		// has the same result
+		WSASetLastError(error);
+		return ret;
+	}
+
+	ssize_t net6_win32_recv_func(gnutls_transport_ptr_t ptr,
+	                             void* data,
+	                             size_t size)
+	{
+		ssize_t ret = ::recv(
+			reinterpret_cast<SOCKET>(ptr),
+			WIN32_CAST_FIX(data),
 			size,
 			0
 		);
@@ -231,12 +247,12 @@ net6::tcp_encrypted_socket_base::
 #ifdef WIN32
 	gnutls_transport_set_pull_function(
 		session,
-		net6_win32_io_func<void*, char*, ::recv>
+		net6_win32_recv_func
 	);
 
 	gnutls_transport_set_push_function(
-		session.
-		net6_win32_io_func<const void*, const char*, ::send>
+		session,
+		net6_win32_send_func
 	);
 #else
 	gnutls_transport_set_push_function(
