@@ -1,4 +1,4 @@
-/* net6 - library providing ipv4/ipv6 network access
+/* net6 - Library providing IPv4/IPv6 network access
  * Copyright (C) 2005 Armin Burgmeier / 0x539 dev group
  *
  * This library is free software; you can redistribute it and/or
