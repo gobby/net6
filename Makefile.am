@@ -17,6 +17,7 @@ INCLUDES = $(libnet6_CFLAGS) -Iinc
 
 pkginclude_HEADERS = \
 	inc/non_copyable.hpp \
+	inc/default_accumulator.hpp \
 	inc/address.hpp \
 	inc/client.hpp \
 	inc/connection.hpp \
@@ -34,6 +35,7 @@ noinst_HEADERS = \
 
 libnet6_la_SOURCES = \
 	src/non_copyable.cpp \
+	src/default_accumulator.cpp \
 	src/address.cpp \
 	src/client.cpp \
 	src/connection.cpp \
