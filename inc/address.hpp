@@ -19,7 +19,7 @@
 #ifndef _NET6_ADDRESS_HPP_
 #define _NET6_ADDRESS_HPP_
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #ifdef WIN32
 #include <winsock2.h>
