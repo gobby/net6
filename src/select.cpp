@@ -152,18 +152,18 @@ void net6::selector::select_impl(timeval* tv)
 		throw error();
 
 	// Check for selected sockets
-	std::list<socket> read_event, write_event, error_event;
+	std::list<socket*> read_event, write_event, error_event;
 	for(i = read_list.begin(); i != read_list.end(); ++ i)
 		if(FD_ISSET(i->cobj(), &readfs) )
-			read_event.push_back(*i);
+			read_event.push_back(&(*i) );
 
 	for(i = write_list.begin(); i != write_list.end(); ++ i)
 		if(FD_ISSET(i->cobj(), &writefs) )
-			write_event.push_back(*i);
+			write_event.push_back(&(*i) );
 
 	for(i = error_list.begin(); i != error_list.end(); ++ i)
 		if(FD_ISSET(i->cobj(), &errorfs) )
-			error_event.push_back(*i);
+			error_event.push_back(&(*i) );
 
 	// Reset fd_sets
 /*	FD_ZERO(&read_set);
@@ -179,17 +179,17 @@ void net6::selector::select_impl(timeval* tv)
 
 	// Emit signals in a seperate list to allow the signal
 	// handlers to modify the select list
-	std::list<socket>::iterator a;
+	std::list<socket*>::iterator a;
 	for(a = read_event.begin(); a != read_event.end(); ++ a)
-		if(a->data->refcount > 1)
-			if(!signal_socket_event.emit(*a, socket::INCOMING) )
-				a->read_event().emit(*a, socket::INCOMING);
+//		if((*a)->data->refcount > 1)
+			if(!signal_socket_event.emit(**a, socket::INCOMING) )
+				(*a)->read_event().emit(**a, socket::INCOMING);
 	for(a = write_event.begin(); a != write_event.end(); ++ a)
-		if(a->data->refcount > 1)
-			if(!signal_socket_event.emit(*a, socket::OUTGOING) )
-				a->write_event().emit(*a, socket::OUTGOING);
+//		if((*a)->data->refcount > 1)
+			if(!signal_socket_event.emit(**a, socket::OUTGOING) )
+				(*a)->write_event().emit(**a, socket::OUTGOING);
 	for(a = error_event.begin(); a != error_event.end(); ++ a)
-		if(a->data->refcount > 1)
-			if(!signal_socket_event.emit(*a, socket::IOERROR) )
-				a->error_event().emit(*a, socket::IOERROR);
+//		if((*a)->data->refcount > 1)
+			if(!signal_socket_event.emit(**a, socket::IOERROR) )
+				(*a)->error_event().emit(**a, socket::IOERROR);
 }
