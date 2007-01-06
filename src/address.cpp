@@ -68,20 +68,10 @@ namespace
 	}
 #endif
 
-#ifdef WIN32
-	// There is no inet_ntop on WIN32
-	inline const char *inet_ntop(int af, const void *__restrict src,
-	                             char *__restrict dest, socklen_t size)
+#ifdef _WIN32
+	inline const char* inet_ntop4(int af, const void *__restrict src,
+	                              char *__restrict dest, socklen_t size)
 	{
-		// IPV6 not supported (yet?)
-		if(AF_INET != af)
-		{
-			throw std::runtime_error(
-				"inet_ntop is only implemented for AF_INET "
-				"address family on win32"
-			);
-		}
-
 		// Format address
 		char* s = inet_ntoa(*reinterpret_cast<const in_addr*>(src));
 		if(s == NULL) return NULL;
@@ -89,6 +79,25 @@ namespace
 		// Copy to given buffer
 		socklen_t len = static_cast<socklen_t>(strlen(s) );
 		return strncpy(dest, s, size < (len + 1) ? size : (len + 1) );
+	}
+
+	// There is no inet_ntop on WIN32
+	inline const char *inet_ntop(int af, const void *__restrict src,
+	                             char *__restrict dest, socklen_t size)
+	{
+		switch(af)
+		{
+		case AF_INET:
+			return inet_ntop4(af, src, dest, size);
+			break;
+		default:
+			throw std::logic_error(
+				"inet_ntop is only implemented for "
+				"AF_INET address family on win32"
+			);
+
+			break;
+		}
 	}
 #endif
 }
@@ -491,11 +500,30 @@ net6::address* net6::ipv6_address::clone() const
 
 std::string net6::ipv6_address::get_name() const
 {
+#ifdef _WIN32
+	// No call to inet_ntop on WIN32 since inet_ntop is not defined
+	// on Win32. Use WSAAdressToString instead.
+	char destbuf[INET6_ADDRSTRLEN + 6];
+	DWORD len = INET6_ADDRSTRLEN + 6;
+
+	WSAAdressToStringA(
+		addr,
+		sizeof(sockaddr_in6),
+		NULL,
+		destbuf,
+		&len
+	);
+
+	char* sep = strrchr(destbuf, ':');
+	if(sep != NULL) *sep = '\0';
+
+	return destbuf;
+#else
 	const size_t len = INET6_ADDRSTRLEN;
 	char buf[len];
-
 	inet_ntop(AF_INET6, &((sockaddr_in6*)addr)->sin6_addr, buf, len);
 	return buf;
+#endif
 }
 
 socklen_t net6::ipv6_address::get_size() const
