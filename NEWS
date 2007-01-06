@@ -1,6 +1,12 @@
 net6
 ====
 
+Version 1.3.0:
+ * Encryption support through GNUTLS
+ * Interface changes in the selector
+ * Prevent crashes when send() is used on invalid sockets (Linux / OS X only)
+ * Allow the use of the net6 protocol with Unix domain sockets
+
 Version 1.2.2:
  * Translation update
 
