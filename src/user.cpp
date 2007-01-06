@@ -26,8 +26,8 @@ net6::user::user(unsigned int unique_id, connection* remote_conn)
 
 void net6::user::login(const std::string& user_name, unsigned int new_id)
 {
-	if(logged_in)
-		throw connected_error("net6::user::login");
+//	if(logged_in)
+//		throw connected_error("net6::user::login");
 
 	if(new_id != 0) id = new_id;
 	name = user_name;
