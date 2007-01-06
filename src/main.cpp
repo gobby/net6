@@ -24,8 +24,16 @@
 #include "error.hpp"
 #include "main.hpp"
 
+unsigned int net6::main::refcount = 0;
+
 net6::main::main()
 {
+	if(refcount > 0)
+	{
+		refcount ++;
+		return;
+	}
+
 #ifdef WIN32
 	WSAData data;
 	if(WSAStartup(MAKEWORD(2, 2), &data) != 0)
@@ -33,12 +41,17 @@ net6::main::main()
 #else
 	signal(SIGPIPE, SIG_IGN);
 #endif
+	refcount ++;
 }
 
 net6::main::~main()
 {
+	refcount --;
 #ifdef WIN32
-	WSACleanup();
+	if(refcount == 0)
+	{
+		WSACleanup();
+	}
 #endif
 }
 

@@ -34,6 +34,9 @@ class NET6_EXPORT main : private non_copyable
 public:
 	main();
 	~main();
+
+private:
+	static unsigned int refcount;
 };
 
 }
