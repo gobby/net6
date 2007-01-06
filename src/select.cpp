@@ -108,6 +108,11 @@ void net6::selector::select(unsigned long timeout)
 	select_impl(&tv);
 }
 
+net6::selector::signal_socket_event_type net6::selector::socket_event() const
+{
+	return signal_socket_event;
+}
+
 void net6::selector::select_impl(timeval* tv)
 {
 	// Determinate the highest file descriptor number for select()
@@ -177,11 +182,14 @@ void net6::selector::select_impl(timeval* tv)
 	std::list<socket>::iterator a;
 	for(a = read_event.begin(); a != read_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->read_event().emit(*a, socket::INCOMING);
+			if(!signal_socket_event.emit(*a, socket::INCOMING) )
+				a->read_event().emit(*a, socket::INCOMING);
 	for(a = write_event.begin(); a != write_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->write_event().emit(*a, socket::OUTGOING);
+			if(!signal_socket_event.emit(*a, socket::OUTGOING) )
+				a->write_event().emit(*a, socket::OUTGOING);
 	for(a = error_event.begin(); a != error_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->error_event().emit(*a, socket::IOERROR);
+			if(!signal_socket_event.emit(*a, socket::IOERROR) )
+				a->error_event().emit(*a, socket::IOERROR);
 }

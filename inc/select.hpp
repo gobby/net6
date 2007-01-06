@@ -35,6 +35,27 @@ namespace net6
 class NET6_EXPORT selector : private non_copyable
 {
 public:
+	/** Accumulator that defaults on false for signal_socket_event.
+	 */
+	class NET6_EXPORT socket_accumulator
+	{
+	public:
+		typedef bool result_type;
+
+		template<typename iterator>
+		result_type operator()(iterator begin, iterator end) const
+		{
+			bool result = false;
+			for(; begin != end; ++ begin)
+				if(result = *begin)
+					break;
+			return result;
+		}
+	};
+
+	typedef sigc::signal<bool, socket&, socket::condition>
+		::accumulated<socket_accumulator> signal_socket_event_type;
+
 	selector();
 	~selector();
 
@@ -71,12 +92,23 @@ public:
 	 */
 	void select(unsigned long timeout);
 
+	/** Signal which is emitted every time an event occurs on a socket.
+	 * The signal handler may return true to indicate that he has handled
+	 * this event. The event handler for the socket will not be
+	 * emitted then. Usually you should use the socket signals to handle
+	 * socket events. Use this hook only if you want to prevent the
+	 * selector to emit the socket's signals. Use with care!
+	 */
+	signal_socket_event_type socket_event() const;
+
 protected:
 	void select_impl(timeval* tv);
 
 	std::list<socket> read_list;
 	std::list<socket> write_list;
 	std::list<socket> error_list;
+
+	signal_socket_event_type signal_socket_event;
 /*
 	fd_set read_set;
 	fd_set write_set;

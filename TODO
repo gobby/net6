@@ -19,6 +19,7 @@ Normal:
    (replacing the custom_login API)
  * Pass -DCOMPILING_NET6 and -DBUILDING_DLL to the compiler via autotools
  * Link to ws2_32 and sigc on WIN32, write ws2_32 to the .pc file as link flag
+ * Remove export-thingies, libobby works well without :)
 
 Minor:
  * Possibility to build a static libarary (undefine BUILDING_DLL)
