@@ -127,7 +127,7 @@ public:
 	signal_login_failed_type login_failed_event() const;
 
 	/** Signal which is emitted when a login packet will be sent (most
-	 * likely by a call to client::login). It allow the user to append
+	 * likely by a call to client::login). It allows the user to append
 	 * some more parameters to the login packet which may be evaluated by
 	 * the server object in its login_auth and login signals.
 	 */
