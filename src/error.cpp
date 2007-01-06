@@ -243,17 +243,20 @@ namespace
 			return net6::error::HOSTNAME_NOT_FOUND;
 		case EAI_SERVICE:
 			return net6::error::TYPE_NOT_FOUND;
-#ifndef WIN32
+		// These #ifdef'd values seem not to exist on all systems.
+#ifdef EAI_ADDRFAMILY
 		case EAI_ADDRFAMILY: // TODO: Do we want HOST_NOT_FOUND here?
 			return net6::error::ADDRESS_UNAVAILABLE;
 #endif
+#ifdef EAI_NODATA
 		case EAI_NODATA:
 			return net6::error::NO_DATA_RECORD;
+#endif
 		case EAI_MEMORY:
 			return net6::error::NO_MEMORY;
 		case EAI_AGAIN:
 			return net6::error::TEMPORARY_FAILURE;
-#ifndef WIN32
+#ifdef EAI_SYSTEM
 		case EAI_SYSTEM:
 			return system_to_net6(errno);
 #endif
