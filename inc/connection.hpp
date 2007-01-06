@@ -91,6 +91,12 @@ public:
 	 */
 	signal_recv_type recv_event() const;
 
+	/** Signal that is emitted when all available data has been sent.
+	 *
+	 * TODO: Change this into a send signal for each packet.
+	 */
+	signal_send_type send_event() const;
+
 	/** Signal which is emitted when the connection has been lost. Note
 	 * that the connection is invalid after the close event occured!
 	 */
@@ -118,6 +124,7 @@ protected:
 	queue recvqueue;
 
 	signal_recv_type signal_recv;
+	signal_send_type signal_send;
 	signal_close_type signal_close;
 	signal_encrypted_type signal_encrypted;
 	signal_encryption_failed_type signal_encryption_failed;

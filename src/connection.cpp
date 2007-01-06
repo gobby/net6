@@ -128,6 +128,12 @@ net6::connection_base::recv_event() const
 	return signal_recv;
 }
 
+net6::connection_base::signal_send_type
+net6::connection_base::send_event() const
+{
+	return signal_send;
+}
+
 net6::connection_base::signal_close_type
 net6::connection_base::close_event() const
 {
@@ -402,6 +408,8 @@ void net6::connection_base::on_send()
 		net6::io_condition flags = get_select();
 		if( (flags & IO_OUTGOING) == IO_OUTGOING)
 			set_select(flags & ~IO_OUTGOING);
+
+		signal_send.emit();
 	}
 }
 
