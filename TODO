@@ -8,8 +8,6 @@ Serious:
 Important:
 
 Normal:
- * host::shutdown will not work correctly since the self object will be
-   destroyed as well and no longer be in the peer list after a reopen()
  * Use a login_extend-like interface for net6::client as well
    (replacing the custom_login API)
 

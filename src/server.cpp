@@ -94,7 +94,14 @@ net6::server::server(unsigned int port, bool ipv6)
 
 net6::server::~server()
 {
+	// Shutdown server socket
 	shutdown_impl();
+
+	// Delete clients
+	std::list<peer*>::iterator peer_it;
+	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
+		delete *peer_it;
+	peers.clear();
 }
 
 void net6::server::shutdown()
@@ -400,17 +407,9 @@ void net6::server::net_client_login(peer& from, const packet& pack)
 
 void net6::server::shutdown_impl()
 {
-	if(serv_sock)
-	{
-		sock_sel.remove(*serv_sock, socket::INCOMING);
-		delete serv_sock;
-		serv_sock = NULL;
-	}
-
-	std::list<peer*>::iterator peer_it;
-	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
-		delete *peer_it;
-	peers.clear();
+	sock_sel.remove(*serv_sock, socket::INCOMING);
+	delete serv_sock;
+	serv_sock = NULL;
 }
 
 void net6::server::reopen_impl(unsigned int port)
