@@ -52,12 +52,7 @@ public:
 	 */
 	virtual void send(const packet& pack, const user& to);
 
-v v v v v v v
 	/** Returns the local user.
-*************
-	/** Send a packet to the given peer. If <em>to</em> is the local peer,
-	 * no operation will be performed.
-^ ^ ^ ^ ^ ^ ^
 	 */
 	virtual user& get_self();
 

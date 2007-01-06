@@ -100,7 +100,7 @@ public:
 	 */
 	void kick(const user& user);
 
-	/** Send a packet to all the connected and logined peers.
+	/** Send a packet to all the connected and logged in users.
 	 */
 	virtual void send(const packet& pack);
 
