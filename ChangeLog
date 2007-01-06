@@ -1,3 +1,33 @@
+Sun May 14 14:52:49 CEST 2006  Philipp Kern <phil@0x539.de>
+  * Bump version to 1.3.0rc2
+
+Mon May  8 20:18:10 CEST 2006  Armin Burgmeier <armin@0x539.de>
+  * Include <unistd.h> for close() in socket.cpp
+
+Mon May  8 17:55:06 CEST 2006  Armin Burgmeier <armin@0x539.de>
+  * Splitted up assignment operators in enum_ops into two lines
+
+Mon Apr 24 19:17:19 CEST 2006  Armin Burgmeier <armin@0x539.de>
+  * Build fix for older GNUTLS versions [fixes #153]
+
+Sat May  6 11:48:32 CEST 2006  Philipp Kern <phil@0x539.de>
+  * Check for substrings in Win32 detection
+
+Wed Apr 19 01:30:15 CEST 2006  Philipp Kern <phil@0x539.de>
+  * Check for SO_NOSIGPIPE through Autoconf [fixes #135]
+
+Fri Mar 31 17:33:40 CEST 2006  Armin Burgmeier <armin@0x539.de>
+  * Fixed a problem that caused WIN32 programs to abort when using encryption
+
+Fri Mar 31 00:40:53 CEST 2006  Armin Burgmeier <armin@0x539.de>
+  * Include <limits> in selector for numeric_limits
+
+Thu Mar 30 19:48:01 CEST 2006  Philipp Kern <phil@0x539.de>
+  tagged net6-1.3.0rc1
+
+Thu Mar 30 19:47:51 CEST 2006  Philipp Kern <phil@0x539.de>
+  * Updated ChangeLog for release
+
 Thu Mar 30 19:47:41 CEST 2006  Philipp Kern <phil@0x539.de>
   * Updated NEWS once again
 
@@ -37,17 +67,17 @@ Mon Mar 27 14:46:45 CEST 2006  Armin Burgmeier <armin@0x539.de>
 Sat Mar 25 20:45:58 CET 2006  Armin Burgmeier <armin@0x539.de>
   * #if should be #ifdef
 
-Sat Mar 25 15:23:26 CET 2006  Armin Burgmeier <armin@0x539.de>
-  * Only send encryption info for logged in users
-
-Sat Mar 25 13:56:59 CET 2006  Armin Burgmeier <armin@0x539.de>
-  * Win32 build fix
-
 Sat Mar 25 18:25:07 CET 2006  Philipp Kern <phil@0x539.de>
   * Check MSG_NOSIGNAL's presence via autoconf
 
+Sat Mar 25 15:23:26 CET 2006  Armin Burgmeier <armin@0x539.de>
+  * Only send encryption info for logged in users
+
 Sat Mar 25 14:05:39 CET 2006  Philipp Kern <phil@0x539.de>
   * Make really, really sure that LIBGNUTLS_LIBS is added to the linker command
+
+Sat Mar 25 13:56:59 CET 2006  Armin Burgmeier <armin@0x539.de>
+  * Win32 build fix
 
 Sat Mar 25 13:50:05 CET 2006  Philipp Kern <phil@0x539.de>
   * Use net6-1.3 for pkgconfig instead of net6-1.2
@@ -64,23 +94,23 @@ Fri Mar 24 23:31:39 CET 2006  Armin Burgmeier <armin@0x539.de>
 Fri Mar 24 23:31:13 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Added send_event to connection
 
-Fri Mar 24 17:21:44 CET 2006  Armin Burgmeier <armin@0x539.de>
-  * Removed debuglog on unknown GnuTLS error
-
 Fri Mar 24 21:51:21 CET 2006  Philipp Kern <phil@0x539.de>
   * Bump API version
 
-Wed Mar 22 20:35:22 CET 2006  Armin Burgmeier <armin@0x539.de>
-  * Use MSG_NOSIGNAL for nonencrypted sockets, too
-
-Wed Mar 22 19:55:12 CET 2006  Armin Burgmeier <armin@0x539.de>
-  * Avoid sending TLS client hello directly after encryption_ok
+Fri Mar 24 17:21:44 CET 2006  Armin Burgmeier <armin@0x539.de>
+  * Removed debuglog on unknown GnuTLS error
 
 Wed Mar 22 21:00:58 CET 2006  Philipp Kern <phil@0x539.de>
   * Implement stubs for non-NLS systems
 
+Wed Mar 22 20:35:22 CET 2006  Armin Burgmeier <armin@0x539.de>
+  * Use MSG_NOSIGNAL for nonencrypted sockets, too
+
 Wed Mar 22 20:18:41 CET 2006  Philipp Kern <phil@0x539.de>
   * Compile fix for Mac OS X; NOSIGPIPE is not yet set on *BSD
+
+Wed Mar 22 19:55:12 CET 2006  Armin Burgmeier <armin@0x539.de>
+  * Avoid sending TLS client hello directly after encryption_ok
 
 Mon Mar 20 19:50:58 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Send messages with MSG_NOSIGNAL to prevent SIGPIPE to be sent to the process
@@ -100,6 +130,12 @@ Sun Mar 19 17:24:35 CET 2006  Armin Burgmeier <armin@0x539.de>
 Sat Mar 18 08:19:28 CET 2006  Philipp Kern <phil@0x539.de>
   * Removed a superfluous word
 
+Mon Mar 13 09:13:21 CET 2006  Philipp Kern <phil@0x539.de>
+  * Fix the GNUTLS build for unusual paths
+
+Mon Mar 13 09:00:57 CET 2006  Philipp Kern <phil@0x539.de>
+  * Fix misplaced NLS conditional
+
 Thu Mar 16 19:28:07 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Fixes to make GnuTLS work on WIN32
 
@@ -108,12 +144,6 @@ Tue Mar 14 21:48:16 CET 2006  Armin Burgmeier <armin@0x539.de>
 
 Fri Mar 10 18:57:24 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Propagate encryption state to other clients
-
-Mon Mar 13 09:13:21 CET 2006  Philipp Kern <phil@0x539.de>
-  * Fix the GNUTLS build for unusual paths
-
-Mon Mar 13 09:00:57 CET 2006  Philipp Kern <phil@0x539.de>
-  * Fix misplaced NLS conditional
 
 Fri Mar  3 19:58:35 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Win32 build fixes
@@ -141,11 +171,11 @@ Sat Feb 25 12:49:26 CET 2006  Armin Burgmeier <armin@0x539.de>
 Fri Feb 24 17:53:56 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Made io_impl template work
 
-Thu Feb 23 16:06:11 CET 2006  Philipp Kern <phil@0x539.de>
-  * Enable source skipping in Doxygen (DOXYGEN_SHOULD_SKIP_THIS)
-
 Thu Feb 23 23:22:02 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Closed connection state
+
+Thu Feb 23 16:06:11 CET 2006  Philipp Kern <phil@0x539.de>
+  * Enable source skipping in Doxygen (DOXYGEN_SHOULD_SKIP_THIS)
 
 Mon Feb 20 17:32:28 CET 2006  Armin Burgmeier <armin@0x539.de>
   * Working TLS encryption, still needs some cleanup
