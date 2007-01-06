@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
-"POT-Creation-Date: 2005-11-06 00:44+0100\n"
+"POT-Creation-Date: 2005-11-24 23:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,190 +28,190 @@ msgstr ""
 msgid "An unknown login error occured"
 msgstr ""
 
-#: src/error.cpp:320
+#: src/error.cpp:327
 msgid "Interrupted function call"
 msgstr ""
 
-#: src/error.cpp:322
+#: src/error.cpp:329
 msgid "Access denied"
 msgstr ""
 
-#: src/error.cpp:324
+#: src/error.cpp:331
 msgid "Bad address"
 msgstr ""
 
-#: src/error.cpp:326
+#: src/error.cpp:333
 msgid "Invalid argument"
 msgstr ""
 
-#: src/error.cpp:328
+#: src/error.cpp:335
 msgid "Too many open files"
 msgstr ""
 
-#: src/error.cpp:330
+#: src/error.cpp:337
 msgid "Resource temporarily unavailable"
 msgstr ""
 
-#: src/error.cpp:332
+#: src/error.cpp:339
 msgid "Operation already in progress"
 msgstr ""
 
-#: src/error.cpp:334
+#: src/error.cpp:341
 msgid "Socket operation on non-socket"
 msgstr ""
 
-#: src/error.cpp:336
+#: src/error.cpp:343
 msgid "Destination address required"
 msgstr ""
 
-#: src/error.cpp:338
+#: src/error.cpp:345
 msgid "Message too long"
 msgstr ""
 
-#: src/error.cpp:340
+#: src/error.cpp:347
 msgid "Protocol wrong type for socket"
 msgstr ""
 
-#: src/error.cpp:342
+#: src/error.cpp:349
 msgid "Bad protocol option"
 msgstr ""
 
-#: src/error.cpp:344
+#: src/error.cpp:351
 msgid "Protocol not supported"
 msgstr ""
 
-#: src/error.cpp:346
+#: src/error.cpp:353
 msgid "Socket type not supported"
 msgstr ""
 
-#: src/error.cpp:348
+#: src/error.cpp:355
 msgid "Operation not supported"
 msgstr ""
 
-#: src/error.cpp:350
+#: src/error.cpp:357
 msgid "Protocol family not supported"
 msgstr ""
 
-#: src/error.cpp:352
+#: src/error.cpp:359
 msgid "Address family not supported"
 msgstr ""
 
-#: src/error.cpp:354
+#: src/error.cpp:361
 msgid "Address is already in use"
 msgstr ""
 
-#: src/error.cpp:356
+#: src/error.cpp:363
 msgid "Cannot assign requested address"
 msgstr ""
 
-#: src/error.cpp:358
+#: src/error.cpp:365
 msgid "Network is down"
 msgstr ""
 
-#: src/error.cpp:360
+#: src/error.cpp:367
 msgid "Network is unreachable"
 msgstr ""
 
-#: src/error.cpp:362
+#: src/error.cpp:369
 msgid "Network dropped connection on reset"
 msgstr ""
 
-#: src/error.cpp:364
+#: src/error.cpp:371
 msgid "Software caused connection abort"
 msgstr ""
 
-#: src/error.cpp:366
+#: src/error.cpp:373
 msgid "Connection reset by peer"
 msgstr ""
 
-#: src/error.cpp:368
+#: src/error.cpp:375
 msgid "No buffer space available"
 msgstr ""
 
-#: src/error.cpp:370
+#: src/error.cpp:377
 msgid "Socket is already connected"
 msgstr ""
 
-#: src/error.cpp:372
+#: src/error.cpp:379
 msgid "Socket is not connected"
 msgstr ""
 
-#: src/error.cpp:374
+#: src/error.cpp:381
 msgid "Cannot send after socket shutdown"
 msgstr ""
 
-#: src/error.cpp:376
+#: src/error.cpp:383
 msgid "Connection timed out"
 msgstr ""
 
-#: src/error.cpp:378
+#: src/error.cpp:385
 msgid "Connection refused"
 msgstr ""
 
-#: src/error.cpp:380
+#: src/error.cpp:387
 msgid "Host is down"
 msgstr ""
 
-#: src/error.cpp:382
+#: src/error.cpp:389
 msgid "No route to host"
 msgstr ""
 
-#: src/error.cpp:384
+#: src/error.cpp:391
 msgid "Too many processes"
 msgstr ""
 
-#: src/error.cpp:386
+#: src/error.cpp:393
 msgid "Network subsystem is unavailable"
 msgstr ""
 
-#: src/error.cpp:388
+#: src/error.cpp:395
 msgid "Winsock.dll version out of range"
 msgstr ""
 
-#: src/error.cpp:390
+#: src/error.cpp:397
 msgid "Successful WSAStartup not yet performed"
 msgstr ""
 
-#: src/error.cpp:392
+#: src/error.cpp:399
 msgid "Graceful shutdown in progress"
 msgstr ""
 
-#: src/error.cpp:394
+#: src/error.cpp:401
 msgid "Class type not found"
 msgstr ""
 
-#: src/error.cpp:396
+#: src/error.cpp:403
 msgid "Host not found"
 msgstr ""
 
-#: src/error.cpp:398
+#: src/error.cpp:405
 msgid "Nonauthoritative host not found"
 msgstr ""
 
-#: src/error.cpp:400
+#: src/error.cpp:407
 msgid "No data record of requested type"
 msgstr ""
 
-#: src/error.cpp:402
+#: src/error.cpp:409
 msgid "Specified event object handle is invalid"
 msgstr ""
 
-#: src/error.cpp:404
+#: src/error.cpp:411
 msgid "One or more parameters are invalid"
 msgstr ""
 
-#: src/error.cpp:406
+#: src/error.cpp:413
 msgid "No more memory is available"
 msgstr ""
 
-#: src/error.cpp:408
+#: src/error.cpp:415
 msgid "Broken pipe"
 msgstr ""
 
-#: src/error.cpp:410
+#: src/error.cpp:417
 msgid "No such device"
 msgstr ""
 
-#: src/error.cpp:412
+#: src/error.cpp:419
 msgid "A nonrecoverable error has occured"
 msgstr ""
