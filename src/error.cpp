@@ -18,6 +18,7 @@
 
 #ifdef WIN32
 #include <winsock2.h>
+#include <ws2tcpip.h>
 #else
 #include <errno.h>
 #include <netdb.h>
@@ -43,7 +44,7 @@ namespace
 		case WSAEINVAL:
 			return net6::error::INVALID_ARGUMENT;
 		case WSAEMFILE:
-			return net6::error::TOO_MANY_FILES,
+			return net6::error::TOO_MANY_FILES;
 		case WSAEWOULDBLOCK:
 			return net6::error::WOULD_BLOCK;
 		case WSAEALREADY:
@@ -221,18 +222,18 @@ namespace
 			return net6::error::HOSTNAME_NOT_FOUND;
 		case EAI_SERVICE:
 			return net6::error::TYPE_NOT_FOUND;
+#ifndef WIN32
 		case EAI_ADDRFAMILY: // TODO: Do we want HOST_NOT_FOUND here?
 			return net6::error::ADDRESS_UNAVAILABLE;
+#endif
 		case EAI_NODATA:
 			return net6::error::NO_DATA_RECORD;
 		case EAI_MEMORY:
 			return net6::error::NO_MEMORY;
 		case EAI_AGAIN:
 			return net6::error::TEMPORARY_FAILURE;
+#ifndef WIN32
 		case EAI_SYSTEM:
-#ifdef WIN32
-			return system_to_net6(WSAGetLastError() );
-#else
 			return system_to_net6(errno);
 #endif
 		default:
