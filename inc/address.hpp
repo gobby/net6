@@ -1,4 +1,4 @@
-/* net6 - library providing ipv4/ipv6 network access
+/* net6 - Library providing IPv4/IPv6 network access
  * Copyright (C) 2005 Armin Burgmeier / 0x539 dev group
  *
  * This library is free software; you can redistribute it and/or
@@ -44,11 +44,11 @@ public:
 	virtual ~address();
 
 	/** Creates a copy of this address. The caller is responsible for
-	 * freeing it
+	 * freeing it.
 	 */
 	virtual address* clone() const = 0;
 
-	/** Returns the address family of this address (AF_INET or AF_INET6)
+	/** Returns the address family of this address (AF_INET or AF_INET6).
 	 */
 	int get_family() const;
 
@@ -58,11 +58,11 @@ public:
 	 */
 	virtual std::string get_name() const = 0;
 
-	/** Returns the size of underlaying C sockaddr object
+	/** Returns the size of underlaying C sockaddr object.
 	 */
 	virtual socklen_t get_size() const = 0;
 
-	/** Returns the underlaying C sockaddr object
+	/** Returns the underlaying C sockaddr object.
 	 */
 	sockaddr* cobj() { return addr; }
 	const sockaddr* cobj() const { return addr; }
@@ -79,27 +79,27 @@ public:
 	static const uint32_t BROADCAST;
 	static const uint32_t LOOPBACK;
 
-	/** Creates a new ipv4 address of type ANY with port <em>port</em>
+	/** Creates a new IPv4 address of type ANY with port <em>port</em>.
 	 */
 	static ipv4_address create(unsigned int port = 0);
 
-	/** Creates a new ipv4 address from a 32 bit integer in network
-	 * byte order and with port <em>port</em>
+	/** Creates a new IPv4 address from a 32 bit integer in network
+	 * byte order and with port <em>port</em>.
 	 */
 	static ipv4_address create_from_address(uint32_t ip_address,
 	                                        unsigned int port = 0);
 
 	/** Performs a DNS lookup of the host <em>hostname</em> and stores
-	 * its ipv4 address, if any. Otherwise, a net6::error is thrown.
+	 * its IPv4 address, if any. Otherwise, a net6::error is thrown.
 	 */
 	static ipv4_address create_from_hostname(const std::string& hostname,
 	                                         unsigned int port = 0);
 
-	/** Creates an ipv4 address by copying a C sockaddr object
+	/** Creates an IPv4 address by copying a C sockaddr object.
 	 */
 	ipv4_address(const sockaddr_in* other);
 
-	/** Creates a copy of an ipv4 address
+	/** Creates a copy of an IPv4 address.
 	 */
 	ipv4_address(const ipv4_address& other);
 	virtual ~ipv4_address();
@@ -110,37 +110,37 @@ public:
 	static std::list<ipv4_address> list(const std::string& hostname,
 	                                    unsigned int port = 0);
 
-	/** Copies an ipv4 address
+	/** Copies an IPv4 address.
 	 */
 	ipv4_address& operator=(const ipv4_address& other);
 
-	/** Assigns a C sockaddr object to this ipv4 address
+	/** Assigns a C sockaddr object to this IPv4 address.
 	 */
 	ipv4_address& operator=(const sockaddr_in* other);
 
-	/** Creates a copy of this ipv4 address on the heap. The caller
+	/** Creates a copy of this IPv4 address on the heap. The caller
 	 * is responsible for freeing it.
 	 */
 	virtual address* clone() const;
 
-	/** Returns a human-readable string of this ipv4 address (for
+	/** Returns a human-readable string of this IPv4 address (for
 	 * example 127.0.0.1).
 	 */
 	virtual std::string get_name() const;
 
-	/** Returns the size of the underlaying C sockaddr_in object 
+	/** Returns the size of the underlaying C sockaddr_in object.
 	 */
 	virtual socklen_t get_size() const;
 
-	/** Returns the port assigned to this ipv4 address
+	/** Returns the port assigned to this IPv4 address.
 	 */
 	unsigned int get_port() const;
 
-	/** Changes the port assigned to this ipv4 address
+	/** Changes the port assigned to this IPv4 address.
 	 */
 	void set_port(unsigned int port);
 
-	/** Provides access to the underlaying C sockaddr_in object
+	/** Provides access to the underlaying C sockaddr_in object.
 	 */
 	sockaddr_in* cobj() { return reinterpret_cast<sockaddr_in*>(addr); }
 	const sockaddr_in* cobj() const
@@ -155,13 +155,13 @@ public:
 	static const uint8_t ANY[16];
 	static const uint8_t LOOPBACK[16];
 
-	/** Creates a new ipv6 address of type ANY and port <em>port</em>.
+	/** Creates a new IPv6 address of type ANY and port <em>port</em>.
 	 */
 	static ipv6_address create(unsigned int port = 0,
 	                           unsigned int flowinfo = 0,
 	                           unsigned int scope_id = 0);
 
-	/** Creates a new ipv6 address from the given byte array in
+	/** Creates a new IPv6 address from the given byte array in
 	 * network byte order and with port <em>port</em>.
 	 */
 	static ipv6_address create_from_address(const uint8_t ip_address[16],
@@ -170,79 +170,79 @@ public:
 	                                        unsigned int scope_id = 0);
 
 	/** Performs a DNS lookup to resolve <em>hostname</em> to an
-	 * ipv6 address. If the host could not be resolved, a net6::error is
-	 * thrown
+	 * IPv6 address. If the host could not be resolved, a net6::error is
+	 * thrown.
 	 */
 	static ipv6_address create_from_hostname(const std::string& hostname,
 	                                         unsigned int port = 0,
 	                                         unsigned int flowinfo = 0,
 	                                         unsigned int scope_id = 0);
 
-	/** Creates an ipv6 address from a C sockaddr_in6 object
+	/** Creates an IPv6 address from a C sockaddr_in6 object.
 	 */
 	ipv6_address(const sockaddr_in6* other);
 
-	/** Creates a copy of an ipv6 address
+	/** Creates a copy of an IPv6 address.
 	 */
 	ipv6_address(const ipv6_address& other);
 	virtual ~ipv6_address();
 
-	/** Performs a DNS lookup to retrieve a list with all ipv6
-	 * addresses of <em>hostname</em>
+	/** Performs a DNS lookup to retrieve a list with all IPv6
+	 * addresses of <em>hostname</em>.
 	 */
 	static std::list<ipv6_address> list(const std::string& hostname,
                                             unsigned int port = 0,
 	                                    unsigned int flowinfo = 0,
 	                                    unsigned int scope_id = 0);
 
-	/** Creates a copy of an ipv6 address
+	/** Creates a copy of an IPv6 address.
 	 */
 	ipv6_address& operator=(const ipv6_address& other);
 
-	/** Assigns a C sockaddr_in6 object to this ipv6 address object
+	/** Assigns a C sockaddr_in6 object to this IPv6 address object.
 	 */
 	ipv6_address& operator=(const sockaddr_in6* addr);
 
-	/** Creates a copy of this ipv6 address on the heap. The caller is
-	 * responsible for freeing it
+	/** Creates a copy of this IPv6 address on the heap. The caller is
+	 * responsible for freeing it.
 	 */
 	virtual address* clone() const;
 
-	/** Returns a human-readable string of the ipv6 address (like ::1).
-	 * Currently, ipv6 address compression (::1 instead of 0:0:0:0:0:0:0:1)
+	/** Returns a human-readable string of the IPv6 address (like ::1).
+	 * Currently, IPv6 address compression (::1 instead of 0:0:0:0:0:0:0:1)
 	 * is not supported.
 	 */
 	virtual std::string get_name() const;
 
-	/** Returns the size of the underlaying C sockaddr_in6 object
+	/** Returns the size of the underlaying C sockaddr_in6 object.
 	 */
 	virtual socklen_t get_size() const;
 
-	/** Returns the port associated with this ipv6 address object
+	/** Returns the port associated with this IPv6 address object.
 	 */
 	unsigned int get_port() const;
 
-	/** Returns the ipv6 flowinfo assigned to this ipv6 address
+	/** Returns the IPv6 flowinfo assigned to this IPv6 address.
 	 */
 	unsigned int get_flowinfo() const;
 
-	/** Returns the ipv6 scope id assigned to this ipv6 address
+	/** Returns the IPv6 scope id assigned to this IPv6 address.
 	 */
 	unsigned int get_scope_id() const;
 
-	/** Changes the port associated with this ipv6 address object
+	/** Changes the port associated with this IPv6 address object.
 	 */
 	void set_port(unsigned int port);
 
-	/** Changes the ipv6 flowinfo assigned to this ipv6 address
+	/** Changes the IPv6 flowinfo assigned to this IPv6 address.
 	 */
 	void set_flowinfo(unsigned int flowinfo);
 
-	/** Changes the ipv6 scope id assigned to this ipv6 address
+	/** Changes the IPv6 scope id assigned to this IPv6 address.
 	 */
 	void set_scope_id(unsigned int scope_id);
 
-	/** Provides access to the underlaying C sockaddr_in6 object
+	/** Provides access to the underlaying C sockaddr_in6 object.
 	 */
 	sockaddr_in6* cobj() { return reinterpret_cast<sockaddr_in6*>(addr); }
 	const sockaddr_in6* cobj() const
