@@ -76,10 +76,10 @@ protected:
 	std::list<socket> read_list;
 	std::list<socket> write_list;
 	std::list<socket> error_list;
-
+/*
 	fd_set read_set;
 	fd_set write_set;
-	fd_set error_set;
+	fd_set error_set;*/
 };
 	
 }

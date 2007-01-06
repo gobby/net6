@@ -48,6 +48,7 @@ namespace net6
 	
 class NET6_EXPORT socket
 {
+	friend class selector;
 public:
 	enum condition {
 		IN = 0x01,

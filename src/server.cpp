@@ -199,8 +199,11 @@ void net6::server::remove_client(peer* client)
 	signal_part.emit(*client);
 	peers.erase(std::remove(peers.begin(), peers.end(), client),
 	            peers.end() );
-	sock_sel.remove(client->get_socket(), socket::IN | socket::OUT |
-	                socket::ERR);
+
+	sock_sel.remove(client->get_socket(), socket::IN | socket::ERR);
+	if(sock_sel.check(client->get_socket(), socket::OUT) )
+		sock_sel.remove(client->get_socket(), socket::OUT);
+
 	packet pack("net6_client_part");
 	pack << static_cast<int>(client->get_id() );
 	send(pack);

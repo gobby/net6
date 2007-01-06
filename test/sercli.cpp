@@ -7,7 +7,7 @@
 #include <net6/server.hpp>
 #include <net6/client.hpp>
 
-const int port = 1355;
+const int port = 1364;
 bool quit = false;
 
 int client_main(int argc, char* argv[]);
