@@ -30,8 +30,14 @@ AC_TRY_COMPILE([#include <sys/socket.h>],
 	       [ AC_MSG_RESULT(yes)
 	         AC_DEFINE(HAVE_MSG_NOSIGNAL, 1,
 			   [Define this symbol if you have MSG_NOSIGNAL]) ],
- 	       [ AC_MSG_RESULT(no)]
-)
+ 	       [ AC_MSG_RESULT(no)])
+AC_MSG_CHECKING(for SO_NOSIGPIPE)
+AC_TRY_COMPILE([#include <sys/socket.h>],
+               [ int f = SO_NOSIGNAL; ],
+               [ AC_MSG_RESULT(yes)
+                 AC_DEFINE(HAVE_SO_NOSIGNAL, 1,
+                           [Define this symbol if you have SO_NOSIGNAL]) ],
+               [ AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING([whether to enable WIN32 specific flags])
 if test "x$host_os" = "xmingw32" ; then

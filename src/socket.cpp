@@ -49,7 +49,7 @@ namespace
 
 	void set_nosigpipe(net6::tcp_socket::socket_type socket)
 	{
-#if defined(SO_NOSIGPIPE)
+#if HAVE_SO_NOSIGPIPE
 		// Mac OS X
 		int value = 1;
 		if(setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &value,
