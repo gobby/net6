@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 lib_LTLIBRARIES = libnet6.la
 
 #  current  : revision :      age
