@@ -43,31 +43,17 @@ public:
 	// Virtual destructor makes the compiler happy
 	virtual ~selector() {}
 
-	/** @brief Adds a socket to the selector.
+	/** @brief Gets all conditions currently set on a socket
 	 *
-	 * The function may also be used to add conditions the socket
-	 * is watched for.
+	 * The function can be used to retrieve the conditions
+	 * the socket is currently watched for. It will return
+	 * <em>IO_NONE</em> if the socket is not being monitored.
 	 *
-	 * @param sock The socket to watch for conditions to occur.
-	 * @param condition Conditions the socket is watched for.
+	 * @param sock The socket which conditions should be queried
 	 */
-	void add(const socket& sock,
-	         io_condition);
+	io_condition get(const socket& sock) const;
 
-	/** @brief Removes a socket from the selector.
-	 *
-	 * The function may also be used to remove conditions the socket
-	 * is watched for. If all conditions are given, the socket is
-	 * completely removed.
-	 *
-	 * @param sock The socket to remove.
-	 * @param condition A combination of conditions which are no
-	 *        longer watched for.
-	 */
-	void remove(const socket& sock,
-	            io_condition condition);
-
-	/** @brief Sets conditions on a socket.
+	/** @brief Sets conditions on a socket
 	 *
 	 * The function can be used to set conditions the socket is
 	 * watched for. The socket will be added and deleted as
@@ -78,16 +64,6 @@ public:
 	 */
 	void set(const socket& sock,
 	         io_condition condition);
-
-	/** Checks if a socket is watched for events
-	 *
-	 * @param sock Socket to check.
-	 * @param condition Conditions to check the socket for.
-	 *
-	 * @return The condition the socket is currently watched for.
-	 */
-	io_condition check(const socket& sock,
-	                   io_condition condition) const;
 
 	/** Selects infinitely until an event occurs on one or more
 	 * selected sockets. Connect to the socket's signals to handle

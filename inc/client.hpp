@@ -259,8 +259,8 @@ void basic_client<selector_type>::send(const packet& pack)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Add OUTGOING flag it to the selector if it isn't already set
-	if(selector.check(conn->get_socket(), IO_OUTGOING) == IO_NONE)
-		selector.add(conn->get_socket(), IO_OUTGOING);
+	selector.set(conn->get_socket(),
+		selector.get(conn->get_socket() ) | IO_OUTGOING);
 
 	// Add packet to send queue
 	conn->send(pack);
@@ -364,7 +364,8 @@ void basic_client<selector_type>::on_send_event()
 
 	// Remove OUTGOING flag from selector as there is no more
 	// data to send
-	selector.remove(conn->get_socket(), IO_OUTGOING);
+	selector.set(conn->get_socket(),
+		selector.get(conn->get_socket() ) & ~IO_OUTGOING);
 }
 
 template<typename selector_type>
@@ -384,21 +385,22 @@ void basic_client<selector_type>::on_encrypted_event(
 
 	switch(state)
 	{
-		case connection::HANDSHAKING_RECV:
-			selector.set(conn->get_socket(), IO_INCOMING);
-			break;
-		case connection::HANDSHAKING_SEND:
-			selector.set(conn->get_socket(), IO_OUTGOING);
-			break;
-		case connection::ENCRYPTED_PENDING:
-			// Flush the send queue, then emit the signal
-			// in the next case, as only one of the two
-			// is emitted.
-			selector.set(conn->get_socket(), IO_OUTGOING);
-		case connection::ENCRYPTED:
-			// Notify the client that encryption is now used
-			on_encrypted();
-			break;
+	case connection::HANDSHAKING_RECV:
+		selector.set(conn->get_socket(), IO_INCOMING);
+		break;
+	case connection::HANDSHAKING_SEND:
+		selector.set(conn->get_socket(), IO_OUTGOING);
+		break;
+	case connection::ENCRYPTED_PENDING:
+		// Flush the send queue, then emit the signal
+		// in the next case, as only one of the two
+		// is emitted.
+		selector.set(conn->get_socket(),
+			selector.get(conn->get_socket() ) | IO_OUTGOING);
+	case connection::ENCRYPTED:
+		// Notify the client that encryption is now used
+		on_encrypted();
+		break;
 	}
 }
 

@@ -19,29 +19,14 @@
 #include "error.hpp"
 #include "select.hpp"
 
-void net6::selector::add(const socket& sock,
-                         io_condition condition)
+net6::io_condition net6::selector::get(const socket& sock) const
 {
-	map_type::iterator iter = sock_map.find(&sock);
+	map_type::const_iterator iter = sock_map.find(&sock);
 
-	if(iter != sock_map.end() )
-	{
-		iter->second |= condition;
-	}
-	else
-	{
-		sock_map[&sock] = condition;
-	}
-}
+	if(iter == sock_map.end() )
+		return IO_NONE;
 
-void net6::selector::remove(const socket& sock,
-                            io_condition condition)
-{
-	map_type::iterator iter = sock_map.find(&sock);
-	if(iter == sock_map.end() ) return;
-
-	iter->second &= ~condition;
-	if(iter->second == IO_NONE) sock_map.erase(iter);
+	return iter->second;
 }
 
 void net6::selector::set(const socket& sock,
@@ -49,23 +34,13 @@ void net6::selector::set(const socket& sock,
 {
 	map_type::iterator iter = sock_map.find(&sock);
 
-	if(condition == IO_NONE && iter == sock_map.end() )
-		return;
-	else if(condition == IO_NONE)
+	if(condition != IO_NONE)
+		if(iter == sock_map.end() )
+			sock_map[&sock] = condition;
+		else
+			iter->second |= condition;
+	else if(iter != sock_map.end() )
 		sock_map.erase(iter);
-	else if(iter == sock_map.end() )
-		sock_map[&sock] = condition;
-	else
-		iter->second = condition;
-}
-
-net6::io_condition net6::selector::check(const socket& sock,
-                                         io_condition condition) const
-{
-	io_condition ref_cond = IO_NONE;
-	map_type::const_iterator iter = sock_map.find(&sock);
-	if(iter != sock_map.end() ) ref_cond = iter->second;
-	return condition & ref_cond;
 }
 
 void net6::selector::select() const

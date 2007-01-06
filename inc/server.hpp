@@ -284,8 +284,8 @@ void basic_server<selector_type>::send(const packet& pack, const user& to)
 	const tcp_client_socket& user_socket = to.get_connection().get_socket();
 
 	// Set OUTGOING flag if it isn't already
-	if(selector.check(user_socket, IO_OUTGOING) == IO_NONE)
-		selector.add(user_socket, IO_OUTGOING);
+	selector.set(user_socket,
+		selector.get(user_socket) | IO_OUTGOING);
 
 	// Enqueue packet
 	to.send(pack);
@@ -370,9 +370,7 @@ void basic_server<selector_type>::remove_client(const user* user)
 		user->get_connection().get_socket();
 
 	// Remove dead client from selector
-	selector.remove(user_socket, IO_INCOMING | IO_ERROR);
-	if(selector.check(user_socket, IO_OUTGOING) == IO_OUTGOING)
-		selector.remove(user_socket, IO_OUTGOING);
+	selector.set(user_socket, IO_NONE);
 
 	// Store ID of client to remove
 	unsigned int user_id = user->get_id();
@@ -429,7 +427,7 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 
 	// Add to selector to receive data from this client
 	connection& conn = client->get_connection();
-	selector.add(conn.get_socket(), IO_INCOMING | IO_ERROR);
+	selector.set(conn.get_socket(), IO_INCOMING | IO_ERROR);
 
 	// Connect signal handlers
 	conn.send_event().connect(
@@ -463,7 +461,8 @@ void basic_server<selector_type>::on_send_event(user& to)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Remove OUTGOING from selector as no more data has to be sent
-	selector.remove(to.get_connection().get_socket(), IO_OUTGOING);
+	selector.set(to.get_connection().get_socket(),
+		selector.get(to.get_connection().get_socket() ) & ~IO_OUTGOING);
 }
 
 template<typename selector_type>
@@ -606,7 +605,7 @@ void basic_server<selector_type>::shutdown_impl()
 {
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
-	selector.remove(*serv_sock, IO_INCOMING);
+	selector.set(*serv_sock, selector.get(*serv_sock) & ~IO_INCOMING);
 	serv_sock.reset(NULL);
 }
 
@@ -628,7 +627,8 @@ void basic_server<selector_type>::reopen_impl(unsigned int port)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Add incoming flag to selector to accept client connections
-	selector.add(*serv_sock, IO_INCOMING);
+	selector.set(*serv_sock,
+		selector.get(*serv_sock) | IO_INCOMING);
 	serv_sock->io_event().connect(
 		sigc::mem_fun(*this, &basic_server::on_accept_event) );
 }
