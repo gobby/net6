@@ -22,12 +22,14 @@
 net6::host::host(const std::string& username, bool ipv6)
  : server(ipv6), self(new peer(++ id_counter) )
 {
+	self->login(username);
 	peers.push_back(self);
 }
 
 net6::host::host(unsigned int port, const std::string& username, bool ipv6)
  : server(port, ipv6), self(new peer(++ id_counter) )
 {
+	self->login(username);
 	peers.push_back(self);
 }
 
