@@ -97,10 +97,10 @@ int main(int argc, char* argv[]) try
 	if(argc > 1)
 		return client_main(argc, argv);
 
-	net6::ipv4_address serv_addr = net6::ipv4_address::create(port);
+	net6::ipv4_address serv_addr(port);
 	net6::tcp_server_socket sock(serv_addr);
 
-	net6::ipv4_address client_addr = net6::ipv4_address::create();
+	net6::ipv4_address client_addr;
 	net6::tcp_client_socket client = sock.accept(client_addr);
 
 	std::cout << "Connection from " << client_addr.get_name() << std::endl;

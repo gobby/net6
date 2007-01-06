@@ -37,6 +37,17 @@ void on_server_data(const net6::packet& pack, net6::server::peer& peer, net6::se
 	}
 }
 
+bool on_server_auth(net6::server::peer& peer, const net6::packet& pack, std::string& reason)
+{
+	if(pack.get_param(0).as_string() == "foo")
+	{
+		reason = "foo ist nicht erlaubt!";
+		return false;
+	}
+	else
+		return true;
+}
+
 void on_client_join(net6::client::peer& peer, net6::client& client)
 {
 	std::cout << peer.get_name() << " joined" << std::endl;
@@ -82,6 +93,7 @@ int main(int argc, char* argv[]) try
 
 	server.join_event().connect(sigc::bind(sigc::ptr_fun(&on_server_join), sigc::ref(server)) );
 	server.login_event().connect(sigc::bind(sigc::ptr_fun(&on_server_login), sigc::ref(server)) );
+	server.login_auth_event().connect(sigc::ptr_fun(&on_server_auth) );
 	server.part_event().connect(sigc::bind(sigc::ptr_fun(&on_server_part), sigc::ref(server)) );
 	server.data_event().connect(sigc::bind(sigc::ptr_fun(&on_server_data), sigc::ref(server)) );
 	
