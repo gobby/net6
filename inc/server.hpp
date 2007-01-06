@@ -102,7 +102,7 @@ public:
 	};
 
 	/** Accumulator for signal_auth_type: It returns TRUE if no slots
-	 * have been connected (so, connections are always accepted)
+	 * have been connected (so, connections are always accepted).
 	 */
 	class NET6_EXPORT auth_accumulator
 	{

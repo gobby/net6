@@ -19,6 +19,7 @@
 #ifndef _NET6_PACKET_HPP_
 #define _NET6_PACKET_HPP_
 
+#include <string>
 #include <vector>
 #include "export.hpp"
 
