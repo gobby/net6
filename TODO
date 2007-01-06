@@ -1,6 +1,3 @@
-address: standardkonstruktoren (bisherig: create)
 non_copyable base class?
 packet-unsigned-int template specialization
-packet-priority field
-net6::host
 custom login packets

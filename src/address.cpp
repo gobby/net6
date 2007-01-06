@@ -70,19 +70,12 @@ const uint32_t net6::ipv4_address::NONE = INADDR_NONE;
 const uint32_t net6::ipv4_address::BROADCAST = INADDR_BROADCAST;
 const uint32_t net6::ipv4_address::LOOPBACK = INADDR_LOOPBACK;
 
-net6::ipv4_address::ipv4_address()
- : address()
+net6::ipv4_address::ipv4_address(unsigned int port)
 {
-}
-
-net6::ipv4_address net6::ipv4_address::create(unsigned int port)
-{
-	ipv4_address addr;
-	addr.addr = reinterpret_cast<sockaddr*>(new sockaddr_in);
-	addr.cobj()->sin_family = AF_INET;
-	addr.cobj()->sin_port = htons(port);
-	addr.cobj()->sin_addr.s_addr = ANY;
-	return addr;
+	addr = reinterpret_cast<sockaddr*>(new sockaddr_in);
+	cobj()->sin_family = AF_INET;
+	cobj()->sin_port = htons(port);
+	cobj()->sin_addr.s_addr = ANY;
 }
 
 net6::ipv4_address net6::ipv4_address::create_from_address(uint32_t ip_address,
@@ -224,23 +217,15 @@ const uint8_t net6::ipv6_address::LOOPBACK[16] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
 };
 
-net6::ipv6_address::ipv6_address()
- : address()
+net6::ipv6_address::ipv6_address(unsigned int port, unsigned int flowinfo,
+                                 unsigned int scope_id)
 {
-}
-
-net6::ipv6_address net6::ipv6_address::create(unsigned int port,
-                                              unsigned int flowinfo,
-                                              unsigned int scope_id)
-{
-	ipv6_address addr;
-	addr.addr = reinterpret_cast<sockaddr*>(new sockaddr_in6);
-	addr.cobj()->sin6_family = AF_INET6;
-	addr.cobj()->sin6_port = htons(port);
-	addr.cobj()->sin6_flowinfo = flowinfo;
-	std::copy(ANY, ANY + 16, addr.cobj()->sin6_addr.s6_addr);
-	addr.cobj()->sin6_scope_id = scope_id;
-	return addr;
+	addr = reinterpret_cast<sockaddr*>(new sockaddr_in6);
+	cobj()->sin6_family = AF_INET6;
+	cobj()->sin6_port = htons(port);
+	cobj()->sin6_flowinfo = flowinfo;
+	std::copy(ANY, ANY + 16, cobj()->sin6_addr.s6_addr);
+	cobj()->sin6_scope_id = scope_id;
 }
 
 net6::ipv6_address

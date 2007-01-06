@@ -87,7 +87,7 @@ public:
 
 	/** Creates a new IPv4 address of type ANY with port <em>port</em>.
 	 */
-	static ipv4_address create(unsigned int port = 0);
+	ipv4_address(unsigned int port = 0);
 
 	/** Creates a new IPv4 address from a 32 bit integer in network
 	 * byte order and with port <em>port</em>.
@@ -152,7 +152,7 @@ public:
 	const sockaddr_in* cobj() const
 		{ return reinterpret_cast<sockaddr_in*>(addr); }
 protected:
-	ipv4_address();
+//	ipv4_address();
 };
 
 /** IPv6 internet address
@@ -166,9 +166,8 @@ public:
 
 	/** Creates a new IPv6 address of type ANY and port <em>port</em>.
 	 */
-	static ipv6_address create(unsigned int port = 0,
-	                           unsigned int flowinfo = 0,
-	                           unsigned int scope_id = 0);
+	ipv6_address(unsigned int port = 0, unsigned int flowinfo = 0,
+	             unsigned int scope_id = 0);
 
 	/** Creates a new IPv6 address from the given byte array in
 	 * network byte order and with port <em>port</em>.
@@ -258,7 +257,7 @@ public:
 		{ return reinterpret_cast<sockaddr_in6*>(addr); }
 
 protected:
-	ipv6_address();
+//	ipv6_address();
 };
 
 }
