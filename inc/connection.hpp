@@ -24,6 +24,7 @@
 
 #include "non_copyable.hpp"
 #include "socket.hpp"
+#include "encrypt.hpp"
 #include "queue.hpp"
 #include "packet.hpp"
 

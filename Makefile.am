@@ -28,6 +28,7 @@ pkginclude_HEADERS = \
 	inc/serialise.hpp \
 	inc/address.hpp \
 	inc/socket.hpp \
+	inc/encrypt.hpp \
 	inc/select.hpp \
 	inc/queue.hpp \
 	inc/packet.hpp \
@@ -49,6 +50,7 @@ libnet6_la_SOURCES = \
 	src/serialise.cpp \
 	src/address.cpp \
 	src/socket.cpp \
+	src/encrypt.cpp \
 	src/select.cpp \
 	src/queue.cpp \
 	src/packet.cpp \

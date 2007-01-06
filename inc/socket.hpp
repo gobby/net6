@@ -19,9 +19,6 @@
 #ifndef _NET6_SOCKET_HPP_
 #define _NET6_SOCKET_HPP_
 
-#include <gnutls/gnutls.h>
-
-#include <fcntl.h>
 #include <memory>
 #include <sigc++/signal.h>
 
@@ -32,14 +29,6 @@
 
 namespace net6
 {
-
-// Newer versions of GNUTLS use types suffixed with _t.
-typedef gnutls_session gnutls_session_t;
-typedef gnutls_anon_client_credentials gnutls_anon_client_credentials_t;
-typedef gnutls_anon_server_credentials gnutls_anon_server_credentials_t;
-typedef gnutls_transport_ptr gnutls_transport_ptr_t;
-typedef gnutls_dh_params gnutls_dh_params_t;
-typedef gnutls_connection_end gnutls_connection_end_t;
 
 enum io_condition
 {
@@ -131,129 +120,6 @@ public:
 	virtual size_type recv(void* buf, size_type len) const;
 };
 
-class tcp_encrypted_socket_base: public tcp_client_socket
-{
-public:
-	virtual ~tcp_encrypted_socket_base();
-
-	/** @brief Initiates a TLS handshake.
-	 *
-	 * Returns TRUE when the handshake has been completed and FALSE when
-	 * further data needs to be transmitted. You may then select and call
-	 * this function again when data is availabe to send and/or receive
-	 * (see tcp_encrypted_socket_base::get_dir()).
-	 *
-	 * TODO: Possibility to make this blocking
-	 */
-	bool handshake();
-
-	/** Returns <em>true</em> when GNUTLS tried to send data, but failed.
-	 * and <em>false</em> when GNUTLS tried to receive.
-	 */
-	bool get_dir() const;
-
-	/** @brief Returns the amount of bytes remaining in the GnuTLS buffers.
-	 *
-	 * If a socket is selected for IO_INCOMING, the selector would not
-	 * return for this socket even if there is still data to be read when
-	 * GnuTLS already read that data and keeps it in its internal buffer.
-	 */
-	size_type get_pending() const;
-
-	/** @brief Tries to send <em>len</em> bytes of data starting at 
-	 * <em>buf</em>.
-	 *
-	 * The function returns the amount of bytes actually sent that may
-	 * be less than <em>len</em>.
-	 *
-	 * A handshake must have been performed before using this function.
-	 */
-	virtual size_type send(const void* buf, size_type len) const;
-
-	/** @brief Tries to read <em>len</em> bytes of data into the buffer
-	 * starting at <em>buf</em>.
-	 *
-	 * The function returns the amount of bytes actually read that may
-	 * be less than <em>len</em>.
-	 *
-	 * A handshake must have been performed before using this function.
-	 */
-	virtual size_type recv(void* buf, size_type len) const;
-
-protected:
-	/** Ownership of session is given to tcp_encrypted_socket_base.
-	 */
-	tcp_encrypted_socket_base(socket_type cobj, gnutls_session_t sess);
-
-	template<
-		typename buffer_type,
-		ssize_t(*iofunc)(gnutls_session_t, buffer_type, size_t)
-	> size_type io_impl(buffer_type buf, size_type len) const;
-
-	enum handshake_state {
-		DEFAULT,
-		HANDSHAKING,
-		HANDSHAKED
-	};
-
-	gnutls_session_t session;
-	handshake_state state;
-	bool was_blocking;
-};
-
-class tcp_encrypted_socket_client: public tcp_encrypted_socket_base
-{
-public:
-	tcp_encrypted_socket_client(tcp_client_socket& sock);
-	virtual ~tcp_encrypted_socket_client();
-
-private:
-	//static gnutls_session_t create_session(int fd);
-
-	typedef gnutls_anon_client_credentials_t credentials_type;
-	credentials_type anoncred;
-};
-
-class tcp_encrypted_socket_server: public tcp_encrypted_socket_base
-{
-public:
-	tcp_encrypted_socket_server(tcp_client_socket& sock);
-	virtual ~tcp_encrypted_socket_server();
-
-private:
-	typedef gnutls_anon_server_credentials_t credentials_type;
-	credentials_type anoncred;
-
-	gnutls_dh_params_t dh_params;
-};
-
-#if 0
-/** Encrypted TCP connection socket.
- */
-template<typename Info>
-class basic_tcp_encrypted_socket: public tcp_encrypted_socket_base
-{
-public:
-	basic_tcp_encrypted_socket(tcp_client_socket& sock);
-	virtual ~basic_tcp_encrypted_socket();
-
-private:
-	static std::auto_ptr<Info> create_session(int fd);
-
-	std::auto_ptr<Info> info;
-//	Info my_info; //std::auto_ptr<Info> info;
-	//typename Info::credentials_type anoncred;
-
-	template<
-		typename buffer_type,
-		ssize_t(*iofunc)(gnutls_session_t, buffer_type, size_t)
-	> size_type io_impl(buffer_type buf, size_type len) const;
-};
-
-typedef basic_tcp_encrypted_socket<server_info> tcp_encrypted_socket_server;
-typedef basic_tcp_encrypted_socket<client_info> tcp_encrypted_socket_client;
-#endif
-
 /** TCP server socket
 */
 
@@ -334,40 +200,6 @@ public:
 	               size_type len,
 	               address& from) const;
 };
-
-template<
-	typename buffer_type,
-	ssize_t(*func)(gnutls_session_t, buffer_type, size_t)
-> typename tcp_encrypted_socket_base::size_type
-tcp_encrypted_socket_base::io_impl(buffer_type buf, size_type len) const
-{
-	if(state == HANDSHAKING)
-	{
-		throw std::logic_error(
-			"net6::tcp_encrypted_socket_base::io_impl:\n"
-			"IO tried while handshaking"
-		);
-	}
-
-	if(state == DEFAULT)
-	{
-		throw std::logic_error(
-			"net6::tcp_encrypted_socket_base::io_impl:\n"
-			"Handshake not yet performed"
-		);
-	}
-
-	ssize_t ret = func(session, buf, len);
-	if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
-	{
-		func(session, NULL, 0);
-	}
-
-	if(ret < 0)
-		throw net6::error(net6::error::GNUTLS, ret);
-
-	return ret;
-}
 
 } // namespace net6
 
