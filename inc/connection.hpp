@@ -129,7 +129,7 @@ protected:
 	signal_encrypted_type signal_encrypted;
 
 	std::auto_ptr<tcp_client_socket> remote_sock;
-	tcp_encrypted_socket* encrypted_sock;
+	tcp_encrypted_socket_base* encrypted_sock;
 	std::auto_ptr<address> remote_addr;
 
 	conn_state state;

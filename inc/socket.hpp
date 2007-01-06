@@ -128,67 +128,109 @@ public:
 	virtual size_type recv(void* buf, size_type len) const;
 };
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-class server_info
+class tcp_encrypted_socket_base: public tcp_client_socket
 {
 public:
-	typedef gnutls_anon_server_credentials_t credentials_type;
+	virtual ~tcp_encrypted_socket_base();
 
-	static void init(gnutls_session_t* session,
-	                 credentials_type* anoncred);
-	static void init_primes(gnutls_session_t session,
-	                        credentials_type anoncred);
-};
-
-class client_info
-{
-public:
-	typedef gnutls_anon_client_credentials_t credentials_type;
-
-	static void init(gnutls_session_t* session,
-	                 credentials_type* anoncred);
-	static void init_primes(gnutls_session_t session,
-	                        credentials_type anoncred);
-};
-#endif
-
-class tcp_encrypted_socket: public tcp_client_socket
-{
-public:
+	/** @brief Initiates a TLS handshake.
+	 *
+	 * Returns TRUE when the handshake has been completed and FALSE when
+	 * further data needs to be transmitted. You may then select and call
+	 * this function again when data is availabe to send and/or receive
+	 * (see tcp_encrypted_socket_base::get_dir()).
+	 *
+	 * TODO: Possibility to make this blocking
+	 */
 	bool handshake();
-	bool is_handshaking() const { return handshaking; }
+
 	/** Returns <em>true</em> when GNUTLS tried to send data, but failed.
 	 * and <em>false</em> when GNUTLS tried to receive.
 	 */
-	bool get_dir() const {
-		return gnutls_record_get_direction(session) == 1;
-	}
+	bool get_dir() const;
+
+	/** @brief Tries to send <em>len</em> bytes of data starting at 
+	 * <em>buf</em>.
+	 *
+	 * The function returns the amount of bytes actually sent that may
+	 * be less than <em>len</em>.
+	 *
+	 * A handshake must have been performed before using this function.
+	 */
+	virtual size_type send(const void* buf, size_type len) const;
+
+	/** @brief Tries to read <em>len</em> bytes of data into the buffer
+	 * starting at <em>buf</em>.
+	 *
+	 * The function returns the amount of bytes actually read that may
+	 * be less than <em>len</em>.
+	 *
+	 * A handshake must have been performed before using this function.
+	 */
+	virtual size_type recv(void* buf, size_type len) const;
 
 protected:
-	tcp_encrypted_socket(socket_type cobj, gnutls_session_t sess);
+	/** Ownership of session is given to tcp_encrypted_socket_base.
+	 */
+	tcp_encrypted_socket_base(socket_type cobj, gnutls_session_t sess);
+
+	template<
+		typename buffer_type,
+		ssize_t(*iofunc)(gnutls_session_t, buffer_type, size_t)
+	> size_type io_impl(buffer_type buf, size_type len) const;
+
+	enum handshake_state {
+		DEFAULT,
+		HANDSHAKING,
+		HANDSHAKED
+	};
 
 	gnutls_session_t session;
-	bool handshaking;
+	handshake_state state;
 };
 
+class tcp_encrypted_socket_client: public tcp_encrypted_socket_base
+{
+public:
+	tcp_encrypted_socket_client(tcp_client_socket& sock);
+	virtual ~tcp_encrypted_socket_client();
+
+private:
+	//static gnutls_session_t create_session(int fd);
+
+	typedef gnutls_anon_client_credentials_t credentials_type;
+	credentials_type anoncred;
+};
+
+class tcp_encrypted_socket_server: public tcp_encrypted_socket_base
+{
+public:
+	tcp_encrypted_socket_server(tcp_client_socket& sock);
+	virtual ~tcp_encrypted_socket_server();
+
+private:
+	typedef gnutls_anon_server_credentials_t credentials_type;
+	credentials_type anoncred;
+
+	gnutls_dh_params_t dh_params;
+};
+
+#if 0
 /** Encrypted TCP connection socket.
  */
 template<typename Info>
-class basic_tcp_encrypted_socket: public tcp_encrypted_socket
+class basic_tcp_encrypted_socket: public tcp_encrypted_socket_base
 {
 public:
-	static const unsigned int DH_BITS = 1024;
-
 	basic_tcp_encrypted_socket(tcp_client_socket& sock);
 	virtual ~basic_tcp_encrypted_socket();
 
-	virtual size_type send(const void* buf, size_type len) const;
-	virtual size_type recv(void* buf, size_type len) const;
-
 private:
-	gnutls_session_t create_session(int fd);
+	static std::auto_ptr<Info> create_session(int fd);
 
-	typename Info::credentials_type anoncred;
+	std::auto_ptr<Info> info;
+//	Info my_info; //std::auto_ptr<Info> info;
+	//typename Info::credentials_type anoncred;
 
 	template<
 		typename buffer_type,
@@ -198,6 +240,7 @@ private:
 
 typedef basic_tcp_encrypted_socket<server_info> tcp_encrypted_socket_server;
 typedef basic_tcp_encrypted_socket<client_info> tcp_encrypted_socket_client;
+#endif
 
 /** TCP server socket
 */
@@ -280,72 +323,33 @@ public:
 	               address& from) const;
 };
 
-template<typename Info>
-gnutls_session_t basic_tcp_encrypted_socket<Info>::create_session(int fd)
-{
-	gnutls_session_t session;
-	const int kx_prio[] = { GNUTLS_KX_ANON_DH, 0 };
-
-	Info::init(&session, &anoncred);
-	gnutls_set_default_priority(session);
-	gnutls_kx_set_priority(session, kx_prio);
-	Info::init_primes(session, anoncred);
-	gnutls_credentials_set(session, GNUTLS_CRD_ANON, anoncred);
-
-	gnutls_transport_set_ptr(
-		session,
-		reinterpret_cast<gnutls_transport_ptr_t>(fd)
-	);
-
-	gnutls_transport_set_lowat(session, 0);
-
-	return session;
-}
-
-template<typename Info>
-basic_tcp_encrypted_socket<Info>::
-	basic_tcp_encrypted_socket(tcp_client_socket& sock):
-	tcp_encrypted_socket(sock.cobj(), create_session(sock.cobj()) )
-{
-	sock.invalidate();
-}
-
-template<typename Info>
-basic_tcp_encrypted_socket<Info>::~basic_tcp_encrypted_socket()
-{
-	// TODO: Memory management of GNUTLS credentials
-	// (And don't forget the dh_params in socket.cpp)
-	gnutls_bye(session, GNUTLS_SHUT_WR);
-	gnutls_deinit(session);
-}
-
-template<typename Info>
-typename basic_tcp_encrypted_socket<Info>::size_type
-basic_tcp_encrypted_socket<Info>::send(const void* buf, size_type len) const
-{
-	return io_impl<const void*, gnutls_record_send>(buf, len);
-}
-
-template<typename Info>
-typename basic_tcp_encrypted_socket<Info>::size_type
-basic_tcp_encrypted_socket<Info>::recv(void* buf, size_type len) const
-{
-	return io_impl<void*, gnutls_record_recv>(buf, len);
-}
-
-template<typename Info>
 template<
 	typename buffer_type,
 	ssize_t(*func)(gnutls_session_t, buffer_type, size_t)
-> typename basic_tcp_encrypted_socket<Info>::size_type
-basic_tcp_encrypted_socket<Info>::io_impl(buffer_type buf, size_type len) const
+> typename tcp_encrypted_socket_base::size_type
+tcp_encrypted_socket_base::io_impl(buffer_type buf, size_type len) const
 {
-	if(handshaking)
-		throw std::logic_error("IO tried while handshaking");
+	if(state == HANDSHAKING)
+	{
+		throw std::logic_error(
+			"net6::tcp_encrypted_socket_base::io_impl:\n"
+			"IO tried while handshaking"
+		);
+	}
+
+	if(state == DEFAULT)
+	{
+		throw std::logic_error(
+			"net6::tcp_encrypted_socket_base::io_impl:\n"
+			"Handshake not yet performed"
+		);
+	}
 
 	ssize_t ret = func(session, buf, len);
 	if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
+	{
 		func(session, NULL, 0);
+	}
 
 	if(ret < 0)
 		throw net6::error(net6::error::GNUTLS, ret);

@@ -122,57 +122,74 @@ net6::socket::size_type net6::tcp_client_socket::recv(void* buf,
 	return result;
 }
 
-void net6::server_info::init(gnutls_session_t* session,
-                             credentials_type* anoncred)
+namespace
 {
-	gnutls_init(session, GNUTLS_SERVER);
-	gnutls_anon_allocate_server_credentials(anoncred);
-}
+	const unsigned int DH_BITS = 1024;
 
-void net6::server_info::init_primes(gnutls_session_t session,
-                                    credentials_type anoncred)
-{
-	// TODO: Generate diffie-hellman parameters somewhere else
-	gnutls_dh_params_t params;
-	gnutls_dh_params_init(&params);
-	gnutls_dh_params_generate2(params,
-		basic_tcp_encrypted_socket<server_info>::DH_BITS);
-	gnutls_anon_set_server_dh_params(anoncred, params);
-}
-
-void net6::client_info::init(gnutls_session_t* session,
-                             credentials_type* anoncred)
-{
-	gnutls_init(session, GNUTLS_CLIENT);
-	gnutls_anon_allocate_client_credentials(anoncred);
-}
-
-void net6::client_info::init_primes(gnutls_session_t session,
-                                    credentials_type anoncred)
-{
-	// Set the minimum acceptable prime size
-	gnutls_dh_set_prime_bits(session,
-		basic_tcp_encrypted_socket<client_info>::DH_BITS);
-}
-
-bool net6::tcp_encrypted_socket::handshake()
-{
-	if(!handshaking)
+	gnutls_session_t create_session(gnutls_connection_end_t end)
 	{
+		gnutls_session_t session;
+		gnutls_init(&session, end);
+		return session;
+	}
+}
+
+net6::tcp_encrypted_socket_base::
+	tcp_encrypted_socket_base(socket_type cobj,
+                                  gnutls_session_t sess):
+	tcp_client_socket(cobj), session(sess), state(DEFAULT)
+{
+	const int kx_prio[] = { GNUTLS_KX_ANON_DH, 0 };
+
+	gnutls_set_default_priority(session);
+	gnutls_kx_set_priority(session, kx_prio);
+
+	gnutls_transport_set_ptr(
+		session,
+		reinterpret_cast<gnutls_transport_ptr_t>(cobj)
+	);
+
+	gnutls_transport_set_lowat(session, 0);
+}
+
+net6::tcp_encrypted_socket_base::~tcp_encrypted_socket_base()
+{
+	gnutls_bye(session, GNUTLS_SHUT_WR);
+	gnutls_deinit(session);
+}
+
+bool net6::tcp_encrypted_socket_base::handshake()
+{
+	if(state == HANDSHAKED)
+	{
+		throw std::logic_error(
+			"net6::tcp_encrypted_socket_base::handshake:\n"
+			"Handshake has already been performed"
+		);
+	}
+
+	if(state == DEFAULT)
+	{
+		// Make socket nonblocking to allow to call handshake
+		// multiple times
 		int flags = fcntl(cobj(), F_GETFL);
 		if(fcntl(cobj(), F_SETFL, flags | O_NONBLOCK) == -1)
 			throw net6::error(net6::error::SYSTEM);
-		handshaking = true;
+
+		state = HANDSHAKING;
 	}
 
 	int ret = gnutls_handshake(session);
 
 	if(ret == 0)
 	{
-		handshaking = false;
+		// Remove nonblocking state for further handling, so the
+		// socket behaves like a nonencrypted tcp client socket.
 		int flags = fcntl(cobj(), F_GETFL);
 		if(fcntl(cobj(), F_SETFL, flags & ~O_NONBLOCK) == -1)
 			throw net6::error(net6::error::SYSTEM);
+
+		state = HANDSHAKED;
 		return true;
 	}
 
@@ -182,10 +199,59 @@ bool net6::tcp_encrypted_socket::handshake()
 	throw net6::error(net6::error::GNUTLS, ret);
 }
 
-net6::tcp_encrypted_socket::tcp_encrypted_socket(socket_type cobj,
-                                                 gnutls_session_t sess) :
-	tcp_client_socket(cobj), session(sess), handshaking(false)
+bool net6::tcp_encrypted_socket_base::get_dir() const
 {
+	return gnutls_record_get_direction(session) == 1;
+}
+
+net6::tcp_encrypted_socket_base::size_type
+net6::tcp_encrypted_socket_base::send(const void* buf, size_type len) const
+{
+	return io_impl<const void*, gnutls_record_send>(buf, len);
+}
+
+net6::tcp_encrypted_socket_base::size_type
+net6::tcp_encrypted_socket_base::recv(void* buf, size_type len) const
+{
+	return io_impl<void*, gnutls_record_recv>(buf, len);
+}
+
+net6::tcp_encrypted_socket_client::
+	tcp_encrypted_socket_client(tcp_client_socket& sock):
+	tcp_encrypted_socket_base(sock.cobj(), create_session(GNUTLS_CLIENT) )
+{
+	sock.invalidate();
+
+	gnutls_anon_allocate_client_credentials(&anoncred);
+	gnutls_credentials_set(session, GNUTLS_CRD_ANON, anoncred);
+
+	gnutls_dh_set_prime_bits(session, DH_BITS);
+}
+
+net6::tcp_encrypted_socket_client::~tcp_encrypted_socket_client()
+{
+	gnutls_anon_free_client_credentials(anoncred);
+}
+
+net6::tcp_encrypted_socket_server::
+	tcp_encrypted_socket_server(tcp_client_socket& sock):
+	tcp_encrypted_socket_base(sock.cobj(), create_session(GNUTLS_SERVER) )
+{
+	sock.invalidate();
+
+	gnutls_anon_allocate_server_credentials(&anoncred);
+	gnutls_credentials_set(session, GNUTLS_CRD_ANON, anoncred);
+
+	// TODO: Generate diffie-hellman parameters somewhere else
+	gnutls_dh_params_init(&dh_params);
+	gnutls_dh_params_generate2(dh_params, DH_BITS);
+	gnutls_anon_set_server_dh_params(anoncred, dh_params);
+}
+
+net6::tcp_encrypted_socket_server::~tcp_encrypted_socket_server()
+{
+	gnutls_dh_params_deinit(dh_params);
+	gnutls_anon_free_server_credentials(anoncred);
 }
 
 net6::tcp_server_socket::tcp_server_socket(const address& bind_addr):
