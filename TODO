@@ -8,7 +8,6 @@ Critical:
 Major:
 
 Normal:
-  * Encryption support (#109) [security]
 
 Minor:
 
@@ -16,10 +15,4 @@ Trivial:
 
 Enhancement:
 
-
-109: Encryption support
------------------------
-net6 should support transport level security through a symmetric block 
-cipher like AES with a key provided by the client to protect the data 
-stream which is currently in plain-text.
 
