@@ -38,17 +38,17 @@ void net6::init_gettext(gettext_package& package)
 
 const char* net6::_(const char* msgid)
 {
+#ifdef ENABLE_NLS
 	if(local_package == NULL)
 	{
 		throw std::logic_error(
-			"FreeIsle::net6::_:\n"
+			"net6::_:\n"
 			"init_gettext() has not yet been called. Most "
-			"certainly this means that you have\n"
+			"This certainly means that you have\n"
 			"not created a net6::main object."
 		);
 	}
 
-#ifdef ENABLE_NLS
 	return local_package->gettext(msgid);
 #else
 	return msgid;
