@@ -118,6 +118,10 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 			std::string::size_type pos = recv_data.length();
 			recv_data += buffer;
 
+			// First store the packet strings in a seperate list to
+			// allow signal handlers to delete the connection object
+			std::list<std::string> packet_list;
+
 			// Packets are seperated by new lines
 			while( (pos = recv_data.find('\n', pos)) !=
 			       std::string::npos)
@@ -126,9 +130,20 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 				packet_string = recv_data.substr(0, pos + 1);
 				recv_data.erase(0, pos + 1);
 				pos = 0;
+				packet_list.push_back(packet_string);
+			}
 
+			// Build the packets now: We do not depend on recv_data
+			// anymore which may be deleted if a signal handler
+			// deletes the connection object (e.g. as a result of a
+			// login_failed packet or something).
+			std::list<std::string>::iterator iter;
+			for(iter = packet_list.begin();
+			    iter != packet_list.end();
+			    ++ iter)
+			{
 				packet pack;
-				pack.set_raw_string(packet_string);
+				pack.set_raw_string(*iter);
 				signal_recv.emit(pack);
 			}
 		}
