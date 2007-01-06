@@ -2,11 +2,14 @@ net6
 ====
 
 Version 1.1.0:
+ * Numeric error code transmission
+ * Compilation fixed for FreeBSD
+ * More dynamic type system
+ * Internationalisation
 
 Version 1.0.1:
  * Using gethostbyname on win32 to make it work on versions < Windows XP
 
 Version 1.0.0:
-
- * Initial release.
+ * Initial release
 
