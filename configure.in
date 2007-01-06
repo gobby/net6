@@ -29,6 +29,7 @@ else
 	addlibs=""
 	AC_MSG_RESULT([no])
 fi
+AC_SUBST(addlibs)
 AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
 
 # Checks for libraries.
