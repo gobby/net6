@@ -48,6 +48,11 @@ net6::main::main()
 
 	// Register basic types
 	packet::register_type(
+		parameter<bool>::TYPE_ID,
+		sigc::ptr_fun(parameter<bool>::from_string)
+	);
+
+	packet::register_type(
 		parameter<int>::TYPE_ID,
 		sigc::ptr_fun(parameter<int>::from_string)
 	);

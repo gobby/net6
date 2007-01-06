@@ -173,6 +173,34 @@ public:
 	}
 };
 
+/** Boolean parameter.
+ */
+template<>
+class parameter<bool> : public basic_parameter {
+public:
+	parameter(bool value)
+	 : basic_parameter(TYPE_ID, value) { }
+
+	virtual basic_parameter* clone() const {
+		return new parameter<bool>(as<bool>() );
+	}
+
+	virtual std::string to_string() const {
+		return as<bool>() ? "1" : "0";
+	}
+
+	static basic_parameter* from_string(const std::string& str) {
+		if(str == "1") return new parameter<bool>(true);
+		if(str == "0") return new parameter<bool>(false);
+
+		throw basic_parameter::bad_format(
+			"Boolean value is neither 1 nor 0"
+		);
+	}
+
+	static const identification_type TYPE_ID = 'b';
+};
+
 /** Integer parameter.
  */
 template<>
@@ -235,15 +263,6 @@ class parameter<unsigned long> : public parameter<unsigned int> {
 public:
 	parameter(unsigned long value)
 	 : parameter<unsigned int>(static_cast<unsigned int>(value) ) { }
-};
-
-/** Boolean parameter.
- */
-template<>
-class parameter<bool> : public parameter<int> {
-public:
-	parameter(bool value)
-	 : parameter<int>(static_cast<int>( (value) ? 1 : 0) ) { }
 };
 
 /** String parameter.
