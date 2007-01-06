@@ -8,7 +8,7 @@ lib_LTLIBRARIES = libnet6.la
 # interface :  changes : compatibility
 libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1.3
 
-libnet6_la_LIBADD = $(libnet6_LIBS)
+libnet6_la_LIBADD = $(libnet6_LIBS) $(LIBGNUTLS_LIBS)
 
 if WIN32
 libnet6_la_LIBADD += -lws2_32 -lintl
