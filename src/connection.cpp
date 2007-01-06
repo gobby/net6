@@ -165,6 +165,14 @@ void net6::connection_base::on_sock_event(io_condition io)
 	}
 	catch(net6::error& e)
 	{
+		// Asynchronous send/recv on WIN32 requires that one
+		// reads/writes from/to the socket until WSAEWOULDBLOCK
+		// occurs. We catch this case here to allow
+		// asynchronous selection on WIN32.
+#ifdef WIN32
+		if(e.get_code() == error::WOULD_BLOCK)
+			return;
+#endif
 		if(e.get_code() == error::CONNECTION_RESET ||
 		   e.get_code() == error::BROKEN_PIPE ||
 		   e.get_code() == error::PULL_ERROR ||
@@ -345,22 +353,32 @@ void net6::connection_base::do_handshake()
 	{
 		// Done. Normal select
 		sendqueue.unblock();
-		net6::io_condition flags = net6::IO_INCOMING | net6::IO_ERROR;
-		if(sendqueue.get_size() > 0) flags |= net6::IO_OUTGOING;
+		io_condition flags = IO_INCOMING | IO_ERROR;
+		if(sendqueue.get_size() > 0) flags |= IO_OUTGOING;
 
 		state = ENCRYPTED;
 		set_select(flags);
 		signal_encrypted.emit();
+
+		// This is required to call recv as a re-enabling function
+		// for asynchronous selection. Note that we cannot just
+		// call encrypted_sock->recv here and expect WSAEWOULDBLOCK
+		// since real data might be in the buffer that a call could
+		// read and we should process.
+
+		// TODO: We should not do this when the
+		// socket is in blocking mode!
+		do_io(IO_INCOMING);
 	}
 	else
 	{
-		net6::io_condition flags = net6::IO_ERROR;
+		io_condition flags = IO_ERROR;
 
 		// Select depending on current TLS direction
 		if(encrypted_sock->get_dir() )
-			set_select(flags | net6::IO_OUTGOING);
+			set_select(flags | IO_OUTGOING);
 		else
-			set_select(flags | net6::IO_INCOMING);
+			set_select(flags | IO_INCOMING);
 	}
 }
 

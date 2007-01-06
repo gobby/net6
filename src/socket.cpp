@@ -19,8 +19,18 @@
 #include "error.hpp"
 #include "socket.hpp"
 
+#ifdef WIN32
+#define WIN32_CAST_FIX(a) (static_cast<char*>(a) )
+#define WIN32_CCAST_FIX(a) (static_cast<const char*>(a) )
+#else
+#define WIN32_CAST_FIX(a) (a)
+#define WIN32_CCAST_FIX(a) (a)
+#endif
+
 namespace
 {
+	const unsigned int DH_BITS = 1024;
+
 	int address_to_protocol(int af)
 	{
 		switch(af)
@@ -33,19 +43,47 @@ namespace
 			);
 		}
 	}
-}
+
+	net6::gnutls_session_t create_session(net6::gnutls_connection_end_t end)
+	{
+		net6::gnutls_session_t session;
+		gnutls_init(&session, end);
+		return session;
+	}
 
 #ifdef WIN32
-#define WIN32_CAST_FIX(a) (static_cast<char*>(a) )
-#define WIN32_CCAST_FIX(a) (static_cast<const char*>(a) )
-#else
-#define WIN32_CAST_FIX(a) (a)
-#define WIN32_CCAST_FIX(a) (a)
+	// Required to turn WSA error codes into errno.
+	template<
+		typename buffer_type,
+		typename cast_type,
+		ssize_t(*io_func)(SOCKET, cast_type, size_t, int)
+	>
+	ssize_t net6_win32_io_func(gnutls_transport_ptr_t ptr,
+	                           buffer_type data,
+	                           size_t size)
+	{
+		ssize_t ret = io_func(
+			reinterpret_cast<SOCKET>(ptr),
+			static_cast<cast_type>(data),
+			size,
+			0
+		);
+
+		int error = WSAGetLastError();
+		if(error == WSAEWOULDBLOCK) errno = EAGAIN;
+		if(error == WSAEINTR) errno = EINTR;
+
+		// Ensures that a second call to WSAGetLastError
+		// has the same result
+		WSASetLastError(error);
+		return ret;
+	}
 #endif
 
 #ifndef WIN32
-namespace { const int INVALID_SOCKET = -1; }
+	const int INVALID_SOCKET = -1;
 #endif
+}
 
 net6::socket::socket(int domain, int type, int protocol):
 	sock(::socket(domain, type, protocol) )
@@ -122,18 +160,6 @@ net6::socket::size_type net6::tcp_client_socket::recv(void* buf,
 	return result;
 }
 
-namespace
-{
-	const unsigned int DH_BITS = 1024;
-
-	net6::gnutls_session_t create_session(net6::gnutls_connection_end_t end)
-	{
-		net6::gnutls_session_t session;
-		gnutls_init(&session, end);
-		return session;
-	}
-}
-
 net6::tcp_encrypted_socket_base::
 	tcp_encrypted_socket_base(socket_type cobj,
                                   gnutls_session_t sess):
@@ -148,6 +174,18 @@ net6::tcp_encrypted_socket_base::
 		session,
 		reinterpret_cast<gnutls_transport_ptr_t>(cobj)
 	);
+
+#ifdef WIN32
+	gnutls_transport_set_pull_func(
+		session,
+		net6_win32_io_func<void*, char*, ::recv>
+	);
+
+	gnutls_transport_set_push_func(
+		session.
+		net6_win32_io_func<const void*, const char*, ::send>
+	);
+#endif
 
 	gnutls_transport_set_lowat(session, 0);
 }
