@@ -409,7 +409,13 @@ void basic_client<selector_type>::net_client_part(const packet& pack)
 {
 	unsigned int id = pack.get_param(0).basic_parameter::as<int>();
 	user* rem_user = basic_object<selector_type>::user_find(id);
-	if(rem_user == NULL) return;
+
+	if(rem_user == NULL)
+	{
+		throw basic_parameter::bad_value(
+			"Got client_part for nonexistant user"
+		);
+	}
 
 	on_part(*rem_user, pack);
 	basic_object<selector_type>::user_remove(rem_user);

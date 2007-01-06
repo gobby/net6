@@ -378,14 +378,17 @@ void basic_server<selector_type>::remove_client(const user* user)
 		selector.remove(user_socket, socket::OUTGOING);
 
 	// Build packet for other clients
-	packet pack("net6_client_part");
-	pack << user->get_id();
+	if(user->is_logged_in() )
+	{
+		packet pack("net6_client_part");
+		pack << user->get_id();
 
-	// Remove user to prevent server from sending the packet to the user
-	// we are currently removing
-	basic_object<selector_type>::user_remove(user);
+		// Remove user to prevent server from sending the packet to the
+		// user we are currently removing
+		basic_object<selector_type>::user_remove(user);
 
-	send(pack);
+		send(pack);
+	}
 }
 
 template<typename selector_type>
