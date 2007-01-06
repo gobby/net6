@@ -50,7 +50,7 @@ public:
 	protected:
 	};
 
-	typedef sigc::signal<void, peer&> signal_join_type;
+	typedef sigc::signal<void, peer&, const packet&> signal_join_type;
 	typedef sigc::signal<void, peer&> signal_part_type;
 	typedef sigc::signal<void, const packet&> signal_data_type;
 	typedef sigc::signal<void> signal_close_type;

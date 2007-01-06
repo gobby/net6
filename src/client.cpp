@@ -194,7 +194,7 @@ void net6::client::on_client_join(const packet& pack)
 
 	// The first client who joins is the client representing this host.
 	if(!self) self = new_client;
-	signal_join.emit(*new_client);
+	signal_join.emit(*new_client, pack);
 }
 
 void net6::client::on_client_part(const packet& pack)

@@ -17,7 +17,7 @@ void on_server_join(net6::server::peer& peer, net6::server& server)
 	std::cout << peer.get_address().get_name() << " connected" << std::endl;
 }
 
-void on_server_login(net6::server::peer& peer, net6::server& server)
+void on_server_login(net6::server::peer& peer, const net6::packet& pack, net6::server& server)
 {
 	std::cout << peer.get_address().get_name() << " logged in as " << peer.get_name() << std::endl;
 }
@@ -48,7 +48,7 @@ bool on_server_auth(net6::server::peer& peer, const net6::packet& pack, std::str
 		return true;
 }
 
-void on_client_join(net6::client::peer& peer, net6::client& client)
+void on_client_join(net6::client::peer& peer, const net6::packet& pack, net6::client& client)
 {
 	std::cout << peer.get_name() << " joined" << std::endl;
 }

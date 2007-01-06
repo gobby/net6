@@ -122,10 +122,11 @@ public:
 
 	typedef sigc::signal<void, peer&> signal_join_type;
 	typedef sigc::signal<void, peer&> signal_part_type;
-	typedef sigc::signal<void, peer&> signal_login_type;
+	typedef sigc::signal<void, peer&, const packet&> signal_login_type;
 	typedef sigc::signal<bool, peer&, const packet&,
 		std::string&>::accumulated<auth_accumulator>
 			signal_login_auth_type;
+	typedef sigc::signal<void, peer&, packet&> signal_login_extend_type;
 	typedef sigc::signal<void, const packet&, peer&> signal_data_type;
 
 	/** Creates a new server object.
@@ -202,6 +203,11 @@ public:
 	 */
 	signal_login_auth_type login_auth_event() const;
 
+	/** Signal for extending the login packet sent to other clients by
+	 * extra parameters.
+	 */
+	signal_login_extend_type login_extend_event() const;
+
 	/** Signal which is emitted every time we received a packet from
 	 * one of the connected and logged in clients
 	 */
@@ -226,6 +232,7 @@ protected:
 	signal_part_type signal_part;
 	signal_login_type signal_login;
 	signal_login_auth_type signal_login_auth;
+	signal_login_extend_type signal_login_extend;
 	signal_data_type signal_data;
 };
 	

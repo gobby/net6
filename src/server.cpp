@@ -200,6 +200,11 @@ net6::server::signal_login_auth_type net6::server::login_auth_event() const
 	return signal_login_auth;
 }
 
+net6::server::signal_login_extend_type net6::server::login_extend_event() const
+{
+	return signal_login_extend;
+}
+
 net6::server::signal_data_type net6::server::data_event() const
 {
 	return signal_data;
@@ -296,7 +301,8 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 	
 			from.login(name);
 			packet self_pack("net6_client_join");
-			self_pack << from.get_id() << name; //static_cast<int>(from.get_id() ) << name;
+			self_pack << from.get_id() << name;
+			signal_login_extend.emit(from, self_pack);
 			send(self_pack, from);
 
 			std::list<peer*>::iterator it;
@@ -308,12 +314,13 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				packet join_pack("net6_client_join");
 				join_pack << (*it)->get_id()
 				          << (*it)->get_name();
+				signal_login_extend.emit(**it, join_pack);
 
 				send(join_pack, from);
 				send(self_pack, **it);
 			}
 
-			signal_login.emit(from);
+			signal_login.emit(from, pack);
 		}
 	}
 	else

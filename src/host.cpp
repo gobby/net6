@@ -20,7 +20,7 @@
 #include "host.hpp"
 
 net6::host::host(const std::string& username, bool ipv6)
- : server(ipv6), self(new host::peer(++ id_counter) )
+ : server(ipv6), self(new peer(++ id_counter) )
 {
 	peers.push_back(self);
 }
