@@ -35,12 +35,13 @@ namespace net6
 class connection_base: public sigc::trackable, private non_copyable
 {
 public:
-	enum encrypted_state {
+	enum conn_state {
 		UNENCRYPTED,
 		ENCRYPTION_INITIATED_CLIENT,
 		ENCRYPTION_INITIATED_SERVER,
 		ENCRYPTION_HANDSHAKING,
-		ENCRYPTED
+		ENCRYPTED,
+		CLOSED
 	};
 
 	typedef sigc::signal<void, const packet&> signal_recv_type;
@@ -48,6 +49,12 @@ public:
 	typedef sigc::signal<void> signal_close_type;
 	typedef sigc::signal<void> signal_encrypted_type;
 
+	/** @brief Creates a new connection that is initially in closed
+	 * state.
+	 */
+	connection_base();
+
+#if 0
 	/** @brief Creates a new connection object and establishes a
 	 * connection to <em>addr</em>.
 	 */
@@ -60,8 +67,18 @@ public:
 	 */
 	connection_base(std::auto_ptr<tcp_client_socket> sock,
 	                const address& addr);
+#endif
 
 	virtual ~connection_base();
+
+	/** @brief Connects to the given address if the connection is closed.
+	 */
+	void connect(const address& addr);
+
+	/** @brief Wraps the given socket into this connection.
+	 */
+	void assign(std::auto_ptr<tcp_client_socket> sock,
+	            const address& addr);
 
 	/** Returns the remote internet address.
 	 */
@@ -115,7 +132,7 @@ protected:
 	tcp_encrypted_socket* encrypted_sock;
 	std::auto_ptr<address> remote_addr;
 
-	encrypted_state state;
+	conn_state state;
 
 private:
 	void setup_signal();
@@ -140,6 +157,9 @@ class connection: public connection_base
 public:
 	typedef Selector selector_type;
 
+	connection(selector_type& sel);
+
+#if 0
 	/** @brief Establishes a new connection to the given address that
 	 * uses the given selector.
 	 */
@@ -152,6 +172,7 @@ public:
 	connection(std::auto_ptr<tcp_client_socket> sock,
 	           const address& addr,
 	           selector_type& sel);
+#endif
 
 	virtual ~connection();
 
@@ -163,20 +184,9 @@ protected:
 };
 
 template<typename Selector>
-connection<Selector>::connection(const address& addr,
-                                 selector_type& sel):
-	connection_base(addr), selector(sel)
+connection<Selector>::connection(selector_type& sel):
+	selector(sel)
 {
-	set_select(IO_INCOMING | IO_ERROR);
-}
-
-template<typename Selector>
-connection<Selector>::connection(std::auto_ptr<tcp_client_socket> sock,
-                                 const address& addr,
-                                 selector_type& sel):
-	connection_base(sock, addr), selector(sel)
-{
-	set_select(IO_INCOMING | IO_ERROR);
 }
 
 template<typename Selector>

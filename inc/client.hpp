@@ -457,7 +457,6 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 	// Connect to remote host
 	conn.reset(
 		new connection_type(
-			addr,
 			basic_object<selector_type>::get_selector()
 		)
 	);
@@ -469,6 +468,8 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 		sigc::mem_fun(*this, &basic_client::on_close_event) );
 	conn->encrypted_event().connect(
 		sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
+
+	conn->connect(addr);
 }
 
 template<typename selector_type>

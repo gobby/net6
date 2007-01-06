@@ -377,9 +377,26 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 {
 	// Get selector from base class
 	selector_type& selector = basic_object<selector_type>::get_selector();
+	connection_type* conn = new connection_type(selector);
+	std::auto_ptr<user> client(new user(++ id_counter, conn) );
+
+	conn->recv_event().connect(
+		sigc::bind(
+			sigc::mem_fun(*this, &basic_server::on_recv_event),
+			sigc::ref(*client)
+		)
+	);
+
+	conn->close_event().connect(
+		sigc::bind(
+			sigc::mem_fun(*this, &basic_server::on_close_event),
+			sigc::ref(*client)
+		)
+	);
+
+	// TODO: encryption_event
 
 	// Accept new client connection
-	user* client;
 	if(use_ipv6)
 	{
 		ipv6_address addr;
@@ -388,10 +405,7 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 			serv_sock->accept(addr)
 		);
 
-		client = new user(
-			++ id_counter,
-			new connection_type(new_sock, addr, selector)
-		);
+		conn->assign(new_sock, addr);
 	}
 	else
 	{
@@ -401,31 +415,13 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 			serv_sock->accept(addr)
 		);
 
-		client = new user(
-			++ id_counter,
-			new connection_type(new_sock, addr, selector)
-		);
+		conn->assign(new_sock, addr);
 	}
 
-	const connection_base& conn = client->get_connection();
-	basic_object<selector_type>::user_add(client);
-
-	conn.recv_event().connect(
-		sigc::bind(
-			sigc::mem_fun(*this, &basic_server::on_recv_event),
-			sigc::ref(*client)
-		)
-	);
-
-	conn.close_event().connect(
-		sigc::bind(
-			sigc::mem_fun(*this, &basic_server::on_close_event),
-			sigc::ref(*client)
-		)
-	);
+	basic_object<selector_type>::user_add(client.get() );
 
 	// Emit connection signal for new client
-	on_connect(*client);
+	on_connect(*client.release() );
 }
 
 template<typename selector_type>

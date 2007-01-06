@@ -21,6 +21,15 @@
 #include "error.hpp"
 #include "connection.hpp"
 
+net6::connection_base::connection_base():
+	remote_sock(NULL),
+	encrypted_sock(NULL),
+	remote_addr(NULL),
+	state(CLOSED)
+{
+}
+
+#if 0
 net6::connection_base::connection_base(const address& addr):
 	remote_sock(new tcp_client_socket(addr) ),
 	encrypted_sock(NULL),
@@ -39,9 +48,49 @@ net6::connection_base::connection_base(std::auto_ptr<tcp_client_socket> sock,
 {
 	init_impl();
 }
+#endif
 
 net6::connection_base::~connection_base()
 {
+}
+
+void net6::connection_base::connect(const address& addr)
+{
+	if(state != CLOSED)
+	{
+		throw std::logic_error(
+			"net6::connection_base::connect:\n"
+			"Connection is not closed"
+		);
+	}
+
+	remote_sock.reset(new tcp_client_socket(addr) );
+	setup_signal();
+
+	remote_addr.reset(addr.clone() );
+	state = UNENCRYPTED;
+
+	set_select(IO_ERROR | IO_INCOMING);
+}
+
+void net6::connection_base::assign(std::auto_ptr<tcp_client_socket> sock,
+                                   const address& addr)
+{
+	if(state != CLOSED)
+	{
+		throw std::logic_error(
+			"net6::connection_base::assign:\n"
+			"Connection is not closed"
+		);
+	}
+
+	remote_sock = sock;
+	setup_signal();
+
+	remote_addr.reset(addr.clone() );
+	state = UNENCRYPTED;
+
+	set_select(IO_ERROR | IO_INCOMING);
 }
 
 const net6::address& net6::connection_base::get_remote_address() const
@@ -51,6 +100,14 @@ const net6::address& net6::connection_base::get_remote_address() const
 
 void net6::connection_base::send(const packet& pack)
 {
+	if(state == CLOSED)
+	{
+		throw std::logic_error(
+			"net6::connection_base::send:\n"
+			"Connection is closed"
+		);
+	}
+
 	pack.enqueue(sendqueue);
 
 	if(sendqueue.get_size() > 0)
@@ -309,9 +366,17 @@ void net6::connection_base::on_send()
 
 void net6::connection_base::on_close()
 {
-	signal_close.emit();
+	state = CLOSED;
 
-	// TODO: Set state to CLOSED?
+	set_select(IO_NONE);
+	sendqueue.clear();
+	recvqueue.clear();
+
+	remote_sock.reset(NULL);
+	remote_addr.reset(NULL);
+	encrypted_sock = NULL;
+
+	signal_close.emit();
 }
 
 void net6::connection_base::net_encryption(const packet& pack)
@@ -375,9 +440,4 @@ void net6::connection_base::setup_signal()
 {
 	remote_sock->io_event().connect(
 		sigc::mem_fun(*this, &connection_base::on_sock_event) );
-}
-
-void net6::connection_base::init_impl()
-{
-	setup_signal();
 }

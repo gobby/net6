@@ -36,6 +36,10 @@ public:
 	queue();
 	~queue();
 
+	/** @brief Unblocks and clears the whole queue.
+	 */
+	void clear();
+
 	/** Returns the size of the queue.
 	 */
 	size_type get_size() const;

@@ -32,6 +32,14 @@ net6::queue::~queue()
 	std::free(data);
 }
 
+void net6::queue::clear()
+{
+	block_p = INVALID_POS;
+	size = 0; alloc = 1024;
+
+	data = static_cast<char*>(std::realloc(data, alloc) );
+}
+
 net6::queue::size_type net6::queue::get_size() const
 {
 	return block_p == INVALID_POS ? size : block_p;
