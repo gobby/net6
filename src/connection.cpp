@@ -56,7 +56,7 @@ void net6::connection::queue::append(const char* new_data, size_type len)
 	if(size + len > alloc)
 	{
 		alloc = size + len;
-		data = static_cast<char*>(std::realloc(data, alloc) );
+		data = static_cast<char*>(std::realloc(data, alloc *= 2) );
 	}
 
 	std::memcpy(data + size, new_data, len);
@@ -65,6 +65,8 @@ void net6::connection::queue::append(const char* new_data, size_type len)
 
 void net6::connection::queue::remove(size_type len)
 {
+	// TODO: Free a part of the allocated memory when only a half is used,
+	// or so.
 	assert(len <= size);
 	std::memmove(data, data + len, size - len);
 	size -= len;
