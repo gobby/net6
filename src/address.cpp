@@ -25,6 +25,11 @@
 #include "error.hpp"
 #include "address.hpp"
 
+// gai_strerror is not exported with the actual winsock library from mingw
+#ifdef WIN32
+# define gai_strerror(a) "Temporary failure in name resolution"
+#endif
+
 namespace
 {
 	addrinfo* resolve_generic(const char* hostname, int family, int flags)
