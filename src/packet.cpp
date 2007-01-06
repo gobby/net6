@@ -68,7 +68,7 @@ net6::packet& net6::packet::operator=(const packet& other)
 
 	// Take new parameters
 	params.resize(other.params.size() );
-	for(std::vector<basic_parameter>::size_type i = 0;
+	for(std::vector<basic_parameter*>::size_type i = 0;
 	    i < params.size();
 	    ++i)
 		params[i] = other.params[i]->clone();
