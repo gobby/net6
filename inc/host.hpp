@@ -30,8 +30,8 @@ namespace net6
 
 template<typename selector_type = net6::selector>
 class basic_host
- : public basic_local<selector_type>,
-   public basic_server<selector_type>
+ : virtual public basic_local<selector_type>,
+   virtual public basic_server<selector_type>
 {
 public:
 	/** Creates a new basic_host object.

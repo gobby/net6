@@ -37,7 +37,7 @@ namespace net6
 /** Client in a Client/Server based TCP network.
  */
 template<typename selector_type>
-class basic_client : public basic_local<selector_type>
+class basic_client : virtual public basic_local<selector_type>
 {
 public:
 	typedef sigc::signal<void, const user&, const packet&>
