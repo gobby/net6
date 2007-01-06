@@ -16,6 +16,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <gnutls/gnutls.h>
 #include "config.hpp"
 #include "common.hpp"
 #ifdef WIN32
@@ -36,24 +37,20 @@ net6::main::main()
 		return;
 	}
 
+#ifdef ENABLE_NLS
+	package = new gettext_package(PACKAGE, LOCALEDIR);
+	init_gettext(*package);
+#endif
+
 #ifdef WIN32
 	WSAData data;
 	if(WSAStartup(MAKEWORD(2, 2), &data) != 0)
 		throw error(error::SYSTEM, WSAGetLastError() );
 #endif
 
-	refcount ++;
+	gnutls_global_init();
 
-#ifdef ENABLE_NLS
-	package = new gettext_package(PACKAGE, LOCALEDIR);
-	init_gettext(*package);
-#endif
-#if 0
-#ifdef ENABLE_NLS
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	bind_textdomain_codeset(PACKAGE, "UTF-8");
-#endif
-#endif
+	refcount ++;
 }
 
 net6::main::~main()
@@ -62,6 +59,7 @@ net6::main::~main()
 #ifdef WIN32
 	if(refcount == 0)
 	{
+		gnutls_global_deinit();
 #ifdef ENABLE_NLS
 		delete package;
 #endif

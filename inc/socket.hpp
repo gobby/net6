@@ -19,9 +19,12 @@
 #ifndef _NET6_SOCKET_HPP_
 #define _NET6_SOCKET_HPP_
 
+#include <fcntl.h>
 #include <memory>
 #include <sigc++/signal.h>
+#include <gnutls/gnutls.h>
 
+#include "error.hpp"
 #include "enum_ops.hpp"
 #include "non_copyable.hpp"
 #include "address.hpp"
@@ -32,6 +35,12 @@
 
 namespace net6
 {
+
+// Newer versions of GNUTLS use types suffixed with _t.
+typedef gnutls_session gnutls_session_t;
+typedef gnutls_anon_client_credentials gnutls_anon_client_credentials_t;
+typedef gnutls_anon_server_credentials gnutls_anon_server_credentials_t;
+typedef gnutls_transport_ptr gnutls_transport_ptr_t;
 
 enum io_condition
 {
@@ -69,6 +78,12 @@ public:
 	 */
 	socket_type cobj() { return sock; }
 	const socket_type cobj() const { return sock; }
+
+	/** Invalidates the current socket object, which causes all calls
+	 * to fail.
+	 */
+	void invalidate();
+
 protected:
 	socket(int domain, int type, int protocol);
 	socket(socket_type c_object);
@@ -101,24 +116,71 @@ public:
 	 * the C object.
 	 */
 	tcp_client_socket(socket_type c_object);
+	virtual ~tcp_client_socket();
 
 	/** Sends an amount of data through the socket. Note that the call
 	 * may block if you did not select on a socket::OUT event.
 	 * @return The amount of data sent.
 	 */
-	size_type send(const void* buf,
-	               size_type len) const;
+	virtual size_type send(const void* buf, size_type len) const;
 
 	/** Receives an amount of data from the socket. Note that the call
 	 * may block if no data is available.
 	 * @return The amount of data read.
 	 */
-	size_type recv(void* buf,
-	               size_type len) const;
+	virtual size_type recv(void* buf, size_type len) const;
 };
 
-/** TCP server socket
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+class server_info
+{
+public:
+	typedef gnutls_anon_server_credentials_t credentials_type;
+
+	static void init(gnutls_session_t* session);
+};
+
+class client_info
+{
+public:
+	typedef gnutls_anon_client_credentials_t credentials_type;
+
+	static void init(gnutls_session_t* session);
+};
+#endif
+
+/** Encrypted TCP connection socket.
  */
+template<typename Info>
+class tcp_encrypted_socket: public tcp_client_socket
+{
+public:
+	static const unsigned int DH_BITS = 1024;
+
+	tcp_encrypted_socket(tcp_client_socket& sock);
+	virtual ~tcp_encrypted_socket();
+
+	virtual size_type send(const void* buf, size_type len) const;
+	virtual size_type recv(void* buf, size_type len) const;
+
+	bool handshake();
+
+private:
+	gnutls_session_t session;
+	typename Info::credentials_type anoncred;
+	bool handshaking;
+
+	template<
+		typename buffer_type,
+		ssize_t(*iofunc)(gnutls_session_t, buffer_type, size_t)
+	> size_type io_impl(buffer_type buf, size_type len) const;
+};
+
+typedef tcp_encrypted_socket<server_info> tcp_encrypted_socket_server;
+typedef tcp_encrypted_socket<client_info> tcp_encrypted_socket_client;
+
+/** TCP server socket
+*/
 
 class tcp_server_socket: public tcp_socket
 {
@@ -197,6 +259,93 @@ public:
 	               size_type len,
 	               address& from) const;
 };
+
+template<typename Info>
+tcp_encrypted_socket<Info>::tcp_encrypted_socket(tcp_client_socket& sock) :
+	tcp_client_socket(sock.cobj() )
+{
+	const int kx_prio[] = { GNUTLS_KX_ANON_DH, 0 };
+
+	sock.invalidate();
+
+	Info::init(&session);
+	gnutls_set_default_priority(session);
+	gnutls_kx_set_priority(session, kx_prio);
+	gnutls_credentials_set(session, GNUTLS_CRD_ANON, anoncred);
+	gnutls_dh_set_prime_bits(session, DH_BITS);
+
+	gnutls_transport_set_ptr(session, static_cast<gnutls_transport_ptr_t>(
+		cobj() ));
+}
+
+template<typename Info>
+tcp_encrypted_socket<Info>::~tcp_encrypted_socket()
+{
+	gnutls_bye(session, GNUTLS_SHUT_WR);
+	gnutls_deinit(session);
+}
+
+template<typename Info>
+typename tcp_encrypted_socket<Info>::size_type
+tcp_encrypted_socket<Info>::send(const void* buf, size_type len) const
+{
+	return io_impl<const void*, gnutls_record_send>(buf, len);
+}
+
+template<typename Info>
+typename tcp_encrypted_socket<Info>::size_type
+tcp_encrypted_socket<Info>::recv(void* buf, size_type len) const
+{
+	return io_impl<void*, gnutls_record_recv>(buf, len);
+}
+
+template<typename Info>
+bool tcp_encrypted_socket<Info>::handshake()
+{
+	if(!handshaking)
+	{
+		int flags = fcntl(cobj(), F_GETFL);
+		if(fcntl(cobj(), F_SETFL, flags | O_NONBLOCK) == -1)
+			throw net6::error(net6::error::SYSTEM);
+		handshaking = true;
+	}
+
+	int ret = gnutls_handshake(session);
+
+	if(ret == 0)
+	{
+		handshaking = false;
+		int flags = fcntl(cobj(), F_GETFL);
+		if(fcntl(cobj(), F_SETFL, flags & ~O_NONBLOCK) == -1)
+			throw net6::error(net6::error::SYSTEM);
+		return true;
+	}
+
+	if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
+		return false;
+
+	throw net6::error(net6::error::GNUTLS, ret);
+}
+
+template<typename Info>
+template<
+	typename buffer_type,
+	ssize_t(*func)(gnutls_session_t, buffer_type, size_t)
+> typename tcp_encrypted_socket<Info>::size_type
+tcp_encrypted_socket<Info>::io_impl(buffer_type buf, size_type len) const
+{
+	if(handshaking)
+		throw std::logic_error("IO tried while handshaking");
+
+	ssize_t ret = func(session, buf, len);
+	if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
+		func(session, NULL, 0);
+
+	if(ret < 0)
+		throw net6::error(net6::error::GNUTLS, ret);
+
+	return ret;
+}
 
 } // namespace net6
 

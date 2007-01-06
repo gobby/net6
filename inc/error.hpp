@@ -61,7 +61,8 @@ public:
 	enum domain {
 		SYSTEM, // WSAGetLastError or errno
 		GETADDRINFO, // getaddrinfo
-		GETHOSTBYNAME // gethostbyname
+		GETHOSTBYNAME, // gethostbyname
+		GNUTLS // gnutls functions
 	};
 
 	/** Taken from Winsock error code documentation and slightly renamed.

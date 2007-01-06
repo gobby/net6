@@ -61,11 +61,19 @@ net6::socket::socket(socket_type c_object):
 
 net6::socket::~socket()
 {
+	if(sock != INVALID_SOCKET)
+	{
 #ifdef WIN32
-	closesocket(cobj() );
+		closesocket(cobj() );
 #else
-	close(cobj() );
+		close(cobj() );
 #endif
+	}
+}
+
+void net6::socket::invalidate()
+{
+	sock = INVALID_SOCKET;
 }
 
 net6::tcp_socket::tcp_socket(const address& addr):
@@ -108,6 +116,16 @@ net6::socket::size_type net6::tcp_client_socket::recv(void* buf,
 		throw error(net6::error::SYSTEM);
 
 	return result;
+}
+
+void net6::server_info::init(gnutls_session_t* session)
+{
+	gnutls_init(session, GNUTLS_SERVER);
+}
+
+void net6::client_info::init(gnutls_session_t* session)
+{
+	gnutls_init(session, GNUTLS_CLIENT);
 }
 
 net6::tcp_server_socket::tcp_server_socket(const address& bind_addr):
