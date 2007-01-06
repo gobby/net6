@@ -1,3 +1,6 @@
 address: standardkonstruktoren (bisherig: create)
 non_copyable base class?
-packet-unsigned-int-ctor
+packet-unsigned-int template specialization
+packet-priority field
+net6::host
+custom login packets
