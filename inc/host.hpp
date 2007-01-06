@@ -29,7 +29,7 @@ namespace net6
 /** High-level TCP host object that is used as a server with a local peer.
  */
 	
-class host : public server
+class host : virtual public server
 {
 public:
 	/** Participiant in a client/server network. Necessary changes
