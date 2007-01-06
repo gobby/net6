@@ -20,6 +20,7 @@
 #define _NET6_MAIN_HPP_
 
 #include "export.hpp"
+#include "non_copyable.hpp"
 
 namespace net6
 {
@@ -28,7 +29,7 @@ namespace net6
  * to (de)initialize the library
  */
 	
-class NET6_EXPORT main
+class NET6_EXPORT main : private non_copyable
 {
 public:
 	main();

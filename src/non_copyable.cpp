@@ -16,39 +16,25 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef _NET6_PEER_HPP_
-#define _NET6_PEER_HPP_
-
-#include <string>
-#include "export.hpp"
+#include <iostream>
 #include "non_copyable.hpp"
 
-namespace net6
+net6::non_copyable::non_copyable()
 {
-
-/** Participiant in a Client/Server network
- */
-	
-class NET6_EXPORT peer : private non_copyable
-{
-public:
-	peer(unsigned int unique_id, const std::string& nick);
-	~peer();
-
-	/** Returns the unique ID for this peer
-	 */
-	unsigned int get_id() const;
-
-	/** Returns the user name of this peer
-	 */
-	const std::string& get_name() const;
-
-protected:
-	unsigned int id;
-	std::string name;
-};
-	
 }
 
-#endif
+net6::non_copyable::~non_copyable()
+{
+}
+
+net6::non_copyable::non_copyable(const non_copyable& other)
+{
+	std::cerr << "Warning: Copying non_copyable" << std::endl;
+}
+
+net6::non_copyable& net6::non_copyable::operator=(const non_copyable& other)
+{
+	std::cerr << "Warning: Assigning non_copyable" << std::endl;
+	return *this;
+}
 

@@ -9,6 +9,7 @@ libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1
 INCLUDES = $(libnet6_CFLAGS) -Iinc/
 
 pkginclude_HEADERS = \
+	inc/non_copyable.hpp \
 	inc/address.hpp \
 	inc/client.hpp \
 	inc/connection.hpp \
@@ -22,6 +23,7 @@ pkginclude_HEADERS = \
 	inc/socket.hpp
 
 libnet6_la_SOURCES = \
+	src/non_copyable.cpp \
 	src/address.cpp \
 	src/client.cpp \
 	src/connection.cpp \

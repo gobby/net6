@@ -23,6 +23,7 @@
 #include <sigc++/signal.h>
 
 #include "export.hpp"
+#include "non_copyable.hpp"
 #include "socket.hpp"
 #include "packet.hpp"
 
@@ -32,7 +33,7 @@ namespace net6
 /** Connection to another host.
  */
 
-class NET6_EXPORT connection : public sigc::trackable
+class NET6_EXPORT connection : public sigc::trackable, private non_copyable
 {
 public:
 	typedef sigc::signal<void, const packet&> signal_recv_type;

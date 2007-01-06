@@ -20,6 +20,7 @@
 #define _NET6_SELECT_HPP_
 
 #include "export.hpp"
+#include "non_copyable.hpp"
 #include "socket.hpp"
 
 namespace net6
@@ -31,7 +32,7 @@ namespace net6
  * socket.
  */
 	
-class NET6_EXPORT selector
+class NET6_EXPORT selector : private non_copyable
 {
 public:
 	selector();

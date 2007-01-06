@@ -22,6 +22,7 @@
 #include <sigc++/signal.h>
 
 #include "export.hpp"
+#include "non_copyable.hpp"
 #include "peer.hpp"
 #include "address.hpp"
 #include "socket.hpp"
@@ -32,10 +33,10 @@
 namespace net6
 {
 
-/** High-level TCP server object.
+/** High-level TCP dedicated server object.
  */
 	
-class NET6_EXPORT server : public sigc::trackable
+class NET6_EXPORT server : public sigc::trackable, private non_copyable
 {
 public:
 	/** Participiant in a client/server network. Necessary changes
@@ -99,6 +100,9 @@ public:
 		connection conn;
 	};
 
+	/** Accumulator for signal_auth_type: It returns TRUE if no slots
+	 * have been connected (so, connections are always accepted)
+	 */
 	class NET6_EXPORT auth_accumulator
 	{
 	public:
@@ -190,9 +194,10 @@ public:
 	signal_login_type login_event() const;
 
 	/** Signal used for user authentication. If the signal handler returns
-	 * false the login will be denied. The signal handler may set the
-	 * second signal parameter to the reason why the login process has
-	 * been denied.
+	 * false, the login will be denied. The signal handler may set the
+	 * third signal parameter to the reason why the login process has
+	 * been denied (as human-readable string which may be sent to the
+	 * client).
 	 */
 	signal_login_auth_type login_auth_event() const;
 
