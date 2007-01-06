@@ -70,6 +70,11 @@ public:
 	 */
 	void login(const std::string& username);
 
+	/** Sends a customized login packet. It should have the command
+	 * <em>net6_client_login</em> and the username as first parameter.
+	 */
+	void custom_login(const packet& pack);
+
 	/** Wait infinitely for incoming network events. Those events are
 	 * handled by the client object.
 	 */

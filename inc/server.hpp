@@ -99,9 +99,28 @@ public:
 		connection conn;
 	};
 
+	class NET6_EXPORT auth_accumulator
+	{
+	public:
+		typedef bool result_type;
+
+		template<typename iterator>
+		result_type operator()(iterator begin, iterator end) const
+		{
+			bool result = true;
+			for(; begin != end; ++ begin)
+				if(!(result = *begin) )
+					break;
+			return result;
+		}
+	};
+
 	typedef sigc::signal<void, peer&> signal_join_type;
 	typedef sigc::signal<void, peer&> signal_part_type;
 	typedef sigc::signal<void, peer&> signal_login_type;
+	typedef sigc::signal<bool, peer&, const packet&,
+		std::string&>::accumulated<auth_accumulator>
+			signal_login_auth_type;
 	typedef sigc::signal<void, const packet&, peer&> signal_data_type;
 
 	/** Creates a new server object.
@@ -170,6 +189,13 @@ public:
 	 */
 	signal_login_type login_event() const;
 
+	/** Signal used for user authentication. If the signal handler returns
+	 * false the login will be denied. The signal handler may set the
+	 * second signal parameter to the reason why the login process has
+	 * been denied.
+	 */
+	signal_login_auth_type login_auth_event() const;
+
 	/** Signal which is emitted every time we received a packet from
 	 * one of the connected and logged in clients
 	 */
@@ -193,6 +219,7 @@ protected:
 	signal_join_type signal_join;
 	signal_part_type signal_part;
 	signal_login_type signal_login;
+	signal_login_auth_type signal_login_auth;
 	signal_data_type signal_data;
 };
 	

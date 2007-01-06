@@ -16,6 +16,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <cassert>
 #include <sigc++/bind.h>
 #include "client.hpp"
 
@@ -64,6 +65,15 @@ void net6::client::login(const std::string& username)
 	packet login_pack("net6_client_login");
 	login_pack << username;
 	send(login_pack);
+}
+
+void net6::client::custom_login(const packet& pack)
+{
+	assert(pack.get_command() == "net6_client_login");
+	assert(pack.get_param_count() >= 1);
+	assert(pack.get_param(0).get_type() == packet::param::STRING);
+
+	send(pack);
 }
 
 void net6::client::select()
