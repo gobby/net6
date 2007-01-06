@@ -54,6 +54,15 @@ public:
 		 : std::runtime_error("Bad count") { }
 	};
 
+	/** Exception class that may be thrown by the callback of the
+	 * packet type map if the parameter has a bad format.
+	 */
+	class bad_format : public std::runtime_error {
+	public:
+		bad_format(const std::string& reason)
+		 : std::runtime_error(reason) { }
+	};
+
 protected:
 	/** Base class for net6::basic_parameter::data.
 	 */
@@ -149,7 +158,9 @@ protected:
  * is given to the base class (basic_parameter) must not be in use by another
  * type. net6 occupies 'i', 's' and 'f'. Finally call packet::register_type
  * with this ID and a function that converts the string representation of the
- * type back to a parameter object. Look at inc/packet.hpp for examples.
+ * type back to a parameter object. This function may throw
+ * basic_parameter::bad_format if the string has a bad format that does not
+ * correspond to the desired type. Look at inc/packet.hpp for examples.
  */
 template<typename data_type>
 class parameter : public basic_parameter {
@@ -184,6 +195,12 @@ public:
 		std::stringstream stream(str);
 		int result;
 		stream >> std::hex >> result;
+
+		if(stream.bad() )
+			throw basic_parameter::bad_format(
+				"Not a hexadecimal integer"
+			);
+
 		return new parameter<int>(result);
 	}
 

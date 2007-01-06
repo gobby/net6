@@ -135,9 +135,21 @@ void net6::connection::on_sock_event(socket::condition io) try
 			    iter != packet_list.end();
 			    ++ iter)
 			{
-				packet pack;
-				pack.set_raw_string(*iter);
-				on_recv(pack);
+				try
+				{
+					packet pack;
+					pack.set_raw_string(*iter);
+					on_recv(pack);
+				}
+				catch(net6::basic_parameter::bad_format& e)
+				{
+					std::cerr << "net6-Warning: Protocol "
+					          << "mismatch! Received bad "
+					          << "parameter format from "
+					          << remote_addr->get_name()
+					          << ": " << e.what()
+					          << std::endl;
+				}
 			}
 		}
 	}
