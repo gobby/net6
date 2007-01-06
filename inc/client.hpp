@@ -19,6 +19,7 @@
 #ifndef _NET6_CLIENT_HPP_
 #define _NET6_CLIENT_HPP_
 
+#include <memory>
 #include <sigc++/signal.h>
 
 #include "non_copyable.hpp"
@@ -57,14 +58,28 @@ public:
 	typedef sigc::signal<void, login::error> signal_login_failed_type;
 	typedef sigc::signal<void, packet&> signal_login_extend_type;
 
-//	client(const std::string& hostname, unsigned int port,
-//	       bool ipv6 = true);
+	/** Creates a new client object which is not connected to anywhere.
+	 */
+	client();
 
 	/** Creates a new client object and connect to the server at
 	 * <em>addr</em>.
 	 */
 	client(const address& addr);
 	virtual ~client();
+
+	/** Connect to the given address. Only use this if the client is not
+	 * already connected.
+	 */
+	void connect(const address& addr);
+
+	/** Disconnects from the server.
+	 */
+	void disconnect();
+
+	/** Determinates if the client object is connected to a server.
+	 */
+	bool is_connected() const;
 
 	/** Send a login request with the specified user name. On success,
 	 * a join_event with peer==self is emitted, otherwise a
@@ -100,7 +115,9 @@ public:
 	 */
 	peer* get_self() const;
 
-	/** Returns the underlaying net6::connection object.
+	/** Returns the underlaying net6::connection object. Note that this
+	 * function causes a segmentation fault when the client is not
+	 * connected.
 	 */
 	const connection& get_connection() const;
 	
@@ -117,8 +134,8 @@ public:
 	signal_data_type data_event() const;
 
 	/** Signal which is emitted when the connection to the server has
-	 * been lost. Note that the client object is invalid after this
-	 * event occured, you should not use it any longer!
+	 * been lost. The client will end up in disconnected state after having
+	 * received this event.
 	 */
 	signal_close_type close_event() const;
 
@@ -150,7 +167,7 @@ protected:
 	virtual void net_client_join(const packet& pack);
 	virtual void net_client_part(const packet& pack);
 
-	connection conn;
+	std::auto_ptr<connection> conn;
 	std::list<peer*> peers;
 	selector sock_sel;
 	peer* self;

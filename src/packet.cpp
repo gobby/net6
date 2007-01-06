@@ -195,6 +195,7 @@ void net6::packet::set_raw_param(const std::string& param_string)
 	{
 		type_lookup_map::const_iterator i =
 			type_map.find(param_string[0]);
+		// TODO: Throw error if i == type_map.end()
 		params.push_back(i->second(unescape(param_string.substr(1))) );
 	}
 }

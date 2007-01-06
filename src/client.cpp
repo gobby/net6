@@ -41,23 +41,54 @@ net6::client::peer::~peer()
 		sigc::mem_fun(*this, &client::on_client_close) );
 }*/
 
-net6::client::client(const address& addr)
- : conn(addr), self(NULL)
+net6::client::client()
+ : self(NULL)
 {
-	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::IOERROR);
-	conn.send_event().connect(
-		sigc::mem_fun(*this, &client::on_send_event) );
-	conn.recv_event().connect(
-		sigc::mem_fun(*this, &client::on_recv_event) );
-	conn.close_event().connect(
-		sigc::mem_fun(*this, &client::on_close_event) );
+}
+
+net6::client::client(const address& addr)
+ : self(NULL)
+{
+	connect(addr);
 }
 
 net6::client::~client()
 {
+	if(is_connected() )
+		disconnect();
+}
+
+void net6::client::connect(const address& addr)
+{
+	conn.reset(new connection(addr) );
+	sock_sel.add(conn->get_socket(), socket::INCOMING | socket::IOERROR);
+
+	conn->send_event().connect(
+		sigc::mem_fun(*this, &client::on_send_event) );
+	conn->recv_event().connect(
+		sigc::mem_fun(*this, &client::on_recv_event) );
+	conn->close_event().connect(
+		sigc::mem_fun(*this, &client::on_close_event) );
+}
+
+void net6::client::disconnect()
+{
+	// Delete connection object
+	conn.reset(NULL);
+
+	// Clear peer list
 	std::list<peer*>::iterator peer_it;
 	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
 		delete *peer_it;
+
+	peers.clear();
+	self = NULL;
+}
+
+bool net6::client::is_connected() const
+{
+	// We are connected if there is a valid connection object
+	return conn.get() != NULL;
 }
 
 void net6::client::login(const std::string& username)
@@ -81,11 +112,11 @@ void net6::client::select(unsigned int timeout)
 void net6::client::send(const packet& pack)
 {
 	// Select for outgoing packets if we aren't already
-	if(!sock_sel.check(conn.get_socket(), socket::OUTGOING) )
-		sock_sel.add(conn.get_socket(), socket::OUTGOING);
+	if(!sock_sel.check(conn->get_socket(), socket::OUTGOING) )
+		sock_sel.add(conn->get_socket(), socket::OUTGOING);
 
 	// Send packet
-	conn.send(pack);
+	conn->send(pack);
 }
 
 net6::client::peer* net6::client::find(unsigned int id) const
@@ -113,7 +144,8 @@ net6::client::peer* net6::client::get_self() const
 
 const net6::connection& net6::client::get_connection() const
 {
-	return conn;
+	// TODO: Throw error if not connected?
+	return *conn;
 }
 
 net6::client::signal_join_type net6::client::join_event() const
@@ -162,12 +194,13 @@ void net6::client::on_send_event()
 {
 	// Available data has been sent: Remove OUTGOING flag as there is no
 	// more data to send.
-	sock_sel.remove(conn.get_socket(), socket::OUTGOING);
+	sock_sel.remove(conn->get_socket(), socket::OUTGOING);
 }
 
 void net6::client::on_close_event()
 {
 	on_close();
+	disconnect();
 }
 
 void net6::client::on_join(peer& client, const packet& pack)
