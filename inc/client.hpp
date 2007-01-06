@@ -135,11 +135,6 @@ public:
 	 */
 	signal_close_type close_event() const;
 
-	/** Signal which is emitted when the connection is guaranteed to
-	 * be encrypted.
-	 */
-	//signal_encrypted_type encrypted_event() const;
-
 	/** Signal which is emitted, if a login request failed, for example
 	 * if the wished user name was already in use by another client.
 	 */
@@ -163,16 +158,10 @@ protected:
 	 */
 	void on_close_event();
 
-	/** Signal handler that is called when the underlaying connection is
-	 * encrypted.
-	 */
-	//virtual void on_encrypted_event();
-
 	virtual void on_join(const user& user, const packet& pack);
 	virtual void on_part(const user& user, const packet& pack);
 	virtual void on_data(const packet& pack);
 	virtual void on_close();
-	//virtual void on_encrypted();
 	virtual void on_login_failed(login::error error);
 	virtual void on_login_extend(packet& pack);
 
@@ -188,7 +177,6 @@ protected:
 	signal_part_type signal_part;
 	signal_data_type signal_data;
 	signal_close_type signal_close;
-	//signal_encrypted_type signal_encrypted;
 	signal_login_failed_type signal_login_failed;
 	signal_login_extend_type signal_login_extend;
 
@@ -244,7 +232,7 @@ void basic_client<selector_type>::request_encryption()
 	// the corresponding packet to the server. The handler
 	// code in the connection will take care of establishing
 	// the additional security layer.
-	conn->request_encryption();
+	conn->request_encryption(true);
 }
 
 template<typename selector_type>

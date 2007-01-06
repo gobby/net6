@@ -29,27 +29,6 @@ net6::connection_base::connection_base():
 {
 }
 
-#if 0
-net6::connection_base::connection_base(const address& addr):
-	remote_sock(new tcp_client_socket(addr) ),
-	encrypted_sock(NULL),
-	remote_addr(addr.clone() ),
-	state(UNENCRYPTED)
-{
-	init_impl();
-}
-
-net6::connection_base::connection_base(std::auto_ptr<tcp_client_socket> sock,
-                                       const address& addr):
-	remote_sock(sock),
-	encrypted_sock(NULL),
-	remote_addr(addr.clone() ),
-	state(UNENCRYPTED)
-{
-	init_impl();
-}
-#endif
-
 net6::connection_base::~connection_base()
 {
 }
@@ -118,7 +97,7 @@ void net6::connection_base::send(const packet& pack)
 	}
 }
 
-void net6::connection_base::request_encryption()
+void net6::connection_base::request_encryption(bool as_client)
 {
 	if(state != UNENCRYPTED)
 	{
@@ -130,10 +109,14 @@ void net6::connection_base::request_encryption()
 
 	// Request encryption from other side
 	packet pack("net6_encryption");
+	pack << as_client;
 	send(pack);
 
 	// Wait for net6_encryption_ok or net6_encryption_failed
-	state = ENCRYPTION_INITIATED_CLIENT;
+	if(as_client)
+		state = ENCRYPTION_INITIATED_CLIENT;
+	else
+		state = ENCRYPTION_INITIATED_SERVER;
 
 	// Block further outgoing traffic
 	sendqueue.block();
@@ -384,13 +367,26 @@ void net6::connection_base::do_handshake()
 
 void net6::connection_base::on_send()
 {
-	if(state == ENCRYPTION_INITIATED_SERVER)
+	if(state == ENCRYPTION_INITIATED_SERVER ||
+	   state == ENCRYPTION_INITIATED_CLIENT)
 	{
 		// All remaining data has been sent, we may now initiate the
 		// TLS handshake
 		set_select(IO_NONE);
 
-		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
+		if(state == ENCRYPTION_INITIATED_SERVER)
+		{
+			encrypted_sock = new tcp_encrypted_socket_server(
+				*remote_sock
+			);
+		}
+		else
+		{
+			encrypted_sock = new tcp_encrypted_socket_client(
+				*remote_sock
+			);
+		}
+
 		remote_sock.reset(encrypted_sock);
 		setup_signal();
 
@@ -438,12 +434,17 @@ void net6::connection_base::net_encryption(const packet& pack)
 	// Block further packets in order to perform a TLS handshake. This
 	// is done in on_send(), when all remaining data has been sent.
 	sendqueue.block();
-	state = ENCRYPTION_INITIATED_SERVER;
+
+	if(pack.get_param(0).as<bool>() == true)
+		state = ENCRYPTION_INITIATED_SERVER;
+	else
+		state = ENCRYPTION_INITIATED_CLIENT;
 }
 
 void net6::connection_base::net_encryption_ok(const packet& pack)
 {
-	if(state != ENCRYPTION_INITIATED_CLIENT)
+	if(state != ENCRYPTION_INITIATED_CLIENT &&
+	   state != ENCRYPTION_INITIATED_SERVER)
 	{
 		throw bad_value(
 			"Received encryption reply without having "
@@ -453,7 +454,11 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 
 	set_select(IO_NONE);
 
-	encrypted_sock = new tcp_encrypted_socket_client(*remote_sock);
+	if(state == ENCRYPTION_INITIATED_CLIENT)
+		encrypted_sock = new tcp_encrypted_socket_client(*remote_sock);
+	else
+		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
+
 	remote_sock.reset(encrypted_sock);
 	setup_signal(); // TODO: Make one method that merges this with on_send
 
@@ -463,7 +468,8 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 
 void net6::connection_base::net_encryption_failed(const packet& pack)
 {
-	if(state != ENCRYPTION_INITIATED_CLIENT)
+	if(state != ENCRYPTION_INITIATED_CLIENT &&
+	   state != ENCRYPTION_INITIATED_SERVER)
 	{
 		throw bad_value(
 			"Received encryption reply without having "

@@ -54,21 +54,6 @@ public:
 	 */
 	connection_base();
 
-#if 0
-	/** @brief Creates a new connection object and establishes a
-	 * connection to <em>addr</em>.
-	 */
-	connection_base(const address& addr);
-
-	/** @brief Wraps a socket into to a connection object.
-	 *
-	 * The ownership of the socket is transferred to the connection.
-	 * The remote host has the address <em>addr</em>.
-	 */
-	connection_base(std::auto_ptr<tcp_client_socket> sock,
-	                const address& addr);
-#endif
-
 	virtual ~connection_base();
 
 	/** @brief Connects to the given address if the connection is closed.
@@ -97,7 +82,7 @@ public:
 	 * signal_encrypted will be emitted when further traffic will be
 	 * encrypted.
 	 */
-	void request_encryption();
+	void request_encryption(bool as_client);
 
 	/** Signal which is emitted when a packet has been received.
 	 */
@@ -158,21 +143,6 @@ public:
 	typedef Selector selector_type;
 
 	connection(selector_type& sel);
-
-#if 0
-	/** @brief Establishes a new connection to the given address that
-	 * uses the given selector.
-	 */
-	connection(const address& addr,
-	           selector_type& sel);
-
-	/** @brief Creates a connection that takes ownership of the given
-	 * socket whose remote end has the address <em>addr</em>.
-	 */
-	connection(std::auto_ptr<tcp_client_socket> sock,
-	           const address& addr,
-	           selector_type& sel);
-#endif
 
 	virtual ~connection();
 

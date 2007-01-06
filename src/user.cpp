@@ -91,5 +91,6 @@ void net6::user::request_encryption() const
 	if(conn.get() == NULL)
 		throw not_connected_error("net6::user::send");
 
-	conn->request_encryption();
+	// When we have a direct connection to a client, we are server.
+	conn->request_encryption(false);
 }

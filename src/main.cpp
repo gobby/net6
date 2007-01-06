@@ -56,15 +56,15 @@ net6::main::main()
 net6::main::~main()
 {
 	refcount --;
-#ifdef WIN32
 	if(refcount == 0)
 	{
 		gnutls_global_deinit();
 #ifdef ENABLE_NLS
 		delete package;
 #endif
+#ifdef WIN32
 		WSACleanup();
-	}
 #endif
+	}
 }
 
