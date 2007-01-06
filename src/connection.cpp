@@ -503,7 +503,7 @@ void net6::connection_base::do_handshake()
 
 		// TODO: We should not do this when the
 		// socket is in blocking mode!
-		do_io(IO_INCOMING);
+		on_sock_event(IO_INCOMING);
 #endif
 	}
 	else

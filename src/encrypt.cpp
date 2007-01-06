@@ -130,7 +130,7 @@ namespace
 		case net6::tcp_encrypted_socket_base::HANDSHAKED:
 			ret = func(session, buf, len);
 			if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
-				ret = func(session, NULL, 0);
+				func(session, NULL, 0);
 
 			if(ret < 0)
 				throw net6::error(net6::error::GNUTLS, ret);
