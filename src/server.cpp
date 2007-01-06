@@ -20,13 +20,13 @@
 #include "server.hpp"
 
 net6::server::peer::peer(unsigned int id)
- : net6::peer(id, ""), logined(false), conn(NULL)
+ : net6::peer(id, ""), logged_in(false), conn(NULL)
 {
 }
 
 net6::server::peer::peer(unsigned int id, const tcp_client_socket& sock,
                          const address& addr)
- : net6::peer(id, ""), logined(false), conn(new net6::connection(sock, addr) )
+ : net6::peer(id, ""), logged_in(false), conn(new net6::connection(sock, addr) )
 {
 }
 
@@ -38,12 +38,12 @@ net6::server::peer::~peer()
 void net6::server::peer::login(const std::string& username)
 {
 	name = username;
-	logined = true;
+	logged_in = true;
 }
 
-bool net6::server::peer::is_logined() const
+bool net6::server::peer::is_logged_in() const
 {
-	return logined;
+	return logged_in;
 }
 
 void net6::server::peer::send(const packet& pack)
@@ -66,14 +66,14 @@ const net6::address& net6::server::peer::get_address() const
 	return conn->get_remote_address();
 }
 
-net6::server::peer::signal_recv_type net6::server::peer::recv_event() const
-{
-	return conn->recv_event();
-}
-
 net6::server::peer::signal_send_type net6::server::peer::send_event() const
 {
 	return conn->send_event();
+}
+
+net6::server::peer::signal_recv_type net6::server::peer::recv_event() const
+{
+	return conn->recv_event();
 }
 
 net6::server::peer::signal_close_type net6::server::peer::close_event() const
@@ -126,7 +126,7 @@ void net6::server::send(const packet& pack)
 {
 	std::list<peer*>::const_iterator peer_it;
 	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
-		if( (*peer_it)->is_logined() )
+		if( (*peer_it)->is_logged_in() )
 			send(pack, **peer_it);
 }
 
@@ -163,6 +163,16 @@ const net6::tcp_server_socket& net6::server::get_socket() const
 	return *serv_sock;
 }
 
+net6::server::signal_connect_type net6::server::connect_event() const
+{
+	return signal_connect;
+}
+
+net6::server::signal_disconnect_type net6::server::disconnect_event() const
+{
+	return signal_disconnect;
+}
+
 net6::server::signal_join_type net6::server::join_event() const
 {
 	return signal_join;
@@ -173,19 +183,14 @@ net6::server::signal_part_type net6::server::part_event() const
 	return signal_part;
 }
 
-net6::server::signal_pre_login_type net6::server::pre_login_event() const
-{
-	return signal_pre_login;
-}
-
-net6::server::signal_post_login_type net6::server::post_login_event() const
-{
-	return signal_post_login;
-}
-
 net6::server::signal_login_auth_type net6::server::login_auth_event() const
 {
 	return signal_login_auth;
+}
+
+net6::server::signal_login_type net6::server::login_event() const
+{
+	return signal_login;
 }
 
 net6::server::signal_login_extend_type net6::server::login_extend_event() const
@@ -200,130 +205,68 @@ net6::server::signal_data_type net6::server::data_event() const
 
 void net6::server::remove_client(peer* client)
 {
-	signal_part.emit(*client);
+	if(client->is_logged_in() )
+		on_part(*client);
+	on_disconnect(*client);
+
 	peers.erase(std::remove(peers.begin(), peers.end(), client),
 	            peers.end() );
 
-	sock_sel.remove(client->get_socket(), socket::INCOMING | socket::IOERROR);
+	sock_sel.remove(
+		client->get_socket(),
+		socket::INCOMING | socket::IOERROR
+	);
+
 	if(sock_sel.check(client->get_socket(), socket::OUTGOING) )
 		sock_sel.remove(client->get_socket(), socket::OUTGOING);
 
 	packet pack("net6_client_part");
-	pack << client->get_id(); //static_cast<int>(client->get_id() );
+	pack << client->get_id(); 
 	send(pack);
 	delete client;
 }
 
-void net6::server::on_server_read(socket& sock, socket::condition io)
+void net6::server::on_accept_event(socket::condition io)
 {
-	address* new_addr;
+	peer* new_client = NULL;
 	if(use_ipv6)
-		new_addr = new ipv6_address;
+	{
+		ipv6_address addr;
+		tcp_client_socket new_sock = serv_sock->accept(addr);
+		new_client = new peer(++id_counter, new_sock, addr);
+	}
 	else
-		new_addr = new ipv4_address;
-
-	tcp_server_socket& tcp_sock = static_cast<tcp_server_socket&>(sock);
-	tcp_client_socket new_sock = tcp_sock.accept(*new_addr);
-	peer* new_client = new peer(++id_counter, new_sock, *new_addr);
-	delete new_addr;
+	{
+		ipv4_address addr;
+		tcp_client_socket new_sock = serv_sock->accept(addr);
+		new_client = new peer(++id_counter, new_sock, addr);
+	}
 
 	peers.push_back(new_client);
-	sock_sel.add(new_sock, socket::INCOMING | socket::IOERROR);
+	sock_sel.add(
+		new_client->get_socket(),
+		socket::INCOMING | socket::IOERROR
+	);
 
-	new_client->recv_event().connect(sigc::bind(
-		sigc::mem_fun(*this, &server::on_client_recv),
+	new_client->send_event().connect(sigc::bind(
+		sigc::mem_fun(*this, &server::on_send_event),
 		sigc::ref(*new_client)
 	));
 
-	new_client->send_event().connect(sigc::bind(
-		sigc::mem_fun(*this, &server::on_client_send),
+	new_client->recv_event().connect(sigc::bind(
+		sigc::mem_fun(*this, &server::on_recv_event),
 		sigc::ref(*new_client)
 	));
 
 	new_client->close_event().connect(sigc::bind(
-		sigc::mem_fun(*this, &server::on_client_close),
+		sigc::mem_fun(*this, &server::on_close_event),
 		sigc::ref(*new_client)
 	));
 
-	on_join(*new_client);
-}
-/*
-void net6::server::on_server_error(socket& sock, socket::condition io)
-{
-	
-}
-*/
-void net6::server::on_client_recv(const packet& pack, peer& from)
-{
-	if(pack.get_command() == "net6_client_login")
-	{
-		if(from.is_logined() ) return;
-
-		if(pack.get_param_count() < 1) return;
-		if(pack.get_param(0).get_type() != packet::param::STRING)
-			return;
-
-		const std::string& name = pack.get_param(0).as_string();
-		if(name.empty() )
-		{
-			packet pack("net6_login_failed");
-			pack << "Invalid name";
-			send(pack, from);
-		}
-		else if(find(name) != NULL)
-		{
-			packet pack("net6_login_failed");
-			pack << "Name is already in use";
-			send(pack, from);
-		}
-		else
-		{
-			std::string reason;
-			if(!signal_login_auth.emit(from, pack, reason) )
-			{
-				packet pack("net6_login_failed");
-				pack << reason;
-				send(pack, from);
-				return;
-			}
-
-			from.login(name);
-			signal_pre_login.emit(from, pack);
-	
-			packet self_pack("net6_client_join");
-			self_pack << from.get_id() << name;
-			signal_login_extend.emit(from, self_pack);
-			send(self_pack, from);
-
-			std::list<peer*>::iterator it;
-			for(it = peers.begin(); it != peers.end(); ++ it)
-			{
-				if(!( (*it)->is_logined()) ) continue;
-				if(*it == &from) continue;
-
-				packet join_pack("net6_client_join");
-				join_pack << (*it)->get_id()
-				          << (*it)->get_name();
-				signal_login_extend.emit(**it, join_pack);
-
-				send(join_pack, from);
-				send(self_pack, **it);
-			}
-
-			signal_post_login.emit(from, pack);
-
-		}
-	}
-	else
-	{
-		if(from.is_logined() )
-		{
-			signal_data.emit(pack, from);
-		}
-	}
+	on_connect(*new_client);
 }
 
-void net6::server::on_client_send(const packet& pack, peer& to)
+void net6::server::on_send_event(const packet& pack, peer& to)
 {
 	// Do no longer select on socket::OUTGOING if there
 	// are no more packets to write
@@ -331,14 +274,128 @@ void net6::server::on_client_send(const packet& pack, peer& to)
 		sock_sel.remove(to.get_socket(), socket::OUTGOING);
 }
 
-void net6::server::on_client_close(peer& from)
+void net6::server::on_recv_event(const packet& pack, peer& from)
+{
+	if(pack.get_command() == "net6_client_login")
+		net_client_login(from, pack);
+	else
+		if(from.is_logged_in() )
+			on_data(from, pack);
+}
+
+void net6::server::on_close_event(peer& from)
 {
 	remove_client(&from);
+}
+
+void net6::server::on_connect(peer& client)
+{
+	signal_connect.emit(client);
+}
+
+void net6::server::on_disconnect(peer& client)
+{
+	signal_disconnect.emit(client);
 }
 
 void net6::server::on_join(peer& new_peer)
 {
 	signal_join.emit(new_peer);
+}
+
+void net6::server::on_part(peer& client)
+{
+	signal_part.emit(client);
+}
+
+bool net6::server::on_login_auth(peer& client, const packet& pack,
+                                 std::string& reason)
+{
+	return signal_login_auth.emit(client, pack, reason);
+}
+
+void net6::server::on_login(peer& client, const packet& pack)
+{
+	signal_login.emit(client, pack);
+}
+
+void net6::server::on_login_extend(peer& client, packet& pack)
+{
+	signal_login_extend.emit(client, pack);
+}
+
+void net6::server::on_data(peer& client, const packet& pack)
+{
+	signal_data.emit(client, pack);
+}
+
+void net6::server::net_client_login(peer& from, const packet& pack)
+{
+	// Is already logged in
+	if(from.is_logged_in() ) return;
+
+	// Verify packet correctness
+	if(pack.get_param_count() < 1) return;
+	if(pack.get_param(0).get_type() != packet::param::STRING)
+		return;
+
+	// Get wished user name
+	// TODO: trim name?
+	const std::string& name = pack.get_param(0).as_string();
+
+	// Check for valid user name
+	if(name.empty() )
+	{
+		packet pack("net6_login_failed");
+		pack << "Invalid name";
+		send(pack, from);
+	}
+	// Check for existing user name
+	else if(find(name) != NULL)
+	{
+		packet pack("net6_login_failed");
+		pack << "Name is already in use";
+		send(pack, from);
+	}
+	else
+	{
+		// Check for login_auth
+		std::string reason;
+		if(!on_login_auth(from, pack, reason) )
+		{
+			packet pack("net6_login_failed");
+			pack << reason;
+			send(pack, from);
+			return;
+		}
+
+		// Login succeeded
+		from.login(name);
+		on_login(from, pack);
+
+		// Synchronise with other clients
+		packet self_pack("net6_client_join");
+		self_pack << from.get_id() << name;
+		on_login_extend(from, self_pack);
+		send(self_pack, from);
+
+		std::list<peer*>::iterator it;
+		for(it = peers.begin(); it != peers.end(); ++ it)
+		{
+			if(!( (*it)->is_logged_in()) ) continue;
+			if(*it == &from) continue;
+
+			packet join_pack("net6_client_join");
+			join_pack << (*it)->get_id() << (*it)->get_name();
+			on_login_extend(**it, join_pack);
+
+			send(join_pack, from);
+			send(self_pack, **it);
+		}
+
+		// Join complete
+		on_join(from);
+	}
 }
 
 void net6::server::shutdown_impl()
@@ -370,7 +427,7 @@ void net6::server::reopen_impl(unsigned int port)
 	}
 
 	sock_sel.add(*serv_sock, socket::INCOMING);
-	serv_sock->read_event().connect(
-		sigc::mem_fun(*this, &server::on_server_read) );
+	serv_sock->io_event().connect(
+		sigc::mem_fun(*this, &server::on_accept_event) );
 }
 

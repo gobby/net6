@@ -44,8 +44,8 @@ public:
 	class peer : public net6::peer
 	{
 	public:
-		typedef connection::signal_recv_type signal_recv_type;
 		typedef connection::signal_send_type signal_send_type;
+		typedef connection::signal_recv_type signal_recv_type;
 		typedef connection::signal_close_type signal_close_type;
 
 		peer(unsigned int id);
@@ -57,9 +57,9 @@ public:
 		 */
 		void login(const std::string& username);
 
-		/** Checks if this peer has been logined successfully.
+		/** Checks if this peer has been logged in successfully.
 		 */
-		bool is_logined() const;
+		bool is_logged_in() const;
 
 		/** Enqueues a packet to send it to this peer. Use
 		 * net6::server::send instead, which is a wrapper around
@@ -81,22 +81,22 @@ public:
 		 */
 		const address& get_address() const;
 
-		/** Signal which is emitted when data has been received from
-		 * this peer.
-		 */
-		signal_recv_type recv_event() const;
-
 		/** Signal which is emitted when data has been completely
 		 * sent to this peer.
 		 */
 		signal_send_type send_event() const;
+
+		/** Signal which is emitted when data has been received from
+		 * this peer.
+		 */
+		signal_recv_type recv_event() const;
 
 		/** Signal which is emitted when the connection to this peer
 		 * has been lost.
 		 */
 		signal_close_type close_event() const;
 	protected:
-		bool logined;
+		bool logged_in;
 		connection* conn;
 	};
 
@@ -119,16 +119,19 @@ public:
 		}
 	};
 
+	typedef sigc::signal<void, peer&> signal_connect_type;
+	typedef sigc::signal<void, peer&> signal_disconnect_type;
+
 	typedef sigc::signal<void, peer&> signal_join_type;
 	typedef sigc::signal<void, peer&> signal_part_type;
-	typedef sigc::signal<bool, peer&, const packet&,
-		std::string&>::accumulated<auth_accumulator>
-			signal_login_auth_type;
-	typedef sigc::signal<void, peer&, const packet&> signal_pre_login_type;
-	typedef sigc::signal<void, peer&, const packet&> signal_post_login_type;
-	typedef sigc::signal<void, peer&, packet&> signal_login_extend_type;
-	typedef sigc::signal<void, const packet&, peer&> signal_data_type;
 
+	typedef sigc::signal<bool, peer&, const packet&, std::string&>
+		::accumulated<auth_accumulator> signal_login_auth_type;
+	typedef sigc::signal<void, peer&, const packet&> signal_login_type;
+	typedef sigc::signal<void, peer&, packet&> signal_login_extend_type;
+
+	typedef sigc::signal<void, peer&, const packet&> signal_data_type;
+	
 	/** Creates a new server object.
 	 * @param ipv6 Whether to use IPv6.
 	 */
@@ -187,53 +190,81 @@ public:
 	 */
 	const tcp_server_socket& get_socket() const;
 
-	/** Signal which is emitted when a new client joins.
+	/** Signal which is emitted when a new connection has been accepted.
+	 */
+	signal_connect_type connect_event() const;
+
+	/** Signal which is emitted when a connection has been lost.
+	 */
+	signal_disconnect_type disconnect_event() const;
+	
+	/** Signal which is emitted when a new client joins the net6 session,
+	 * that means, that he logged in successfully and the login procedure
+	 * has finished. This is a good place to send any other initial data
+	 * to the new client.
 	 */
 	signal_join_type join_event() const;
 
-	/** Signal which is emitted when a connection client closes the
-	 * connection.
+	/** Signal which is emitted when a client quits the session. Normally,
+	 * this is called when the user has lost its connection (a disconnect
+	 * event will follow), so do better not send anything to the client
+	 * which has quit.
 	 */
 	signal_part_type part_event() const;
 
-	/** Signal which is emitted when a client logs in with a valid user
-	 * name. It is emitted before login_extend signals are emitted.
-	 */
-	signal_pre_login_type pre_login_event() const;
-
-	/** Signal which is emitted when a client loggs in with a valid user
-	 * name. It is emitted after login_extend signals are emitted.
-	 */
-	signal_post_login_type post_login_event() const;
-
-	/** Signal used for user authentication. If the signal handler returns
-	 * false, the login will be denied. The signal handler may set the
-	 * third signal parameter to the reason why the login process has
-	 * been denied (as human-readable string which may be sent to the
-	 * client).
+	/** Signal which may be used to prevent that a user joins the session.
+	 * Returning false means that the login has failed, the std::string-
+	 * Parameter may hold an error string describing why the login failed
+	 * (Such as 'Color already in use' or something).
 	 */
 	signal_login_auth_type login_auth_event() const;
 
-	/** Signal for extending the login packet sent to other clients by
-	 * extra parameters.
+	/** Signal which is emitted when a client loggs in with a valid
+	 * user name and if signal_login_auth returned true. This is a good
+	 * place to put the client into a list or something, so that the
+	 * login_extend signal handler finds the new client. Do not send any
+	 * packets to this client unless you know what you are doing: They
+	 * will be sent before the net6 user list synchronisation! The first
+	 * parameter in the login packet is always the user name the client
+	 * would like to have. Others are set by the client's login_extend
+	 * signal handler. Check in login_auth if they are correct, if you
+	 * define any.
+	 */
+	signal_login_type login_event() const;
+
+	/** Signal which may be used to append parameters to a client_join
+	 * packet which will be sent to existing user to announce the new join.
+	 * The first parameter is the new client's ID number, the second one
+	 * its user name, other parameters may be appended by you. The peer
+	 * given to the signal handler is the peer for which information has
+	 * to be appended, not the one, to which they will be sent.
 	 */
 	signal_login_extend_type login_extend_event() const;
 
-	/** Signal which is emitted every time we received a packet from
-	 * one of the connected and logged in clients
+	/** Signal which will be emitted when a packet from a client has
+	 * arrived.
 	 */
 	signal_data_type data_event() const;
-
+	
 protected:
 	virtual void remove_client(peer* client);
 
-	virtual void on_server_read(socket& sock, socket::condition io);
+	virtual void on_accept_event(socket::condition io);
+	virtual void on_send_event(const packet& pack, peer& to);
+	virtual void on_recv_event(const packet& pack, peer& from);
+	virtual void on_close_event(peer& from);
 
-	virtual void on_client_recv(const packet& pack, peer& from);
-	virtual void on_client_send(const packet& pack, peer& to);
-	virtual void on_client_close(peer& from);
+	virtual void on_connect(peer& client);
+	virtual void on_disconnect(peer& client);
+	virtual void on_join(peer& client);
+	virtual void on_part(peer& client);
+	virtual bool on_login_auth(peer& client, const packet& pack,
+	                           std::string& reason);
+	virtual void on_login(peer& client, const packet& pack);
+	virtual void on_login_extend(peer& client, packet& pack);
+	virtual void on_data(peer& client, const packet& pack);
 
-	virtual void on_join(peer& new_peer);
+	virtual void net_client_login(peer& from, const packet& pack);
 
 	tcp_server_socket* serv_sock;
 	std::list<peer*> peers;
@@ -241,14 +272,15 @@ protected:
 	bool use_ipv6;
 	unsigned int id_counter;
 
+	signal_connect_type signal_connect;
+	signal_disconnect_type signal_disconnect;
 	signal_join_type signal_join;
 	signal_part_type signal_part;
-	signal_pre_login_type signal_pre_login;
-	signal_post_login_type signal_post_login;
 	signal_login_auth_type signal_login_auth;
+	signal_login_type signal_login;
 	signal_login_extend_type signal_login_extend;
 	signal_data_type signal_data;
-
+	
 private:
 	/** Private implementations for the shutdown() and reopen() functions.
 	 * They are used by shutdown() and reopen() as well as by the

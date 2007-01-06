@@ -12,22 +12,22 @@ bool quit = false;
 
 int client_main(int argc, char* argv[]);
 
-void on_server_join(net6::server::peer& peer, net6::server& server)
+void on_server_connect(net6::server::peer& peer, net6::server& server)
 {
 	std::cout << peer.get_address().get_name() << " connected" << std::endl;
 }
 
-void on_server_login(net6::server::peer& peer, const net6::packet& pack, net6::server& server)
+void on_server_join(net6::server::peer& peer, net6::server& server)
 {
 	std::cout << peer.get_address().get_name() << " logged in as " << peer.get_name() << std::endl;
 }
 	
-void on_server_part(net6::server::peer& peer, net6::server& server)
+void on_server_disconnect(net6::server::peer& peer, net6::server& server)
 {
 	std::cout << peer.get_name() << " disconnected" << std::endl;
 }
 
-void on_server_data(const net6::packet& pack, net6::server::peer& peer, net6::server& server)
+void on_server_data(net6::server::peer& peer, const net6::packet& pack, net6::server& server)
 {
 	if(pack.get_command() == "message")
 	{
@@ -53,7 +53,7 @@ void on_client_join(net6::client::peer& peer, const net6::packet& pack, net6::cl
 	std::cout << peer.get_name() << " joined" << std::endl;
 }
 
-void on_client_part(net6::client::peer& peer, net6::client& client)
+void on_client_part(net6::client::peer& peer, const net6::packet& pack, net6::client& client)
 {
 	std::cout << peer.get_name() << " left" << std::endl;
 }
@@ -91,10 +91,10 @@ int main(int argc, char* argv[]) try
 
 	net6::server server(port, false);
 
+	server.connect_event().connect(sigc::bind(sigc::ptr_fun(&on_server_connect), sigc::ref(server)) );
 	server.join_event().connect(sigc::bind(sigc::ptr_fun(&on_server_join), sigc::ref(server)) );
-	server.pre_login_event().connect(sigc::bind(sigc::ptr_fun(&on_server_login), sigc::ref(server)) );
 	server.login_auth_event().connect(sigc::ptr_fun(&on_server_auth) );
-	server.part_event().connect(sigc::bind(sigc::ptr_fun(&on_server_part), sigc::ref(server)) );
+	server.disconnect_event().connect(sigc::bind(sigc::ptr_fun(&on_server_disconnect), sigc::ref(server)) );
 	server.data_event().connect(sigc::bind(sigc::ptr_fun(&on_server_data), sigc::ref(server)) );
 	
 	while(!quit)

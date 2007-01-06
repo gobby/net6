@@ -84,7 +84,11 @@ public:
 	signal_close_type close_event() const;
 
 protected:
-	void on_sock_event(socket& sock, socket::condition io);
+	void on_sock_event(socket::condition io);
+
+	void on_send(const net6::packet& pack);
+	void on_recv(const net6::packet& pack);
+	void on_close();
 
 	std::list<packet> packet_queue;
 	std::string::size_type offset;

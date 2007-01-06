@@ -43,9 +43,7 @@ public:
 		IOERROR = 0x04
 	};
 
-	typedef sigc::signal<void, socket&, condition> signal_read_type;
-	typedef sigc::signal<void, socket&, condition> signal_write_type;
-	typedef sigc::signal<void, socket&, condition> signal_error_type;
+	typedef sigc::signal<void, condition> signal_io_type;
 
 #ifdef WIN32
 	typedef SOCKET socket_type;
@@ -71,17 +69,9 @@ public:
 	 */
 	bool operator!=(const socket& other) { return data == other.data; }
 
-	/** This signal is emitted if data becomes available for reading.
+	/** Signal which will be emitted if somehting occures with the socket.
 	 */
-	signal_read_type read_event() const { return data->signal_read; }
-
-	/** Signal emitted if data may be written without blocking.
-	 */
-	signal_write_type write_event() const { return data->signal_write; }
-
-	/** Signal emitted if an error occured on the socket.
-	 */
-	signal_error_type error_event() const { return data->signal_error; }
+	signal_io_type io_event() const { return data->signal_io; }
 
 	/** Provides access to the underlaying C socket object.
 	 */
@@ -96,12 +86,15 @@ protected:
 		socket_type sock;
 		int refcount;
 
-		signal_read_type signal_read;
-		signal_write_type signal_write;
-		signal_error_type signal_error;
+		signal_io_type signal_io;
 	};
 
 	socket_data* data;
+
+	/** May be overwritten to do things before/after the signal_io is
+	 * emitted.
+	 */
+	virtual void on_io(condition cond);
 };
 
 /** Abstract TCP socket class.

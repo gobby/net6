@@ -45,12 +45,12 @@ net6::client::client(const address& addr)
  : conn(addr), self(NULL)
 {
 	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::IOERROR);
-	conn.recv_event().connect(
-		sigc::mem_fun(*this, &client::on_client_recv) );
 	conn.send_event().connect(
-		sigc::mem_fun(*this, &client::on_client_send) );
+		sigc::mem_fun(*this, &client::on_send_event) );
+	conn.recv_event().connect(
+		sigc::mem_fun(*this, &client::on_recv_event) );
 	conn.close_event().connect(
-		sigc::mem_fun(*this, &client::on_client_close) );
+		sigc::mem_fun(*this, &client::on_close_event) );
 }
 
 net6::client::~client()
@@ -146,46 +146,63 @@ net6::client::signal_login_failed_type net6::client::login_failed_event() const
 	return signal_login_failed;
 }
 
-void net6::client::on_client_recv(const packet& pack)
+void net6::client::on_recv_event(const packet& pack)
 {
 	if(pack.get_command() == "net6_login_failed")
-	{
-		on_login_failed(pack);
-	}
+		net_login_failed(pack);
 	else if(pack.get_command() == "net6_client_join")
-	{
-		on_client_join(pack);
-	}
+		net_client_join(pack);
 	else if(pack.get_command() == "net6_client_part")
-	{
-		on_client_part(pack);
-	}
+		net_client_part(pack);
 	else
-	{
-		signal_data.emit(pack);
-	}
+		on_data(pack);
 }
 
-void net6::client::on_client_send(const packet& pack)
+void net6::client::on_send_event(const packet& pack)
 {
 	if(conn.send_queue_size() == 0)
 		sock_sel.remove(conn.get_socket(), socket::OUTGOING);
 }
 
-void net6::client::on_client_close()
+void net6::client::on_close_event()
+{
+	on_close();
+}
+
+void net6::client::on_join(peer& client, const packet& pack)
+{
+	signal_join.emit(client, pack);
+}
+
+void net6::client::on_part(peer& client, const packet& pack)
+{
+	signal_part.emit(client, pack);
+}
+
+void net6::client::on_data(const packet& pack)
+{
+	signal_data.emit(pack);
+}
+
+void net6::client::on_close()
 {
 	signal_close.emit();
 }
 
-void net6::client::on_login_failed(const packet& pack)
+void net6::client::on_login_failed(const std::string& reason)
+{
+	signal_login_failed.emit(reason);
+}
+
+void net6::client::net_login_failed(const packet& pack)
 {
 	if(pack.get_param_count() < 1) return;
 	if(pack.get_param(0).get_type() != packet::param::STRING) return;
 
-	signal_login_failed.emit(pack.get_param(0).as_string() );
+	on_login_failed(pack.get_param(0).as_string() );
 }
 
-void net6::client::on_client_join(const packet& pack)
+void net6::client::net_client_join(const packet& pack)
 {
 	if(pack.get_param_count() < 2) return;
 	if(pack.get_param(0).get_type() != packet::param::INT) return;
@@ -199,10 +216,10 @@ void net6::client::on_client_join(const packet& pack)
 
 	// The first client who joins is the client representing this host.
 	if(!self) self = new_client;
-	signal_join.emit(*new_client, pack);
+	on_join(*new_client, pack);
 }
 
-void net6::client::on_client_part(const packet& pack)
+void net6::client::net_client_part(const packet& pack)
 {
 	if(pack.get_param_count() < 1) return;
 	if(pack.get_param(0).get_type() != packet::param::INT) return;
@@ -211,7 +228,7 @@ void net6::client::on_client_part(const packet& pack)
 	peer* rem_peer = find(id);
 	
 	if(!rem_peer) return;
-	signal_part.emit(*rem_peer);
+	on_part(*rem_peer, pack);
 
 	peers.erase(std::remove(peers.begin(), peers.end(), rem_peer),
 	            peers.end() );

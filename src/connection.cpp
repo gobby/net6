@@ -23,22 +23,14 @@
 net6::connection::connection(const address& addr)
  : offset(0), remote_sock(addr), remote_addr(addr.clone() ), part_pack(false)
 {
-	remote_sock.read_event().connect(
-		sigc::mem_fun(*this, &connection::on_sock_event) );
-	remote_sock.write_event().connect(
-		sigc::mem_fun(*this, &connection::on_sock_event) );
-	remote_sock.error_event().connect(
+	remote_sock.io_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
 }
 
 net6::connection::connection(const tcp_client_socket& sock, const address& addr)
  : offset(0), remote_sock(sock), remote_addr(addr.clone() ), part_pack(false)
 {
-	remote_sock.read_event().connect(
-		sigc::mem_fun(*this, &connection::on_sock_event) );
-	remote_sock.write_event().connect(
-		sigc::mem_fun(*this, &connection::on_sock_event) );
-	remote_sock.error_event().connect(
+	remote_sock.io_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
 }
 
@@ -101,17 +93,16 @@ net6::connection::signal_close_type net6::connection::close_event() const
 	return signal_close;
 }
 
-void net6::connection::on_sock_event(socket& sock, socket::condition io) try
+void net6::connection::on_sock_event(socket::condition io) try
 {
-	tcp_client_socket& tcp_sock = static_cast<tcp_client_socket&>(sock);
 	if(io & socket::INCOMING)
 	{
 		// Get up to 1024 bytes
 		char buffer[1024 + 1];
-		socket::size_type bytes = tcp_sock.recv(buffer, 1024);
+		socket::size_type bytes = remote_sock.recv(buffer, 1024);
 		if(bytes <= 0)
 		{
-			signal_close.emit();
+			on_close();
 		}
 		else
 		{
@@ -145,7 +136,7 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io) try
 			{
 				packet pack;
 				pack.set_raw_string(*iter);
-				signal_recv.emit(pack);
+				on_recv(pack);
 			}
 		}
 	}
@@ -159,10 +150,10 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io) try
 
 		part_pack = true;
 		socket::size_type bytes;
-		bytes = tcp_sock.send(data, string.length() - offset);
+		bytes = remote_sock.send(data, string.length() - offset);
 		if(bytes <= 0)
 		{
-			signal_close.emit();
+			on_close();
 		}
 		else
 		{
@@ -173,7 +164,7 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io) try
 			{
 				packet send_pack = *packet_queue.begin();
 				packet_queue.erase(packet_queue.begin() );
-				signal_send.emit(send_pack);
+				on_send(send_pack);
 
 				offset = 0;
 				part_pack = false;
@@ -183,14 +174,29 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io) try
 
 	if(io & socket::IOERROR)
 	{
-		signal_close.emit();
+		on_close();
 	}
 }
 catch(net6::error& e)
 {
 	if(e.get_code() == error::CONNECTION_RESET ||
 	   e.get_code() == error::BROKEN_PIPE)
-		signal_close.emit();
+		on_close();
 	else
 		throw e;
+}
+
+void net6::connection::on_send(const net6::packet& pack)
+{
+	signal_send.emit(pack);
+}
+
+void net6::connection::on_recv(const net6::packet& pack)
+{
+	signal_recv.emit(pack);
+}
+
+void net6::connection::on_close()
+{
+	signal_close.emit();
 }

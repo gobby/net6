@@ -9,23 +9,19 @@
 const int port = 1349;
 bool quit = false;
 net6::selector selector;
+net6::socket* gsock;
 
 int client_main(int argc, char* argv[]);
 
-void on_server_io(net6::socket& sock, net6::socket::condition io)
+void on_server_io(net6::socket::condition io)
 {
-	net6::tcp_client_socket& tcp_sock = static_cast<net6::tcp_client_socket&>(sock);
+	net6::tcp_client_socket& tcp_sock = static_cast<net6::tcp_client_socket&>(*gsock);
 	if(io & net6::socket::INCOMING)
 	{
 		char buffer[1024 + 1];
-		int bytes = tcp_sock.recv(buffer, 1024);
+		unsigned int bytes = tcp_sock.recv(buffer, 1024);
 
-		if(bytes < 0)
-		{
-			std::cout << "Error occured" << std::endl;
-			quit = true;
-		}
-		else if(bytes == 0)
+		if(bytes == 0)
 		{
 			std::cout << "Connection lost" << std::endl;
 			quit = true;
@@ -39,7 +35,7 @@ void on_server_io(net6::socket& sock, net6::socket::condition io)
 	if(io & net6::socket::OUTGOING)
 	{
 		tcp_sock.send("Hallo, Welt!", 12);
-		selector.remove(sock, net6::socket::OUTGOING);
+		selector.remove(tcp_sock, net6::socket::OUTGOING);
 	}
 	if(io & net6::socket::IOERROR)
 	{
@@ -48,20 +44,15 @@ void on_server_io(net6::socket& sock, net6::socket::condition io)
 	}
 }
 
-void on_client_io(net6::socket& sock, net6::socket::condition io)
+void on_client_io(net6::socket::condition io)
 {
-	net6::tcp_client_socket& tcp_sock = static_cast<net6::tcp_client_socket&>(sock);
+	net6::tcp_client_socket& tcp_sock = static_cast<net6::tcp_client_socket&>(*gsock);
 	if(io & net6::socket::INCOMING)
 	{
 		char buffer[1024 + 1];
 		int bytes = tcp_sock.recv(buffer, 1024);
 
-		if(bytes < 0)
-		{
-			std::cout << "Error occured" << std::endl;
-			quit = true;
-		}
-		else if(bytes == 0)
+		if(bytes == 0)
 		{
 			std::cout << "Connection lost" << std::endl;
 			quit = true;
@@ -75,7 +66,7 @@ void on_client_io(net6::socket& sock, net6::socket::condition io)
 	if(io & net6::socket::OUTGOING)
 	{
 		tcp_sock.send("Foobar!", 7);
-		selector.remove(sock, net6::socket::OUTGOING);
+		selector.remove(tcp_sock, net6::socket::OUTGOING);
 	}
 	if(io & net6::socket::IOERROR)
 	{
@@ -87,11 +78,6 @@ void on_client_io(net6::socket& sock, net6::socket::condition io)
 
 int main(int argc, char* argv[]) try
 {
-	net6::ipv4_address test = net6::ipv4_address::create_from_hostname("localhost", 34325);
-	net6::address* other = test.clone();
-	std::cout << other->get_name() << std::endl;
-	delete other;
-
 	net6::main kit;
 
 	if(argc > 1)
@@ -102,12 +88,13 @@ int main(int argc, char* argv[]) try
 
 	net6::ipv4_address client_addr;
 	net6::tcp_client_socket client = sock.accept(client_addr);
+	gsock = &client;
 
 	std::cout << "Connection from " << client_addr.get_name() << std::endl;
 
-	client.read_event().connect(sigc::ptr_fun(&on_server_io) );
-	client.write_event().connect(sigc::ptr_fun(&on_server_io) );
-	client.error_event().connect(sigc::ptr_fun(&on_server_io) );
+	client.io_event().connect(sigc::ptr_fun(&on_server_io) );
+//	client.write_event().connect(sigc::ptr_fun(&on_server_io) );
+//	client.error_event().connect(sigc::ptr_fun(&on_server_io) );
 
 	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::IOERROR);
 
@@ -125,10 +112,11 @@ int client_main(int argc, char* argv[])
 {
 	net6::ipv4_address client_addr = net6::ipv4_address::create_from_hostname("localhost", port);
 	net6::tcp_client_socket client(client_addr);
+	gsock = &client;
 
-	client.read_event().connect(sigc::ptr_fun(&on_client_io) );
-	client.write_event().connect(sigc::ptr_fun(&on_client_io) );
-	client.error_event().connect(sigc::ptr_fun(&on_client_io) );
+	client.io_event().connect(sigc::ptr_fun(&on_client_io) );
+//	client.write_event().connect(sigc::ptr_fun(&on_client_io) );
+//	client.error_event().connect(sigc::ptr_fun(&on_client_io) );
 
 	selector.add(client, net6::socket::INCOMING | net6::socket::OUTGOING | net6::socket::IOERROR);
 

@@ -104,6 +104,11 @@ net6::socket& net6::socket::operator=(const socket& other)
 	return *this;
 }
 
+void net6::socket::on_io(condition cond)
+{
+	data->signal_io.emit(cond);
+}
+
 net6::tcp_socket::tcp_socket(const address& addr)
  : socket(address_to_protocol(addr.get_family()), SOCK_STREAM, IPPROTO_TCP)
 {

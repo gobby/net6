@@ -108,6 +108,11 @@ protected:
 	std::list<socket> error_list;
 
 	signal_socket_event_type signal_socket_event;
+
+	/** May be overwritten to do things before/after the socket_event
+	 * signal is emitted.
+	 */
+	virtual bool on_socket_event(socket& sock, socket::condition cond);
 };
 	
 }

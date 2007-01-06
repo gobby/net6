@@ -50,7 +50,7 @@ public:
 	};
 
 	typedef sigc::signal<void, peer&, const packet&> signal_join_type;
-	typedef sigc::signal<void, peer&> signal_part_type;
+	typedef sigc::signal<void, peer&, const packet&> signal_part_type;
 	typedef sigc::signal<void, const packet&> signal_data_type;
 	typedef sigc::signal<void> signal_close_type;
 	typedef sigc::signal<void, const std::string&> signal_login_failed_type;
@@ -131,13 +131,19 @@ public:
 	signal_login_failed_type login_failed_event() const;
 
 protected:
-	virtual void on_client_recv(const packet& pack);
-	virtual void on_client_send(const packet& pack);
-	virtual void on_client_close();
+	virtual void on_recv_event(const packet& pack);
+	virtual void on_send_event(const packet& pack);
+	virtual void on_close_event();
 
-	virtual void on_login_failed(const packet& pack);
-	virtual void on_client_join(const packet& pack);
-	virtual void on_client_part(const packet& pack);
+	virtual void on_join(peer& client, const packet& pack);
+	virtual void on_part(peer& client, const packet& pack);
+	virtual void on_data(const packet& pack);
+	virtual void on_close();
+	virtual void on_login_failed(const std::string& reason);
+
+	virtual void net_login_failed(const packet& pack);
+	virtual void net_client_join(const packet& pack);
+	virtual void net_client_part(const packet& pack);
 
 	connection conn;
 	std::list<peer*> peers;
