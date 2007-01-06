@@ -141,18 +141,20 @@ void net6::packet::param::clear_memory()
 		delete data.s;
 }
 
-net6::packet::packet()
+net6::packet::packet(unsigned int priority)
+ : prio(priority)
 {
 }
 
-net6::packet::packet(const std::string& command, unsigned int size)
- : command(command)
+net6::packet::packet(const std::string& command, unsigned int priority,
+                     unsigned int size)
+ : command(command), prio(priority)
 {
 	params.reserve(size);
 }
 
 net6::packet::packet(const packet& other)
- : command(other.command)
+ : command(other.command), prio(other.prio)
 {
 	params.resize(other.params.size() );
 	std::copy(other.params.begin(), other.params.end(), params.begin() );
@@ -178,6 +180,11 @@ net6::packet& net6::packet::operator=(const packet& other)
 const std::string& net6::packet::get_command() const
 {
 	return command;
+}
+
+unsigned int net6::packet::get_priority() const
+{
+	return prio;
 }
 
 const net6::packet::param& net6::packet::get_param(unsigned int index) const

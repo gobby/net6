@@ -108,12 +108,13 @@ public:
 
   /** Creates an empty packet.
    */
-  packet();
+  packet(unsigned int priority = 1000);
 
   /** Creates a new packet with command <em>command</em> and preallocates
    * memoty for <size> parameters.
    */
-  packet(const std::string& command, unsigned int size = 0);
+  packet(const std::string& command, unsigned int priority = 1000,
+         unsigned int size = 0);
 
   /** Creates a copy of <em>other</em>.
    */
@@ -132,9 +133,14 @@ public:
     return *this;
   }
 
-  /** Returns the command of this packet
+  /** Returns the command of this packet.
    */
   const std::string& get_command() const;
+
+  /** Returns the priority of this packet. Packets with higher priority are
+   * sent before ones with lower priority.
+   */
+  unsigned int get_priority() const;
 
   /** Returns the <em>index</em>d parameter of this packet.
    */
@@ -163,6 +169,7 @@ protected:
 
   std::string command;
   std::vector<param> params;
+  unsigned int prio;
 };
 
 }

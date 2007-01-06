@@ -19,7 +19,7 @@
 #ifndef _NET6_CONNECTION_HPP_
 #define _NET6_CONNECTION_HPP_
 
-#include <queue>
+#include <list>
 #include <sigc++/signal.h>
 
 #include "export.hpp"
@@ -86,7 +86,7 @@ public:
 protected:
 	void on_sock_event(socket& sock, socket::condition io);
 
-	std::queue<packet> packet_queue;
+	std::list<packet> packet_queue;
 	std::string::size_type offset;
 	std::string recv_data;
 
@@ -96,6 +96,7 @@ protected:
 
 	tcp_client_socket remote_sock;
 	address* remote_addr;
+	bool part_pack; // Set to TRUE if a packet has been send partially
 };
 	
 }

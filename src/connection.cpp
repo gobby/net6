@@ -16,10 +16,11 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <cassert>
 #include "connection.hpp"
 
 net6::connection::connection(const address& addr)
- : offset(0), remote_sock(addr), remote_addr(addr.clone() )
+ : offset(0), remote_sock(addr), remote_addr(addr.clone() ), part_pack(false)
 {
 	remote_sock.read_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
@@ -30,7 +31,7 @@ net6::connection::connection(const address& addr)
 }
 
 net6::connection::connection(const tcp_client_socket& sock, const address& addr)
- : offset(0), remote_sock(sock), remote_addr(addr.clone() )
+ : offset(0), remote_sock(sock), remote_addr(addr.clone() ), part_pack(false)
 {
 	remote_sock.read_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
@@ -57,7 +58,26 @@ const net6::tcp_client_socket& net6::connection::get_socket() const
 
 void net6::connection::send(const packet& pack)
 {
-	packet_queue.push(pack);
+	std::list<packet>::iterator iter = packet_queue.begin();
+
+	// Do not push the packet to the front of the queue if the first
+	// packet has been sent partially already.
+	if(part_pack) ++ iter;
+	
+	// Insert into list
+	for(; iter != packet_queue.end(); ++ iter)
+	{
+		// Is the new priority higher than the one of this packet?
+		// Insert before in order to be sent before this one.
+		if(pack.get_priority() > iter->get_priority() )
+		{
+			packet_queue.insert(iter, pack);
+			return;
+		}
+	}
+
+	// Not inserted already? Push back.
+	packet_queue.push_back(pack);
 }
 
 unsigned int net6::connection::send_queue_size() const
@@ -116,9 +136,12 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 
 	if(io & socket::OUT)
 	{
-		std::string string = packet_queue.front().get_raw_string();
+		assert(packet_queue.begin() != packet_queue.end() );
+
+		std::string string = packet_queue.begin()->get_raw_string();
 		const char* data = string.c_str() + offset;
 
+		part_pack = true;
 		socket::size_type bytes;
 		bytes = tcp_sock.send(data, string.length() - offset);
 		if(bytes <= 0)
@@ -132,11 +155,12 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 			// Wrote whole packet?
 			if(offset == string.length() )
 			{
-				packet send_pack = packet_queue.front();
-				packet_queue.pop();
+				packet send_pack = *packet_queue.begin();
+				packet_queue.erase(packet_queue.begin() );
 				signal_send.emit(send_pack);
 
 				offset = 0;
+				part_pack = false;
 			}
 		}
 	}

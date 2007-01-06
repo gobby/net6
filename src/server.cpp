@@ -106,12 +106,12 @@ void net6::server::reopen(unsigned int port)
 {
 	if(use_ipv6)
 	{
-		ipv6_address bind_addr = ipv6_address::create(port);
+		ipv6_address bind_addr(port);
 		serv_sock = new tcp_server_socket(bind_addr);
 	}
 	else
 	{
-		ipv4_address bind_addr = ipv4_address::create(port);
+		ipv4_address bind_addr(port);
 		serv_sock = new tcp_server_socket(bind_addr);
 	}
 
@@ -189,6 +189,11 @@ net6::server::signal_login_type net6::server::login_event() const
 	return signal_login;
 }
 
+net6::server::signal_login_auth_type net6::server::login_auth_event() const
+{
+	return signal_login_auth;
+}
+
 net6::server::signal_data_type net6::server::data_event() const
 {
 	return signal_data;
@@ -214,9 +219,9 @@ void net6::server::on_server_read(socket& sock, socket::condition io)
 {
 	address* new_addr;
 	if(use_ipv6)
-		new_addr = new ipv6_address(ipv6_address::create() );
+		new_addr = new ipv6_address;
 	else
-		new_addr = new ipv4_address(ipv4_address::create() );
+		new_addr = new ipv4_address;
 
 	tcp_server_socket& tcp_sock = static_cast<tcp_server_socket&>(sock);
 	tcp_client_socket new_sock = tcp_sock.accept(*new_addr);
@@ -253,6 +258,8 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 {
 	if(pack.get_command() == "net6_client_login")
 	{
+		if(from.is_logined() ) return;
+
 		if(pack.get_param_count() < 1) return;
 		if(pack.get_param(0).get_type() != packet::param::STRING)
 			return;
@@ -272,6 +279,15 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 		}
 		else
 		{
+			std::string reason;
+			if(!signal_login_auth.emit(from, pack, reason) )
+			{
+				packet pack("net6_login_failed");
+				pack << reason;
+				send(pack, from);
+				return;
+			}
+	
 			from.login(name);
 			packet self_pack("net6_client_join");
 			self_pack << static_cast<int>(from.get_id() ) << name;
