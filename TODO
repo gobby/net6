@@ -6,7 +6,6 @@ Blocker:
 Critical:
 
 Major:
-  * gethostbyname on win32 (#19)
 
 Normal:
 
@@ -19,12 +18,6 @@ Enhancement:
   * Translate failure messages with gettext (#14)
 
 
-19: gethostbyname on win32
---------------------------
-net6 should use gethostbyname instead of getaddrinfo for the win32 
-implementation because getaddrinfo seem only to exist in Windows XP's 
-version of ws2_32.dll.
-
 16: Error code transmission
 ---------------------------
 We should transmit error codes instead of error strings in net6. The client 
@@ -33,5 +26,7 @@ may build a (localised, see #14) string out of it.
 14: Translate failure messages with gettext
 -------------------------------------------
 The failure messages issued by net6 should be localised and translated with 
-gettext.
+gettext. Error code transmission (#16) should be implemented first so that 
+the client gets the message in his own locale and not in the one of the 
+server.
 
