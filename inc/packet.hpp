@@ -63,6 +63,15 @@ public:
 		 : std::runtime_error(reason) { }
 	};
 
+	/** Exception that might be thrown by a packet reception handler if
+	 * the packet has invalid parameters.
+	 */
+	class bad_value : public std::runtime_error {
+	public:
+		bad_value(const std::string& error_message)
+		 : std::runtime_error(error_message) { }
+	};
+
 protected:
 	/** Base class for net6::basic_parameter::data.
 	 */
