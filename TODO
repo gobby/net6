@@ -1,1 +1,18 @@
-net6::host
+net6
+====
+
+This file lists prioritised items which need to be fixed or developed.
+
+Serious:
+
+Important:
+ * Catch connection resets (might depend on ``Add error codes'').
+
+Normal:
+ * Add error codes.
+
+Minor:
+
+Wishlist:
+ * Translate failure messages with gettext.
+
