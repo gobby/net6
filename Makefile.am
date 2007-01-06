@@ -53,7 +53,7 @@ libnet6_la_SOURCES = \
 	src/host.cpp
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = net6-1.1.pc
+pkgconfig_DATA = net6-1.2.pc
 
 # gettext
 SUBDIRS = po .
