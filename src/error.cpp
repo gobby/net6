@@ -28,9 +28,9 @@
 #include "common.hpp"
 
 // Login error codes
-const net6::login::error net6::login::ERROR_NAME_INVALID = 1;
-const net6::login::error net6::login::ERROR_NAME_IN_USE = 2;
-const net6::login::error net6::login::ERROR_MAX = 0xff;
+const net6::login::error net6::login::ERROR_NAME_INVALID = 0x01;
+const net6::login::error net6::login::ERROR_NAME_IN_USE  = 0x02;
+const net6::login::error net6::login::ERROR_MAX          = 0xff;
 
 std::string net6::login::errstring(error err)
 {
