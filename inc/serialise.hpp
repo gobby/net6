@@ -60,6 +60,8 @@ template<typename data_type>
 class context_base_to
 {
 public:
+	virtual ~context_base_to() {}
+
 	/** @brief Converts the given data type to a string.
 	 */
 	virtual std::string to_string(const data_type& from) const = 0;
@@ -71,6 +73,8 @@ template<typename data_type>
 class context_base_from
 {
 public:
+	virtual ~context_base_from() {}
+
 	/** @brief Converts a string to a data type. Might throw
 	 * serialise::conversion_error.
 	 */

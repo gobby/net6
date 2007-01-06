@@ -18,6 +18,8 @@
 
 #include <ctime>
 #include <limits>
+#include <sys/select.h>
+
 #include "error.hpp"
 #include "select.hpp"
 
