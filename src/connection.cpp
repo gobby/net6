@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include "error.hpp"
+#include "packet.hpp"
 #include "connection.hpp"
 
 // We use malloc for the dynamic queue data to be available to use realloc
@@ -104,8 +105,7 @@ const net6::tcp_client_socket& net6::connection::get_socket() const
 
 void net6::connection::send(const packet& pack)
 {
-	std::string str = pack.get_raw_string();
-	sendqueue.append(str.c_str(), str.length() );
+	pack.enqueue(sendqueue);
 }
 
 net6::connection::signal_recv_type net6::connection::recv_event() const
@@ -131,59 +131,46 @@ void net6::connection::on_sock_event(socket::condition io)
 		{
 			// Get up to 1024 bytes
 			char buffer[1024];
-			socket::size_type bytes = remote_sock.recv(buffer, 1024);
+			socket::size_type bytes =
+				remote_sock.recv(buffer, 1024);
+
 			if(bytes == 0)
 			{
 				on_close();
 			}
 			else
 			{
+				// Add to queue
 				recvqueue.append(buffer, bytes);
 
-				// First store the packet strings in a separate list to
-				// allow signal handlers to delete the connection object
-				std::list<std::string> packet_list;
+				// First store the packets in a separate list
+				// to allow signal handlers to delete the
+				// connection object
+				std::list<packet> packet_list;
 
-				// Read as many packets as we successfully read.
-				queue::size_type pos;
-				while( (pos = recvqueue.packet_size()) !=
-							recvqueue.get_size() )
+				// Add all packets to the list until
+				// end of queue is found.
+				try
 				{
-					// Push packet string back to the list
-					packet_list.push_back(
-						std::string(
-							recvqueue.get_data(),
-							pos + 1
-						)
-					);
-
-					// Remove the packet from the queue
-					recvqueue.remove(pos + 1);
+					while(true)
+					{
+						packet_list.push_back(
+							packet(recvqueue)
+						);
+					}
 				}
+				catch(packet::end_of_queue&) {}
 
-				// Emit the signal_recv now. Because we do not depend
-				// on recvqueue for reading further data, the singal
-				// handler may destroy the connection object.
-				std::list<std::string>::iterator iter;
+				// Emit the signal_recv now. Because we do not
+				// depend on recvqueue for reading further
+				// data, the singal handler may destroy the
+				// connection object.
+				std::list<packet>::iterator iter;
 				for(iter = packet_list.begin();
-						iter != packet_list.end();
-						++ iter)
+				    iter != packet_list.end();
+				    ++ iter)
 				{
-					try
-					{
-						packet pack;
-						pack.set_raw_string(*iter);
-						on_recv(pack);
-					}
-					catch(net6::basic_parameter::bad_format& e)
-					{
-						std::cerr << "net6-Warning: Protocol "
-											<< "mismatch! Received bad "
-											<< "parameter format from "
-											<< remote_addr->get_name()
-											<< ": " << e.what()
-											<< std::endl;
-					}
+					on_recv(*iter);
 				}
 			}
 		}
@@ -210,10 +197,12 @@ void net6::connection::on_sock_event(socket::condition io)
 			}
 			else
 			{
-				// Remove the data we successfully sent from the queue
+				// Remove the data we successfully sent from
+				// the queue
 				sendqueue.remove(bytes);
-				// Emit on_send signal if all available data has been
-				// sent
+
+				// Emit on_send signal if all available data
+				// has been sent
 				if(sendqueue.get_size() == 0)
 					on_send();
 			}
@@ -245,24 +234,25 @@ void net6::connection::on_recv(const net6::packet& pack)
 	{
 		signal_recv.emit(pack);
 	}
-	catch(net6::basic_parameter::bad_type& e)
-	{
-		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
-		          << "parameter type from " << remote_addr->get_name()
-		          << " in packet " << pack.get_command() << std::endl;
-	}
-	catch(net6::basic_parameter::bad_count& e)
+	catch(net6::bad_count& e)
 	{
 		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
 		          << "parameter count from " << remote_addr->get_name()
 		          << " in packet " << pack.get_command() << std::endl;
 	}
-	catch(net6::basic_parameter::bad_value& e)
+	catch(net6::bad_format& e)
+	{
+		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
+		          << "parameter format from " << remote_addr->get_name()
+		          << " in packet " << pack.get_command() << ": "
+		          << e.what() << std::endl;
+	}
+	catch(net6::bad_value& e)
 	{
 		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
 		          << "parameter value from " << remote_addr->get_name()
 		          << " in packet " << pack.get_command() << ": "
-		           << e.what() << std::endl;
+		          << e.what() << std::endl;
 	}
 }
 

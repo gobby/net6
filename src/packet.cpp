@@ -17,63 +17,52 @@
  */
 
 #include "packet.hpp"
+#include "connection.hpp"
 
-const unsigned int net6::packet::DEFAULT_PRIORITY = 1000;
-net6::packet::type_lookup_map net6::packet::type_map;
-
-net6::packet::packet(unsigned int priority)
- : prio(priority)
+net6::parameter::parameter(const std::string& value):
+	m_value(value)
 {
 }
 
-net6::packet::packet(const std::string& command, unsigned int priority,
-                     unsigned int size)
- : command(command), prio(priority)
+const std::string& net6::parameter::serialised() const
+{
+	return m_value.serialised();
+}
+
+net6::packet::packet(const std::string& command,
+                     unsigned int size):
+	command(command)
 {
 	params.reserve(size);
 }
 
-net6::packet::packet(const packet& other)
- : command(other.command), prio(other.prio)
+net6::packet::packet(connection::queue& queue)
 {
-	params.resize(other.params.size() );
-	for(std::vector<basic_parameter*>::size_type i = 0;
-	    i < params.size();
-	    ++i)
-		params[i] = other.params[i]->clone();
-}
+	// Check for a complete packet on the queue
+	connection::queue::size_type pack_pos = queue.packet_size();
+	if(pack_pos == queue.get_size() )
+		throw end_of_queue();
 
-net6::packet::~packet()
-{
-	for(std::vector<basic_parameter*>::const_iterator i = params.begin();
-	    i != params.end();
-	    ++ i)
-		delete *i;
-}
+	// Get packet string representation
+	std::string pack_string(queue.get_data(), pack_pos + 1);
+	queue.remove(pack_pos + 1);
 
-net6::packet& net6::packet::operator=(const packet& other)
-{
-	// TODO: Optimize this function by reusing existing parameters
-	if(&other == this)
-		return *this;
+	// Find command
+	std::string::size_type pos = pack_string.find(':', pos);
+	if(pos == std::string::npos) pos = pack_string.length();
+	command = unescape(pack_string.substr(0, pos) );
 
-	// Delete existing parameters
-	for(std::vector<basic_parameter*>::const_iterator i = params.begin();
-	    i != params.end();
-	    ++ i)
-		delete *i;
+	// Parameters
+	std::string::size_type prev = ++ pos;
+	while( (pos = pack_string.find(':', pos)) != std::string::npos)
+	{
+		std::string::size_type len = pos - prev;
+		params.push_back(parameter(pack_string.substr(prev, len)) );
+		prev = ++ pos;
+	}
 
-	// Take new command
-	command = other.command;
-
-	// Take new parameters
-	params.resize(other.params.size() );
-	for(std::vector<basic_parameter*>::size_type i = 0;
-	    i < params.size();
-	    ++i)
-		params[i] = other.params[i]->clone();
-
-	return *this;
+	// Last one
+	params.push_back(parameter(pack_string.substr(prev)) );
 }
 
 const std::string& net6::packet::get_command() const
@@ -81,17 +70,12 @@ const std::string& net6::packet::get_command() const
 	return command;
 }
 
-unsigned int net6::packet::get_priority() const
-{
-	return prio;
-}
-
-const net6::basic_parameter& net6::packet::get_param(unsigned int index) const
+const net6::parameter& net6::packet::get_param(unsigned int index) const
 {
 	if(index >= params.size() )
-		throw basic_parameter::bad_count();
+		throw bad_count();
 
-	return *params[index];
+	return params[index];
 }
 
 unsigned int net6::packet::get_param_count() const
@@ -99,41 +83,26 @@ unsigned int net6::packet::get_param_count() const
 	return static_cast<unsigned int>(params.size() );
 }
 
-std::string net6::packet::get_raw_string() const
+void net6::packet::enqueue(connection::queue& queue) const
 {
-	// TODO: Preallocate memory?
-	std::string str = escape(command);
-	for(std::vector<basic_parameter*>::const_iterator i = params.begin();
-	    i != params.end();
-	    ++ i)
+	// Packet command
+	std::string escaped_command = escape(command);
+	queue.append(escaped_command.c_str(), escaped_command.length() );
+
+	for(std::vector<parameter>::const_iterator iter = params.begin();
+	    iter != params.end();
+	    ++ iter)
 	{
-		const basic_parameter& param = **i;
+		// Parameter separator
+		queue.append(":", 1);
 
-		str += ":";
-		str += param.get_type_id();
-		str += escape(param.to_string() );
+		// Next parameter
+		std::string escaped_param = escape(iter->serialised() );
+		queue.append(escaped_param.c_str(), escaped_param.length() );
 	}
-	str += "\n";
 
-	return str;
-}
-
-void net6::packet::set_raw_string(const std::string& raw_string)
-{
-	command = "";
-	std::string::size_type pos = 0, prev = 0;
-	while( (pos = raw_string.find(':', pos)) != std::string::npos)
-	{
-		set_raw_param(raw_string.substr(prev, pos - prev) );
-		prev = ++ pos;
-	}
-	set_raw_param(raw_string.substr(prev, raw_string.length() - prev - 1) );
-}
-
-void net6::packet::register_type(identification_type type,
-                                 type_lookup_slot slot)
-{
-	type_map[type] = slot;
+	// Packet separator
+	queue.append("\n", 1);
 }
 
 std::string net6::packet::escape(const std::string& string)
@@ -184,19 +153,5 @@ std::string net6::packet::unescape(const std::string& string)
 		++ pos;
 	}
 	return unescaped_string;
-}
-
-void net6::packet::set_raw_param(const std::string& param_string)
-{
-	// No command yet? The first parameter is the command of the packet
-	if(command.empty() )
-		command = unescape(param_string);
-	else
-	{
-		type_lookup_map::const_iterator i =
-			type_map.find(param_string[0]);
-		// TODO: Throw error if i == type_map.end()
-		params.push_back(i->second(unescape(param_string.substr(1))) );
-	}
 }
 

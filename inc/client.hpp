@@ -382,7 +382,7 @@ void basic_client<selector_type>::net_login_failed(const packet& pack)
 	// Received login_failed packet
 	on_login_failed(
 		static_cast<login::error>(
-			pack.get_param(0).basic_parameter::as<int>()
+			pack.get_param(0).parameter::as<int>()
 		)
 	);
 }
@@ -391,9 +391,9 @@ template<typename selector_type>
 void basic_client<selector_type>::net_client_join(const packet& pack)
 {
 	// Received client_join packet
-	int id = pack.get_param(0).basic_parameter::as<int>();
+	int id = pack.get_param(0).parameter::as<int>();
 	const std::string& name =
-		pack.get_param(1).basic_parameter::as<std::string>();
+		pack.get_param(1).parameter::as<std::string>();
 
 	user* new_client = new user(id, NULL);
 	basic_object<selector_type>::user_add(new_client);
@@ -407,15 +407,11 @@ void basic_client<selector_type>::net_client_join(const packet& pack)
 template<typename selector_type>
 void basic_client<selector_type>::net_client_part(const packet& pack)
 {
-	unsigned int id = pack.get_param(0).basic_parameter::as<int>();
+	unsigned int id = pack.get_param(0).parameter::as<int>();
 	user* rem_user = basic_object<selector_type>::user_find(id);
 
 	if(rem_user == NULL)
-	{
-		throw basic_parameter::bad_value(
-			"Got client_part for nonexistant user"
-		);
-	}
+		throw bad_value("Got client_part for nonexistant user");
 
 	on_part(*rem_user, pack);
 	basic_object<selector_type>::user_remove(rem_user);

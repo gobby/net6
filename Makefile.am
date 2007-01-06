@@ -20,6 +20,7 @@ pkginclude_HEADERS = \
 	inc/default_accumulator.hpp \
 	inc/error.hpp \
 	inc/main.hpp \
+	inc/serialise.hpp \
 	inc/address.hpp \
 	inc/socket.hpp \
 	inc/select.hpp \
@@ -40,6 +41,7 @@ libnet6_la_SOURCES = \
 	src/default_accumulator.cpp \
 	src/error.cpp \
 	src/main.cpp \
+	src/serialise.cpp \
 	src/address.cpp \
 	src/socket.cpp \
 	src/select.cpp \

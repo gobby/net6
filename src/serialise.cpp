@@ -16,49 +16,20 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "config.hpp"
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#endif
-#include <signal.h>
-#include "error.hpp"
-#include "main.hpp"
+#include "serialise.hpp"
 
-unsigned int net6::main::refcount = 0;
-
-net6::main::main()
+serialise::conversion_error::conversion_error(const std::string& message):
+	std::runtime_error(message)
 {
-	if(refcount > 0)
-	{
-		refcount ++;
-		return;
-	}
-
-#ifdef WIN32
-	WSAData data;
-	if(WSAStartup(MAKEWORD(2, 2), &data) != 0)
-		throw error(error::SYSTEM, WSAGetLastError() );
-#endif
-
-	refcount ++;
-
-#ifdef ENABLE_NLS
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	bind_textdomain_codeset(PACKAGE, "UTF-8");
-#endif
 }
 
-net6::main::~main()
+serialise::data::data(const std::string& serialised):
+	m_serialised(serialised)
 {
-	refcount --;
-#ifdef WIN32
-	if(refcount == 0)
-	{
-		WSACleanup();
-	}
-#endif
+}
+
+const std::string& serialise::data::serialised() const
+{
+	return m_serialised;
 }
 

@@ -238,6 +238,7 @@ basic_server<selector_type>::basic_server(unsigned int port, bool ipv6)
 template<typename selector_type>
 basic_server<selector_type>::~basic_server()
 {
+	// TODO: Call user_clear first to remove user connections first?
 	if(is_open() )
 		shutdown_impl();
 }
@@ -536,7 +537,7 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 	// Get wished user name
 	// TODO: trim name?
 	const std::string& name =
-		pack.get_param(0).basic_parameter::as<std::string>();
+		pack.get_param(0).parameter::as<std::string>();
 
 	// Check for valid user name
 	if(name.empty() )

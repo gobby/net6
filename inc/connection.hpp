@@ -23,10 +23,11 @@
 
 #include "non_copyable.hpp"
 #include "socket.hpp"
-#include "packet.hpp"
 
 namespace net6
 {
+
+class packet;
 
 /** Connection to another host.
  */
