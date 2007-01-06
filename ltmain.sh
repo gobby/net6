@@ -61,6 +61,13 @@ fi
 if test "X$LTCC" = X ; then
     LTCC=${CC-gcc}
 fi
+# Same for EGREP, and just to be sure, do LTCC as well
+if [ "x$EGREP" = x ] ; then
+    EGREP=egrep
+fi
+if [ "x$LTCC" = x ] ; then
+    LTCC=${CC-gcc}
+fi
 
 # Check that we have a working $echo.
 if test "X$1" = X--no-reexec; then
@@ -144,6 +151,30 @@ show_help=
 execute_dlfiles=
 lo2o="s/\\.lo\$/.${objext}/"
 o2lo="s/\\.${objext}\$/.lo/"
+
+if test -z "$max_cmd_len"; then
+  i=0
+  testring="ABCD"
+  new_result=
+  
+  # If test is not a shell built-in, we'll probably end up computing a
+  # maximum length that is only half of the actual maximum length, but
+  # we can't tell.
+  while (test "X"`$SHELL $0 --fallback-echo "X$testring" 2>/dev/null` \
+             = "XX$testring") >/dev/null 2>&1 &&
+          new_result=`expr "X$testring" : ".*" 2>&1` &&
+          max_cmd_len="$new_result" &&
+          test $i != 17 # 1/2 MB should be enough
+  do
+    i=`expr $i + 1`
+    testring="$testring$testring"
+  done
+  testring=
+  # Add a significant safety factor because C++ compilers can tack on massive
+  # amounts of additional arguments before passing them to the linker.
+  # It appears as though 1/2 is a usable value.
+  max_cmd_len=`expr $max_cmd_len \/ 2`
+fi
 
 if test -z "$max_cmd_len"; then
   i=0
@@ -5353,10 +5384,10 @@ fi\
 		  fi
 		  # We do not want portage's build root ($S) present.
 		  my_little_ninja_foo_2=`echo $deplib |$EGREP -e "$S"`
-		  if test -n "$my_little_ninja_foo_2" && test "$S"; then
-		    mynewdependency_lib=""
 		  # We do not want portage's install root ($D) present.
 		  my_little_ninja_foo_3=`echo $deplib |$EGREP -e "$D"`
+		  if test -n "$my_little_ninja_foo_2" && test "$S"; then
+		    mynewdependency_lib=""
 		  elif test -n "$my_little_ninja_foo_3" && test "$D"; then
 		    eval mynewdependency_lib=`echo "$deplib" |sed -e "s:$D:/:g" -e 's:/\+:/:g'`
 		  else
