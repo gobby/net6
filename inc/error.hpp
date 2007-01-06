@@ -122,7 +122,7 @@ public:
 	 */
 	error(domain error_domain, int error_code);
 
-	/** Gernate error by an error domain and the last occured error.
+	/** Generate error by an error domain and the last occured error.
 	 */
 	error(domain error_domain);
 
