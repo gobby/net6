@@ -6,7 +6,7 @@ lib_LTLIBRARIES = libnet6.la
 # interface :  changes : compatibility
 libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1 
 
-INCLUDES = $(libnet6_CFLAGS) -Iinc/
+INCLUDES = $(libnet6_CFLAGS) -Iinc
 
 pkginclude_HEADERS = \
 	inc/non_copyable.hpp \
