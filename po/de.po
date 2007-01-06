@@ -27,190 +27,190 @@ msgstr "Name wird bereits verwendet"
 msgid "An unknown login error occured"
 msgstr "Ein unbekannter Fehler ist während des Logins aufgetreten"
 
-#: src/error.cpp:327
+#: src/error.cpp:318
 msgid "Interrupted function call"
 msgstr "Funktionsaufruf unterbrochen"
 
-#: src/error.cpp:329
+#: src/error.cpp:320
 msgid "Access denied"
 msgstr "Zugriff verweigert"
 
-#: src/error.cpp:331
+#: src/error.cpp:322
 msgid "Bad address"
 msgstr "Ungültige Adresse"
 
-#: src/error.cpp:333
+#: src/error.cpp:324
 msgid "Invalid argument"
 msgstr "Ungültiges Argument"
 
-#: src/error.cpp:335
+#: src/error.cpp:326
 msgid "Too many open files"
 msgstr "Zu viele offene Dateien"
 
-#: src/error.cpp:337
+#: src/error.cpp:328
 msgid "Resource temporarily unavailable"
 msgstr "Ressource zur Zeit nicht verfügbar"
 
-#: src/error.cpp:339
+#: src/error.cpp:330
 msgid "Operation already in progress"
 msgstr "Operation wird bereits ausgeführt"
 
-#: src/error.cpp:341
+#: src/error.cpp:332
 msgid "Socket operation on non-socket"
 msgstr "Socketoperation wurde auf ein Objekt angewendet, das kein Socket ist"
 
-#: src/error.cpp:343
+#: src/error.cpp:334
 msgid "Destination address required"
 msgstr "Zieladdresse wird benötigt"
 
-#: src/error.cpp:345
+#: src/error.cpp:336
 msgid "Message too long"
 msgstr "Nachricht zu lang"
 
-#: src/error.cpp:347
+#: src/error.cpp:338
 msgid "Protocol wrong type for socket"
 msgstr "Falscher Socket-Typ"
 
-#: src/error.cpp:349
+#: src/error.cpp:340
 msgid "Bad protocol option"
 msgstr "Ungültige Protokol-Option"
 
-#: src/error.cpp:351
+#: src/error.cpp:342
 msgid "Protocol not supported"
 msgstr "Protokoll nicht unterstützt"
 
-#: src/error.cpp:353
+#: src/error.cpp:344
 msgid "Socket type not supported"
 msgstr "Sockettyp nicht unterstützt"
 
-#: src/error.cpp:355
+#: src/error.cpp:346
 msgid "Operation not supported"
 msgstr "Operation nicht unterstützt"
 
-#: src/error.cpp:357
+#: src/error.cpp:348
 msgid "Protocol family not supported"
 msgstr "Protokolltyp nicht unterstützt"
 
-#: src/error.cpp:359
+#: src/error.cpp:350
 msgid "Address family not supported"
 msgstr "Addresstyp nicht unterstützt"
 
-#: src/error.cpp:361
+#: src/error.cpp:352
 msgid "Address is already in use"
 msgstr "Die Adresse wird bereits verwendet"
 
-#: src/error.cpp:363
+#: src/error.cpp:354
 msgid "Cannot assign requested address"
 msgstr "Kann die gewünschte Adresse nicht zuweisen"
 
-#: src/error.cpp:365
+#: src/error.cpp:356
 msgid "Network is down"
 msgstr "Netzwerk ist heruntergefahren"
 
-#: src/error.cpp:367
+#: src/error.cpp:358
 msgid "Network is unreachable"
 msgstr "Netzwerk ist unerreichbar"
 
-#: src/error.cpp:369
+#: src/error.cpp:360
 msgid "Network dropped connection on reset"
 msgstr "Das Netzwerk hat die Verbindung nach einem Zurücksetzen abgebrochen"
 
-#: src/error.cpp:371
+#: src/error.cpp:362
 msgid "Software caused connection abort"
 msgstr "Die Software hat einen Verbindungsabbruch verursacht"
 
-#: src/error.cpp:373
+#: src/error.cpp:364
 msgid "Connection reset by peer"
 msgstr "Verbindungsabbruch durch die Gegenseite"
 
-#: src/error.cpp:375
+#: src/error.cpp:366
 msgid "No buffer space available"
 msgstr "Kein Pufferplatz mehr verfügbar"
 
-#: src/error.cpp:377
+#: src/error.cpp:368
 msgid "Socket is already connected"
 msgstr "Socket ist bereits verbunden"
 
-#: src/error.cpp:379
+#: src/error.cpp:370
 msgid "Socket is not connected"
 msgstr "Socket ist nicht verbunden"
 
-#: src/error.cpp:381
+#: src/error.cpp:372
 msgid "Cannot send after socket shutdown"
 msgstr "Nach dem Abschalten eines Sockets kann nichts versendet werden"
 
-#: src/error.cpp:383
+#: src/error.cpp:374
 msgid "Connection timed out"
 msgstr "Verbindung unterbrochen"
 
-#: src/error.cpp:385
+#: src/error.cpp:376
 msgid "Connection refused"
 msgstr "Verbindungsaufbau abgelehnt"
 
-#: src/error.cpp:387
+#: src/error.cpp:378
 msgid "Host is down"
 msgstr "Zielrechner ist heruntergefahren"
 
-#: src/error.cpp:389
+#: src/error.cpp:380
 msgid "No route to host"
 msgstr "Keinen Weg zum Zielrechner"
 
-#: src/error.cpp:391
+#: src/error.cpp:382
 msgid "Too many processes"
 msgstr "Zu viele Prozesse"
 
-#: src/error.cpp:393
+#: src/error.cpp:384
 msgid "Network subsystem is unavailable"
 msgstr "Netzwerksystem nicht verfügbar"
 
-#: src/error.cpp:395
+#: src/error.cpp:386
 msgid "Winsock.dll version out of range"
 msgstr "Falsche Version von Winsock.dll"
 
-#: src/error.cpp:397
+#: src/error.cpp:388
 msgid "Successful WSAStartup not yet performed"
 msgstr "Noch kein erfolgreicher WSAStartup-Aufruf erfolgt"
 
-#: src/error.cpp:399
+#: src/error.cpp:390
 msgid "Graceful shutdown in progress"
 msgstr "Abschaltvorgang läuft bereits"
 
-#: src/error.cpp:401
+#: src/error.cpp:392
 msgid "Class type not found"
 msgstr "Klassentyp nicht gefunden"
 
-#: src/error.cpp:403
+#: src/error.cpp:394
 msgid "Host not found"
 msgstr "Zielrechner nicht gefunden"
 
-#: src/error.cpp:405
+#: src/error.cpp:396
 msgid "Nonauthoritative host not found"
 msgstr "Nicht-authoritativer Rechner nicht gefunden"
 
-#: src/error.cpp:407
+#: src/error.cpp:398
 msgid "No data record of requested type"
 msgstr "Kein Datensatz vom gewünschten Typ"
 
-#: src/error.cpp:409
+#: src/error.cpp:400
 msgid "Specified event object handle is invalid"
 msgstr "Gegebenes Ereignisobjekt-Handle ist ungültig"
 
-#: src/error.cpp:411
+#: src/error.cpp:402
 msgid "One or more parameters are invalid"
 msgstr "Mindestens ein Parameter ist ungültig"
 
-#: src/error.cpp:413
+#: src/error.cpp:404
 msgid "No more memory is available"
 msgstr "Kein Speicher mehr verfügbar"
 
-#: src/error.cpp:415
+#: src/error.cpp:406
 msgid "Broken pipe"
 msgstr "Verbindung abgebrochen"
 
-#: src/error.cpp:417
+#: src/error.cpp:408
 msgid "No such device"
 msgstr "Kein derartiges Gerät"
 
-#: src/error.cpp:419
+#: src/error.cpp:410
 msgid "A nonrecoverable error has occured"
 msgstr "Ein nicht behebbarer Fehler ist aufgetreten"
