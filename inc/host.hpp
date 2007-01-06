@@ -47,6 +47,10 @@ public:
 	basic_host(unsigned int port, const std::string& username,
 	           bool ipv6 = true);
 
+	/** Sends a packet to all users.
+	 */
+	virtual void send(const packet& pack);
+
 	/** Sends a packet to a single user. The request is ignored if
 	 * <em>to</em> is the local user.
 	 */
@@ -93,6 +97,12 @@ basic_host<selector_type>::
 {
 	self->login(username);
 	basic_object<selector_type>::user_add(self);
+}
+
+template<typename selector_type>
+void basic_host<selector_type>::send(const packet& pack)
+{
+	basic_server<selector_type>::send(pack);
 }
 
 template<typename selector_type>
