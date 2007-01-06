@@ -18,6 +18,7 @@
 
 #include "error.hpp"
 #include "select.hpp"
+#include <algorithm>
 
 net6::selector::selector()
 {
