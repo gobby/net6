@@ -573,7 +573,7 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 		{
 			// Re-insert into map because ID has changed
 			basic_object<selector_type>::users.erase(user.get_id());
-			basic_object<selector_type>::users[new_id] = user;
+			basic_object<selector_type>::users[new_id] = &user;
 
 			user.login(name, new_id);
 			if(id_counter < new_id)
