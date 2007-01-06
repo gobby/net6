@@ -66,7 +66,7 @@ void net6::connection::queue::remove(size_type len)
 {
 	// TODO: Free a part of the allocated memory when only a half is used,
 	// or so.
-	if(len <= size)
+	if(len > size)
 		throw std::logic_error("net6::connection::queue::remove");
 
 	std::memmove(data, data + len, size - len);
@@ -189,7 +189,7 @@ void net6::connection::on_sock_event(socket::condition io) try
 	if(io & socket::OUTGOING)
 	{
 		// Is there something to send?
-		if(sendqueue.get_size() > 0)
+		if(sendqueue.get_size() == 0)
 		{
 			throw std::logic_error(
 				"net6::connection::on_sock_event"
