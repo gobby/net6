@@ -8,7 +8,6 @@ Critical:
 Major:
 
 Normal:
-  * The path containing the pkg-config specs should be determined (#47)
 
 Minor:
 
@@ -16,15 +15,4 @@ Trivial:
 
 Enhancement:
 
-
-47: The path containing the pkg-config specs should be determined
------------------------------------------------------------------
-The path which receives our pkg-config spec files is currently hardcoded as 
-it was advised on the web. On FreeBSD it should go into 
-''$(prefix)/libdata/pkgconfig'' instead of ''$(libdir)/pkgconfig''. 
-Autoconf does not even support a ''--libdata=DIR'' configuration option, 
-and I do not yet know any program which uses this. As Darwin also lacks a 
-''libdata'' subdirectory this probably needs just a special conditional for 
-FreeBSD. More input on this is certainly needed. This affects both ''net6'' 
-and ''libobby''.
 
