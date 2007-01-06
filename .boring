@@ -53,3 +53,4 @@ stamp-h1$
 \.xcode$
 ^test/conn$
 ^test/select$
+^net6-.+($|/)
