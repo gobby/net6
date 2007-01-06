@@ -5,6 +5,11 @@ Version 1.2.0:
  * This release is both API- and ABI-incompatible to the 1.1.x series.
  * New boolean type added
  * Heavily refactored through intensive use of templates
+ * MSVC8 build environment added
+ * Redesigned type concept with thread safety in mind
+ * New translations:
+   - Swedish (complete), thanks to Daniel Nylander!
+   - French (partial)
 
 Version 1.1.0:
  * This release is both API- and ABI-incompatible to the 1.0.x series.
