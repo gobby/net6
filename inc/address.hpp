@@ -37,6 +37,9 @@
 namespace net6
 {
 
+/** Abstract base class representing an internet address
+ */
+	
 class NET6_EXPORT address
 {
 public:
@@ -70,6 +73,9 @@ public:
 protected:
 	sockaddr* addr;
 };
+
+/** IPv4 internet address
+ */
 
 class NET6_EXPORT ipv4_address : public address
 {
@@ -148,6 +154,9 @@ public:
 protected:
 	ipv4_address();
 };
+
+/** IPv6 internet address
+ */
 
 class NET6_EXPORT ipv6_address : public address
 {

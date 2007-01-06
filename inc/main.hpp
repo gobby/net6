@@ -24,6 +24,10 @@
 namespace net6
 {
 
+/** net6 main object. Every net6 capable program needs one of these objects
+ * to (de)initialize the library
+ */
+	
 class NET6_EXPORT main
 {
 public:

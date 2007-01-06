@@ -25,13 +25,21 @@
 namespace net6
 {
 
+/** Participiant in a Client/Server network
+ */
+	
 class NET6_EXPORT peer
 {
 public:
 	peer(unsigned int unique_id, const std::string& nick);
 	~peer();
 
+	/** Returns the unique ID for this peer
+	 */
 	unsigned int get_id() const;
+
+	/** Returns the user name of this peer
+	 */
 	const std::string& get_name() const;
 
 protected:

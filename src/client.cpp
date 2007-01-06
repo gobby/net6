@@ -182,6 +182,8 @@ void net6::client::on_client_join(const packet& pack)
 	peer* new_client = new peer(id, name);
 	peers.push_back(new_client);
 
+	// The first client who joins is the client representing this host.
+	if(!self) self = new_client;
 	signal_join.emit(*new_client);
 }
 

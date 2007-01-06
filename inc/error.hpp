@@ -26,6 +26,9 @@
 namespace net6
 {
 
+/** Common net6 error reporting class.
+ */
+	
 class NET6_EXPORT error : public std::runtime_error
 {
 public:

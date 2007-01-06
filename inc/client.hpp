@@ -32,9 +32,14 @@
 namespace net6
 {
 
+/** Client in a Client/Server based TCP network system.
+ */
+	
 class NET6_EXPORT client : public sigc::trackable
 {
 public:
+	/** This class represents a peer in the network.
+	 */
 	class NET6_EXPORT peer : public net6::peer
 	{
 	public:
@@ -52,23 +57,68 @@ public:
 
 //	client(const std::string& hostname, unsigned int port,
 //	       bool ipv6 = true);
+
+	/** Creates a new client object and connect to the server at
+	 * <em>addr</em>.
+	 */
 	client(const address& addr);
 	~client();
 
+	/** Send a login request with the specified user name. On success,
+	 * a join_event with peer==self is emitted, otherwise a
+	 * login_failed_event.
+	 */
 	void login(const std::string& username);
 
+	/** Wait infinitely for incoming network events. Those events are
+	 * handled by the client object.
+	 */
 	void select();
+
+	/** Wait for incoming events or until timeout exceeds. Those events
+	 * are handled by the client object.
+	 */
 	void select(unsigned int timeout);
+
+	/** Send a packet to the network server.
+	 */
 	void send(const packet& pack);
 
+	/** Look for a peer with the given ID in the network. If there is no
+	 * such peer, NULL is returned.
+	 */
 	peer* find(unsigned int id) const;
+
+	/** Look for a peer with the given user name in the network. If there
+	 * is no such peer, NULL is returned.
+	 */
 	peer* find(const std::string& name) const;
+
+	/** Returns the peer object which represents this host in the network.
+	 */
 	peer* get_self() const;
 	
+	/** Signal which is emitted every time a client joins the network.
+	 */
 	signal_join_type join_event() const;
+
+	/** Signal which is emitted every time a client parts the network.
+	 */
 	signal_part_type part_event() const;
+
+	/** Signal which is emitted when a packet from the server arrived.
+	 */
 	signal_data_type data_event() const;
+
+	/** Signal which is emitted when the connection to the server has
+	 * been lost. Note that the client object is invalid after this
+	 * event occured, you should not use it any longer!
+	 */
 	signal_close_type close_event() const;
+
+	/** Signal which is emitted, if a login request failed, for example
+	 * if the wished user name was already in use by another client.
+	 */
 	signal_login_failed_type login_failed_event() const;
 
 protected:

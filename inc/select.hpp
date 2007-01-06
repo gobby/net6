@@ -25,17 +25,49 @@
 namespace net6
 {
 
+/** The selector may be used to wait until something occurs with a socket:
+ * Either if data comes available for reading, or kernel buffer gets
+ * available for writing (without blocking), or an error occures on the
+ * socket.
+ */
+	
 class NET6_EXPORT selector
 {
 public:
 	selector();
 	~selector();
 
+	/** Adds a socket to the selector.
+	 * @param sock The socket to watch for conditions to occur.
+	 * @param condition Conditions the socket is watched for.
+	 */
 	void add(const socket& sock, socket::condition condition);
+
+	/** Removes a socket from the selector.
+	 * @param sock The socket to remove.
+	 * @param condition A combination of conditions which are no
+	 *        longer watched for.
+	 */
 	void remove(const socket& sock, socket::condition condition);
+
+	/** Checks if a socket is watched for events
+	 * @param sock Socket to check.
+	 * @param condition Condition to check the socket for.
+	 */
 	bool check(const socket& sock, socket::condition condition);
 
+	/** Selects infinitely until an event occurs on one or more
+	 * selected sockets. Connect to the socket's signals to handle
+	 * those events.
+	 */
 	void select();
+
+	/** Selects until an event occurs on ore or more selectes sockets, or
+	 * the timeout exceeds. Connect to the socket's signals to handle
+	 * those events.
+	 * @param timeout Timeout in milliseconds. May be 0 to perform
+	 *        a quick poll.
+	 */
 	void select(unsigned long timeout);
 
 protected:

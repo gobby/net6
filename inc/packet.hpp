@@ -25,31 +25,72 @@
 namespace net6
 {
 
+/** Represents a packet to send through the network to another host. A packet
+ * exists of a command and zero ore more parameters of type int, float, or
+ * std::string.
+ */
+	
 class NET6_EXPORT packet
 {
 public:
+
+  /** Parameter for a packet. It may be of type int, float or std::string.
+   */
+	
   class NET6_EXPORT param
   {
   public:
+    /** Available types that a packet parameter may have
+     */
     enum type_type {
       INT,
       FLOAT,
       STRING
     };
-      
+
+    /** Creates an empty parameter with an uninitialized value.
+     */
     param();
+
+    /** Creates a new integer parameter.
+     */
     param(int val);
+
+    /** Creates a new float parameter.
+     */
     param(float val);
+
+    /** Creates a new string parameter.
+     */
     param(const std::string& val);
+
+    /** Creates a copy of another parameter. It will have the same type and
+     * value as <em>other</em>.
+     */
     param(const param& other);
     ~param();
 
+    /** Copies type and data of <em>other</em>
+     */
     param& operator=(const param& other);
 
+    /** Returns the integer value of the parameter. The parameter has to be of
+     * type int.
+     */
     int as_int() const;
+
+    /** Returns the float value of the parameter. The parameter has to be of
+     * type float.
+     */
     float as_float() const;
+
+    /** Returns the string value of the parameter. The parameter has to be of
+     * type string
+     */
     const std::string& as_string() const;
 
+    /** Returns the type of this parameter.
+     */
     type_type get_type() const;
   protected:
     void clear_memory();
@@ -64,26 +105,54 @@ public:
     type_type type;
     data_type data;
   };
-    
+
+  /** Creates an empty packet.
+   */
   packet();
+
+  /** Creates a new packet with command <em>command</em> and preallocates
+   * memoty for <size> parameters.
+   */
   packet(const std::string& command, unsigned int size = 0);
+
+  /** Creates a copy of <em>other</em>.
+   */
   packet(const packet& other);
   ~packet();
 
+  /** Creates a copy of <em>other</em>.
+   */
   packet& operator=(const packet& other);
 
+  /** Adds a new parameter to this packet.
+   */
   template<typename T> packet& operator<<(const T& val)
   {
     params.push_back(param(val) );
     return *this;
   }
 
+  /** Returns the command of this packet
+   */
   const std::string& get_command() const;
 
+  /** Returns the <em>index</em>d parameter of this packet.
+   */
   const param& get_param(unsigned int index) const;
+
+  /** Returns the amount of parameters of this packet
+   */
   unsigned int get_param_count() const;
 
+  /** Returns the raw packet string to send it over the net. This function
+   * is used by net6::connection, but you will most certainly not need it.
+   */
   std::string get_raw_string() const;
+
+  /** Creates a packet out of a raw packet string got from antoher host.
+   * This function is used by net6::connection, but you will most certainly not
+   * need it.
+   */
   void set_raw_string(const std::string& raw_string);
 
 protected:

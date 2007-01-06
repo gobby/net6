@@ -32,9 +32,15 @@
 namespace net6
 {
 
+/** High-level TCP server object.
+ */
+	
 class NET6_EXPORT server : public sigc::trackable
 {
 public:
+	/** Participiant in a client/server network. Necessary changes
+	 * to this object are performed by the net6::server object.
+	 */
 	class NET6_EXPORT peer : public net6::peer
 	{
 	public:
@@ -46,16 +52,47 @@ public:
 		     const address& addr);
 		~peer();
 
+		/** Login this peer with the specified user name.
+		 */
 		void login(const std::string& username);
+
+		/** Checks if this peer has been logined successfully.
+		 */
 		bool is_logined() const;
 
+		/** Enqueues a packet to send it to this peer. Use
+		 * net6::server::send instead, which is a wrapper around
+		 * this function.
+		 */
 		void send(const packet& pack);
+
+		/** Returns the size of the queue with pending packets of
+		 * the connection.
+		 */
 		unsigned int send_queue_size() const;
+
+		/** Returns the socket which is used to communicate with
+		 * this peer.
+		 */
 		const tcp_client_socket& get_socket() const;
+
+		/** Returns the remote address of this peer.
+		 */
 		const address& get_address() const;
 
+		/** Signal which is emitted when data has been received from
+		 * this peer.
+		 */
 		signal_recv_type recv_event() const;
+
+		/** Signal which is emitted when data has been completely
+		 * sent to this peer.
+		 */
 		signal_send_type send_event() const;
+
+		/** Signal which is emitted when the connection to this peer
+		 * has been lost.
+		 */
 		signal_close_type close_event() const;
 	protected:
 		bool logined;
@@ -67,34 +104,81 @@ public:
 	typedef sigc::signal<void, peer&> signal_login_type;
 	typedef sigc::signal<void, const packet&, peer&> signal_data_type;
 
+	/** Creates a new server object.
+	 * @param ipv6 Whether to use IPv6.
+	 */
 	server(bool ipv6 = true);
+
+	/** Creates a new server which will be opened on port <em>port</em>.
+	 */
 	server(unsigned int port, bool ipv6 = true);
 	~server();
 
+	/** Shuts down the server socket. New connections will no longer be
+	 * accepted, but already established connections stay open.
+	 */
 	void shutdown();
+
+	/** (re)opens the server socket on port <em>port</em>, if it has
+	 * been shut down before.
+	 */
 	void reopen(unsigned int port);
 
+	/** Removes the connection to the given peer.
+	 */
 	void kick(peer& client);
+
+	/** Wait infinitely for incoming events. The events themselves
+	 * are handled by the server.
+	 */
 	void select();
+
+	/** Wait for incoming events or until <em>timeout</em> exceeds. The
+	 * events themselves are handled by the server.
+	 */
 	void select(unsigned int timeout);
 
+	/** Send a packet to all the connected and logined peers.
+	 */
 	void send(const packet& pack);
+
+	/** Send a packet to a single peer.
+	 */
 	void send(const packet& pack, peer& to);
 
+	/** Lookup a peer with the given id. If the peer is not connected to
+	 * the server, NULL is returned.
+	 */
 	peer* find(unsigned int id) const;
+
+	/** Look for a peer whose user name is <em>name</em>. If no one is
+	 * found, NULL is returned.
+	 */
 	peer* find(const std::string& name) const;
 
-	
+	/** Signal which is emitted when a new client joins.
+	 */
 	signal_join_type join_event() const;
+
+	/** Signal which is emitted when a connection client closes the
+	 * connection.
+	 */
 	signal_part_type part_event() const;
+
+	/** Signal which is emitted when a client logs in with a valid user
+	 * name
+	 */
 	signal_login_type login_event() const;
+
+	/** Signal which is emitted every time we received a packet from
+	 * one of the connected and logged in clients
+	 */
 	signal_data_type data_event() const;
 
 protected:
 	void remove_client(peer* client);
 
 	void on_server_read(socket& sock, socket::condition io);
-//	void on_server_error(socket& sock, socket::condition io);
 
 	void on_client_recv(const packet& pack, peer& from);
 	void on_client_send(const packet& pack, peer& to);
