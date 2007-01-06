@@ -19,6 +19,18 @@ AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_CACHE_SAVE
 
+AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
+AC_MSG_CHECKING([whether to enable WIN32 specific flags])
+if test "x$host_os" = "xmingw32" ; then
+	win32=true
+	addlibs="-lws2_32" 
+	AC_MSG_RESULT([yes])
+else
+	win32=false
+	addlibs=""
+	AC_MSG_RESULT([no])
+fi
+
 # Checks for libraries.
 PKG_CHECK_MODULES([libnet6], [sigc++-2.0])
 

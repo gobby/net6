@@ -6,6 +6,10 @@ lib_LTLIBRARIES = libnet6.la
 # interface :  changes : compatibility
 libnet6_la_LDFLAGS = -no-undefined -version-info 0:0:0 -release 1 
 
+if WIN32
+	libnet6_la_LDADD = -lws2_32
+endif
+
 INCLUDES = $(libnet6_CFLAGS) -Iinc
 
 pkginclude_HEADERS = \

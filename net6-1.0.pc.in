@@ -2,11 +2,12 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
+addlibs=@addlibs@
 
 Name: net6
 Description: Library providing network access using IPv4/IPv6
 Requires: sigc++-2.0
 Version: 1.0
-Libs: -L${libdir} -lnet6
+Libs: -L${libdir} ${addlibs} -lnet6
 Cflags: -I${includedir}
 
