@@ -280,6 +280,49 @@ public:
 	 : parameter<std::string>(value) { }
 };
 
+/** Double packet parameter.
+ */
+template<>
+class parameter<double> : public basic_parameter {
+public:
+	parameter(double value)
+	 : basic_parameter(TYPE_ID, value) { }
+
+	virtual basic_parameter* clone() const {
+		return new parameter<double>(as<double>() );
+	}
+
+	virtual std::string to_string() const {
+		std::stringstream stream;
+		stream << as<double>();
+		return stream.str();
+	}
+
+	static basic_parameter* from_string(const std::string& str) {
+		std::stringstream stream(str);
+		double val;
+		stream >> val;
+
+		if(stream.bad() )
+			throw basic_parameter::bad_format(
+				"Not a floating point value"
+			);
+
+		return new parameter<double>(val);
+	}
+
+	static const identification_type TYPE_ID = 'f';
+};
+
+/** Wrapper for float data types.
+ */
+template<>
+class parameter<float> : public parameter<double> {
+public:
+	parameter(float value)
+	 : parameter<double>(value) { }
+};
+
 /** High-level object that represents a packet that may be sent over the
  * network. A packet exists of a command and a variable amount of parameters
  * with variable type.

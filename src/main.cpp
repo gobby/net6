@@ -53,6 +53,11 @@ net6::main::main()
 	);
 
 	packet::register_type(
+		parameter<double>::TYPE_ID,
+		sigc::ptr_fun(parameter<double>::from_string)
+	);
+
+	packet::register_type(
 		parameter<std::string>::TYPE_ID,
 		sigc::ptr_fun(parameter<std::string>::from_string)
 	);
