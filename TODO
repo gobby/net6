@@ -10,6 +10,9 @@ Important:
 
 Normal:
  * Add error codes.
+ * Provide on_*-Methods for signals being emitted to allow derived classes
+   to overwrite these methods to do things before/after signals have been
+   emitted (server/client/host)
 
 Minor:
 

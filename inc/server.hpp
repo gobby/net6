@@ -234,6 +234,8 @@ protected:
 	virtual void on_client_send(const packet& pack, peer& to);
 	virtual void on_client_close(peer& from);
 
+	virtual void on_join(peer& new_peer);
+
 	tcp_server_socket* serv_sock;
 	std::list<peer*> peers;
 	selector sock_sel;

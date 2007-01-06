@@ -267,7 +267,7 @@ void net6::server::on_server_read(socket& sock, socket::condition io)
 		sigc::ref(*new_client)
 	));
 
-	signal_join.emit(*new_client);
+	on_join(*new_client);
 }
 /*
 void net6::server::on_server_error(socket& sock, socket::condition io)
@@ -358,3 +358,7 @@ void net6::server::on_client_close(peer& from)
 	remove_client(&from);
 }
 
+void net6::server::on_join(peer& new_peer)
+{
+	signal_join.emit(new_peer);
+}
