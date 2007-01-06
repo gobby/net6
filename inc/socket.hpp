@@ -19,19 +19,16 @@
 #ifndef _NET6_SOCKET_HPP_
 #define _NET6_SOCKET_HPP_
 
+#include <gnutls/gnutls.h>
+
 #include <fcntl.h>
 #include <memory>
 #include <sigc++/signal.h>
-#include <gnutls/gnutls.h>
 
 #include "error.hpp"
 #include "enum_ops.hpp"
 #include "non_copyable.hpp"
 #include "address.hpp"
-
-#ifndef ssize_t
-#define ssize_t signed long
-#endif
 
 namespace net6
 {
