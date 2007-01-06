@@ -21,7 +21,7 @@
 
 #include <stdexcept>
 
-#include <net6/export.hpp>
+#include "export.hpp"
 
 namespace net6
 {

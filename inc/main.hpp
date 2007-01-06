@@ -19,7 +19,7 @@
 #ifndef _NET6_MAIN_HPP_
 #define _NET6_MAIN_HPP_
 
-#include <net6/export.hpp>
+#include "export.hpp"
 
 namespace net6
 {

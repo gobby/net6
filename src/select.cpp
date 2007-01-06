@@ -16,8 +16,8 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <net6/error.hpp>
-#include <net6/select.hpp>
+#include "error.hpp"
+#include "select.hpp"
 
 net6::selector::selector()
 {

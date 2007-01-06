@@ -22,8 +22,8 @@
 
 #include <sstream>
 
-#include <net6/error.hpp>
-#include <net6/address.hpp>
+#include "error.hpp"
+#include "address.hpp"
 
 namespace
 {

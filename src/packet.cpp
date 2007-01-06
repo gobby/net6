@@ -17,7 +17,7 @@
  */
 
 #include <sstream>
-#include <net6/packet.hpp>
+#include "packet.hpp"
 
 namespace
 {

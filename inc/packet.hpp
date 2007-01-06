@@ -20,7 +20,7 @@
 #define _NET6_PACKET_HPP_
 
 #include <vector>
-#include <net6/export.hpp>
+#include "export.hpp"
 
 namespace net6
 {

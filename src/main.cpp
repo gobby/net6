@@ -21,8 +21,8 @@
 #endif
 
 #include <signal.h>
-#include <net6/error.hpp>
-#include <net6/main.hpp>
+#include "error.hpp"
+#include "main.hpp"
 
 net6::main::main()
 {

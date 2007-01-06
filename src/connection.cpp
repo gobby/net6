@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <net6/connection.hpp>
+#include "connection.hpp"
 
 net6::connection::connection(const address& addr)
  : offset(0), remote_sock(addr), remote_addr(addr.clone() )

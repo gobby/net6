@@ -30,7 +30,7 @@
 #include <list>
 #include <string>
 
-#include <net6/export.hpp>
+#include "export.hpp"
 
 namespace net6
 {

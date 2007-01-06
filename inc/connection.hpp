@@ -22,9 +22,9 @@
 #include <queue>
 #include <sigc++/signal.h>
 
-#include <net6/export.hpp>
-#include <net6/socket.hpp>
-#include <net6/packet.hpp>
+#include "export.hpp"
+#include "socket.hpp"
+#include "packet.hpp"
 
 namespace net6
 {

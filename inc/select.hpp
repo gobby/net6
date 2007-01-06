@@ -19,8 +19,8 @@
 #ifndef _NET6_SELECT_HPP_
 #define _NET6_SELECT_HPP_
 
-#include <net6/export.hpp>
-#include <net6/socket.hpp>
+#include "export.hpp"
+#include "socket.hpp"
 
 namespace net6
 {

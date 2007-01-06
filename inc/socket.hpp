@@ -21,8 +21,8 @@
 
 #include <sigc++/signal.h>
 
-#include <net6/export.hpp>
-#include <net6/address.hpp>
+#include "export.hpp"
+#include "address.hpp"
 
 #ifdef IN
 #undef IN

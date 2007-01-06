@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <net6/peer.hpp>
+#include "peer.hpp"
 
 net6::peer::peer(unsigned int unique_id, const std::string& nick)
  : id(unique_id), name(nick)

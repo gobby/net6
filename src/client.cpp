@@ -17,7 +17,7 @@
  */
 
 #include <sigc++/bind.h>
-#include <net6/client.hpp>
+#include "client.hpp"
 
 net6::client::peer::peer(unsigned int id, const std::string& username)
  : net6::peer(id, username)

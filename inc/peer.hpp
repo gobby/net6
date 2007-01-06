@@ -20,7 +20,7 @@
 #define _NET6_PEER_HPP_
 
 #include <string>
-#include <net6/export.hpp>
+#include "export.hpp"
 
 namespace net6
 {

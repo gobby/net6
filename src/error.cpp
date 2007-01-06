@@ -22,7 +22,7 @@
 #include <errno.h>
 #endif
 
-#include <net6/error.hpp>
+#include "error.hpp"
 
 namespace
 {

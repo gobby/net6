@@ -17,7 +17,7 @@
  */
 
 #include <sigc++/bind.h>
-#include <net6/server.hpp>
+#include "server.hpp"
 
 net6::server::peer::peer(unsigned int id, const tcp_client_socket& sock,
                          const address& addr)

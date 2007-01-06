@@ -21,13 +21,13 @@
 
 #include <sigc++/signal.h>
 
-#include <net6/export.hpp>
-#include <net6/peer.hpp>
-#include <net6/address.hpp>
-#include <net6/socket.hpp>
-#include <net6/select.hpp>
-#include <net6/packet.hpp>
-#include <net6/connection.hpp>
+#include "export.hpp"
+#include "peer.hpp"
+#include "address.hpp"
+#include "socket.hpp"
+#include "select.hpp"
+#include "packet.hpp"
+#include "connection.hpp"
 
 namespace net6
 {
