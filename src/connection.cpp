@@ -37,7 +37,8 @@ net6::connection_base::connection_base():
 	encrypted_sock(NULL),
 	remote_addr(NULL),
 	state(CLOSED),
-	keepalive(KEEPALIVE_DISABLED)
+	keepalive(KEEPALIVE_DISABLED),
+	params(NULL)
 {
 }
 
@@ -182,6 +183,16 @@ void net6::connection_base::request_encryption(bool as_client)
 	{
 		stop_keepalive_timer();
 	}
+}
+
+void net6::connection_base::gen_dh_params()
+{
+	params = NULL;
+}
+
+void net6::connection_base::set_dh_params(dh_params& new_params)
+{
+	params = &new_params;
 }
 
 net6::connection_base::signal_recv_type
@@ -512,8 +523,22 @@ void net6::connection_base::on_send()
 	if(state == ENCRYPTION_INITIATED_SERVER)
 	{
 		// All remaining data has been sent, we may now initiate the
-		// TLS handshake
-		begin_handshake(new tcp_encrypted_socket_server(*remote_sock));
+		// TLS handshake.
+		if(params == NULL)
+		{
+			begin_handshake(
+				new tcp_encrypted_socket_server(*remote_sock)
+			);
+		}
+		else
+		{
+			begin_handshake(
+				new tcp_encrypted_socket_server(
+					*remote_sock,
+					*params
+				)
+			);
+		}
 	}
 	else
 	{

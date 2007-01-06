@@ -222,6 +222,8 @@ protected:
 	bool use_ipv6;
 	unsigned int id_counter;
 
+	dh_params params;
+
 	signal_connect_type signal_connect;
 	signal_disconnect_type signal_disconnect;
 	signal_join_type signal_join;
@@ -425,6 +427,8 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 			sigc::ref(*client)
 		)
 	);
+
+	conn->set_dh_params(params);
 
 	// Accept new client connection
 	if(use_ipv6)

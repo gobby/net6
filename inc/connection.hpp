@@ -104,6 +104,26 @@ public:
 	 */
 	void request_encryption(bool as_client);
 
+	/** @brief Tells to automatically generate dh_params on connection
+	 * encryption.
+	 *
+	 * This function does not generate dh_params immediately but creates
+	 * them when needed.
+	 *
+	 * dh_params are only used on the server side of the encryption.
+	 */
+	void gen_dh_params();
+
+	/** @brief Sets the dh params to use when the connection is going
+	 * to be encrypted.
+	 *
+	 * Note that the dh_params are not copied, so they have to exist as
+	 * long as the connection exists.
+	 *
+	 * dh_params are only used on the server side of the encryption.
+	 */
+	void set_dh_params(dh_params& new_params);
+
 	/** Signal which is emitted when a packet has been received.
 	 */
 	signal_recv_type recv_event() const;
@@ -155,6 +175,7 @@ protected:
 
 	conn_state state;
 	keepalive_state keepalive;
+	dh_params* params;
 
 private:
 	void setup_signal();
