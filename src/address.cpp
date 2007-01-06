@@ -192,12 +192,12 @@ net6::address* net6::ipv4_address::clone() const
 
 std::string net6::ipv4_address::get_name() const
 {
-	uint32_t ip = cobj()->sin_addr.s_addr;
+	uint32_t ip = htonl(cobj()->sin_addr.s_addr);
 	std::stringstream ip_stream;
-	ip_stream << ( (ip      ) & 0xff) << '.'
-	          << ( (ip >>  8) & 0xff) << '.'
+	ip_stream << ( (ip >> 24) & 0xff) << '.'
 	          << ( (ip >> 16) & 0xff) << '.'
-	          << ( (ip >> 24) & 0xff);
+	          << ( (ip >>  8) & 0xff) << '.'
+	          << ( (ip      ) & 0xff);
 	return ip_stream.str();
 }
 
