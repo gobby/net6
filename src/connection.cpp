@@ -103,7 +103,7 @@ net6::connection::signal_close_type net6::connection::close_event() const
 void net6::connection::on_sock_event(socket& sock, socket::condition io)
 {
 	tcp_client_socket& tcp_sock = static_cast<tcp_client_socket&>(sock);
-	if(io & socket::IN)
+	if(io & socket::INCOMING)
 	{
 		// Get up to 1024 bytes
 		char buffer[1024 + 1];
@@ -134,7 +134,7 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 		}
 	}
 
-	if(io & socket::OUT)
+	if(io & socket::OUTGOING)
 	{
 		assert(packet_queue.begin() != packet_queue.end() );
 
@@ -165,7 +165,7 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 		}
 	}
 
-	if(io & socket::ERR)
+	if(io & socket::ERROR)
 	{
 		signal_close.emit();
 	}

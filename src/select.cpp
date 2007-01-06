@@ -32,19 +32,19 @@ net6::selector::~selector()
 
 void net6::selector::add(const socket& sock, socket::condition condition)
 {
-	if(condition & socket::IN)
+	if(condition & socket::INCOMING)
 	{
 //		FD_SET(sock.cobj(), &read_set);
 		read_list.push_back(sock);
 	}
 
-	if(condition & socket::OUT)
+	if(condition & socket::OUTGOING)
 	{
 //		FD_SET(sock.cobj(), &write_set);
 		write_list.push_back(sock);
 	}
 
-	if(condition & socket::ERR)
+	if(condition & socket::ERROR)
 	{
 //		FD_SET(sock.cobj(), &error_set);
 		error_list.push_back(sock);
@@ -53,21 +53,21 @@ void net6::selector::add(const socket& sock, socket::condition condition)
 
 void net6::selector::remove(const socket& sock, socket::condition condition)
 {
-	if(condition & socket::IN)
+	if(condition & socket::INCOMING)
 	{
 //		FD_CLR(sock.cobj(), &read_set);
 		read_list.erase(std::remove(read_list.begin(), read_list.end(),
 		                sock), read_list.end() );
 	}
 
-	if(condition & socket::OUT)
+	if(condition & socket::OUTGOING)
 	{
 //		FD_CLR(sock.cobj(), &write_set);
 		write_list.erase(std::remove(write_list.begin(),
 		                 write_list.end(), sock), write_list.end() );
 	}
 
-	if(condition & socket::ERR)
+	if(condition & socket::ERROR)
 	{
 //		FD_CLR(sock.cobj(), &error_set);
 		error_list.erase(std::remove(error_list.begin(),
@@ -77,17 +77,17 @@ void net6::selector::remove(const socket& sock, socket::condition condition)
 
 bool net6::selector::check(const socket& sock, socket::condition condition)
 {
-	if(condition & socket::IN)
+	if(condition & socket::INCOMING)
 		if(std::find(read_list.begin(), read_list.end(), sock) !=
 		   read_list.end() )
 			return true;
 
-	if(condition & socket::OUT)
+	if(condition & socket::OUTGOING)
 		if(std::find(write_list.begin(), write_list.end(), sock) !=
 		   write_list.end() )
 			return true;
 
-	if(condition & socket::ERR)
+	if(condition & socket::ERROR)
 		if(std::find(error_list.begin(), error_list.end(), sock) !=
 		   error_list.end() )
 			return true;
@@ -177,11 +177,11 @@ void net6::selector::select_impl(timeval* tv)
 	std::list<socket>::iterator a;
 	for(a = read_event.begin(); a != read_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->read_event().emit(*a, socket::IN);
+			a->read_event().emit(*a, socket::INCOMING);
 	for(a = write_event.begin(); a != write_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->write_event().emit(*a, socket::OUT);
+			a->write_event().emit(*a, socket::OUTGOING);
 	for(a = error_event.begin(); a != error_event.end(); ++ a)
 		if(a->data->refcount > 1)
-			a->error_event().emit(*a, socket::ERR);
+			a->error_event().emit(*a, socket::ERROR);
 }

@@ -103,7 +103,7 @@ net6::server::~server()
 
 void net6::server::shutdown()
 {
-	sock_sel.remove(*serv_sock, socket::IN);
+	sock_sel.remove(*serv_sock, socket::INCOMING);
 	delete serv_sock;
 	serv_sock = NULL;
 }
@@ -121,7 +121,7 @@ void net6::server::reopen(unsigned int port)
 		serv_sock = new tcp_server_socket(bind_addr);
 	}
 
-	sock_sel.add(*serv_sock, socket::IN);
+	sock_sel.add(*serv_sock, socket::INCOMING);
 
 	serv_sock->read_event().connect(
 		sigc::mem_fun(*this, &server::on_server_read) );
@@ -155,7 +155,7 @@ void net6::server::send(const packet& pack)
 void net6::server::send(const packet& pack, peer& to)
 {
 	if(to.send_queue_size() == 0)
-		sock_sel.add(to.get_socket(), socket::OUT);
+		sock_sel.add(to.get_socket(), socket::OUTGOING);
 
 	to.send(pack);
 }
@@ -216,9 +216,9 @@ void net6::server::remove_client(peer* client)
 	peers.erase(std::remove(peers.begin(), peers.end(), client),
 	            peers.end() );
 
-	sock_sel.remove(client->get_socket(), socket::IN | socket::ERR);
-	if(sock_sel.check(client->get_socket(), socket::OUT) )
-		sock_sel.remove(client->get_socket(), socket::OUT);
+	sock_sel.remove(client->get_socket(), socket::INCOMING | socket::ERROR);
+	if(sock_sel.check(client->get_socket(), socket::OUTGOING) )
+		sock_sel.remove(client->get_socket(), socket::OUTGOING);
 
 	packet pack("net6_client_part");
 	pack << client->get_id(); //static_cast<int>(client->get_id() );
@@ -240,7 +240,7 @@ void net6::server::on_server_read(socket& sock, socket::condition io)
 	delete new_addr;
 
 	peers.push_back(new_client);
-	sock_sel.add(new_sock, socket::IN | socket::ERR);
+	sock_sel.add(new_sock, socket::INCOMING | socket::ERROR);
 
 	new_client->recv_event().connect(sigc::bind(
 		sigc::mem_fun(*this, &server::on_client_recv),
@@ -334,10 +334,10 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 
 void net6::server::on_client_send(const packet& pack, peer& to)
 {
-	// Do no longer select on socket::OUT if there
+	// Do no longer select on socket::OUTGOING if there
 	// are no more packets to write
 	if(to.send_queue_size() == 0)
-		sock_sel.remove(to.get_socket(), socket::OUT);
+		sock_sel.remove(to.get_socket(), socket::OUTGOING);
 }
 
 void net6::server::on_client_close(peer& from)

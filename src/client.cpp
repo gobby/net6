@@ -34,7 +34,7 @@ net6::client::peer::~peer()
                ipv6_address::create_from_hostname(hostname, port) ),
    self(NULL)
 {
-	sock_sel.add(conn.get_socket(), socket::IN | socket::ERR);
+	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::ERROR);
 	conn.recv_event().connect(
 		sigc::mem_fun(*this, &client::on_client_recv) );
 	conn.close_event().connect(
@@ -44,7 +44,7 @@ net6::client::peer::~peer()
 net6::client::client(const address& addr)
  : conn(addr), self(NULL)
 {
-	sock_sel.add(conn.get_socket(), socket::IN | socket::ERR);
+	sock_sel.add(conn.get_socket(), socket::INCOMING | socket::ERROR);
 	conn.recv_event().connect(
 		sigc::mem_fun(*this, &client::on_client_recv) );
 	conn.send_event().connect(
@@ -89,7 +89,7 @@ void net6::client::select(unsigned int timeout)
 void net6::client::send(const packet& pack)
 {
 	if(conn.send_queue_size() == 0)
-		sock_sel.add(conn.get_socket(), socket::OUT);
+		sock_sel.add(conn.get_socket(), socket::OUTGOING);
 	conn.send(pack);
 }
 
@@ -164,7 +164,7 @@ void net6::client::on_client_recv(const packet& pack)
 void net6::client::on_client_send(const packet& pack)
 {
 	if(conn.send_queue_size() == 0)
-		sock_sel.remove(conn.get_socket(), socket::OUT);
+		sock_sel.remove(conn.get_socket(), socket::OUTGOING);
 }
 
 void net6::client::on_client_close()

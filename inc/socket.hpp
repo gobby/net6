@@ -24,18 +24,6 @@
 #include "export.hpp"
 #include "address.hpp"
 
-#ifdef IN
-#undef IN
-#endif
-
-#ifdef OUT
-#undef OUT
-#endif
-
-#ifdef ERR
-#undef ERR
-#endif
-
 #ifndef ssize_t
 #define ssize_t signed long
 #endif
@@ -51,9 +39,9 @@ class NET6_EXPORT socket
 	friend class selector;
 public:
 	enum condition {
-		IN = 0x01,
-		OUT = 0x02,
-		ERR = 0x04
+		INCOMING = 0x01,
+		OUTGOING = 0x02,
+		ERROR = 0x04
 	};
 
 	typedef sigc::signal<void, socket&, condition> signal_read_type;
