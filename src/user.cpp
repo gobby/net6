@@ -20,18 +20,31 @@
 #include "user.hpp"
 
 net6::user::user(unsigned int unique_id, connection_base* remote_conn):
-	id(unique_id), logged_in(false), conn(remote_conn)
+	id(unique_id), logged_in(false), conn(remote_conn),
+	connection_encrypted(false)
 {
 }
 
-void net6::user::login(const std::string& user_name, unsigned int new_id)
+void net6::user::login(const std::string& user_name)
 {
-//	if(logged_in)
-//		throw connected_error("net6::user::login");
-
-	if(new_id != 0) id = new_id;
 	name = user_name;
 	logged_in = true;
+}
+
+void net6::user::set_encrypted()
+{
+	connection_encrypted = true;
+	signal_encrypted.emit();
+}
+
+bool net6::user::is_encrypted() const
+{
+	return connection_encrypted;
+}
+
+net6::user::signal_encrypted_type net6::user::encrypted_event() const
+{
+	return signal_encrypted;
 }
 
 unsigned int net6::user::get_id() const
@@ -71,4 +84,12 @@ void net6::user::send(const packet& pack) const
 		throw not_connected_error("net6::user::send");
 
 	conn->send(pack);
+}
+
+void net6::user::request_encryption() const
+{
+	if(conn.get() == NULL)
+		throw not_connected_error("net6::user::send");
+
+	conn->request_encryption();
 }

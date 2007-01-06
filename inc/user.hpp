@@ -32,13 +32,29 @@ namespace net6
 class user : private non_copyable
 {
 public:
+	typedef sigc::signal<void> signal_encrypted_type;
+
 	user(unsigned int unique_id, connection_base* remote_conn);
 
-	/** Log in the user with the given name, optionally changing his ID.
-	 * Note that this function is called automatically by the high-level
-	 * net6 objects including client, server and host.
+	/** Log in the user with the given name.
 	 */
-	void login(const std::string& user_name, unsigned int new_id = 0);
+	void login(const std::string& user_name);
+
+	/** @brief Flags the connection to this user as encrypted.
+	 *
+	 * This is not done automatically through the encrypted_event() of
+	 * the connection since there is not a direct connection to any user.
+	 */
+	void set_encrypted();
+
+	/** @brief Returns whether the connection to this user is secure.
+	 */
+	bool is_encrypted() const;
+
+	/** @brief Signal that is emitted when a secure connection to this
+	 * client has been established.
+	 */
+	signal_encrypted_type encrypted_event() const;
 
 	/** Returns the unique ID for this user.
 	 */
@@ -62,20 +78,28 @@ public:
 	 */
 	const connection_base& get_connection() const;
 
-	/** Sends a packet to this user. Note that the underlaying socket will
-	 * not be added to any selector. Use the send function of a high-level
-	 * TCP object (such as basic_server) or add the socket of the
-	 * connection to this user manually to a selector. If there is no
-	 * direct connection to this user available, not_connected_error is
-	 * thrown.
+	/** Sends a packet to this user.
+	 *
+	 * If there is no direct connection to this user available,
+	 * not_connected_error is thrown.
 	 */
 	void send(const packet& pack) const;
+
+	/** @brief Requests an encryption connection to this client.
+	 *
+	 * If there is no direct connection to this user available,
+	 * not_connected_error is thrown.
+	 */
+	void request_encryption() const;
 
 protected:
 	unsigned int id;
 	std::string name;
 	bool logged_in;
 	std::auto_ptr<connection_base> conn;
+
+	signal_encrypted_type signal_encrypted;
+	bool connection_encrypted;
 };
 
 } // namespace net6

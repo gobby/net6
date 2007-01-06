@@ -50,8 +50,8 @@ public:
 		signal_data_type;
 	typedef sigc::signal<void>
 		signal_close_type;
-	typedef sigc::signal<void>
-		signal_encrypted_type;
+//	typedef sigc::signal<void>
+//		signal_encrypted_type;
 	typedef sigc::signal<void, login::error>
 		signal_login_failed_type;
 	typedef sigc::signal<void, packet&>
@@ -138,7 +138,7 @@ public:
 	/** Signal which is emitted when the connection is guaranteed to
 	 * be encrypted.
 	 */
-	signal_encrypted_type encrypted_event() const;
+	//signal_encrypted_type encrypted_event() const;
 
 	/** Signal which is emitted, if a login request failed, for example
 	 * if the wished user name was already in use by another client.
@@ -156,29 +156,30 @@ public:
 protected:
 	/** Signal handler that is called each time a packet arrives.
 	 */
-	virtual void on_recv_event(const packet& pack);
+	void on_recv_event(const packet& pack);
 
 	/** Signal handler that is called when the remote site closed the
 	 * connection.
 	 */
-	virtual void on_close_event();
+	void on_close_event();
 
 	/** Signal handler that is called when the underlaying connection is
 	 * encrypted.
 	 */
-	virtual void on_encrypted_event();
+	//virtual void on_encrypted_event();
 
 	virtual void on_join(const user& user, const packet& pack);
 	virtual void on_part(const user& user, const packet& pack);
 	virtual void on_data(const packet& pack);
 	virtual void on_close();
-	virtual void on_encrypted();
+	//virtual void on_encrypted();
 	virtual void on_login_failed(login::error error);
 	virtual void on_login_extend(packet& pack);
 
-	virtual void net_login_failed(const packet& pack);
-	virtual void net_client_join(const packet& pack);
-	virtual void net_client_part(const packet& pack);
+	void net_login_failed(const packet& pack);
+	void net_client_join(const packet& pack);
+	void net_client_part(const packet& pack);
+	void net_encryption_info(const packet& pack);
 
 	std::auto_ptr<connection_type> conn;
 	user* self;
@@ -187,7 +188,7 @@ protected:
 	signal_part_type signal_part;
 	signal_data_type signal_data;
 	signal_close_type signal_close;
-	signal_encrypted_type signal_encrypted;
+	//signal_encrypted_type signal_encrypted;
 	signal_login_failed_type signal_login_failed;
 	signal_login_extend_type signal_login_extend;
 
@@ -326,12 +327,12 @@ basic_client<selector_type>::close_event() const
 	return signal_close;
 }
 
-template<typename selector_type>
+/*template<typename selector_type>
 typename basic_client<selector_type>::signal_encrypted_type
 basic_client<selector_type>::encrypted_event() const
 {
 	return signal_encrypted;
-}
+}*/
 
 template<typename selector_type>
 typename basic_client<selector_type>::signal_login_failed_type
@@ -356,6 +357,8 @@ void basic_client<selector_type>::on_recv_event(const packet& pack)
 		net_client_join(pack);
 	else if(pack.get_command() == "net6_client_part")
 		net_client_part(pack);
+	else if(pack.get_command() == "net6_encryption_info")
+		net_encryption_info(pack);
 	else
 		on_data(pack);
 }
@@ -369,11 +372,11 @@ void basic_client<selector_type>::on_close_event()
 	on_close();
 }
 
-template<typename selector_type>
+/*template<typename selector_type>
 void basic_client<selector_type>::on_encrypted_event()
 {
 	on_encrypted();
-}
+}*/
 
 template<typename selector_type>
 void basic_client<selector_type>::on_join(const user& user, const packet& pack)
@@ -399,11 +402,11 @@ void basic_client<selector_type>::on_close()
 	signal_close.emit();
 }
 
-template<typename selector_type>
+/*template<typename selector_type>
 void basic_client<selector_type>::on_encrypted()
 {
 	signal_encrypted.emit();
-}
+}*/
 
 template<typename selector_type>
 void basic_client<selector_type>::on_login_failed(login::error error)
@@ -434,6 +437,7 @@ void basic_client<selector_type>::net_client_join(const packet& pack)
 	// Received client_join packet
 	unsigned int id = pack.get_param(0).parameter::as<int>();
 	std::string name = pack.get_param(1).parameter::as<std::string>();
+	bool is_encrypted = pack.get_param(2).parameter::as<bool>();
 
 	user* new_client = new user(id, NULL);
 	basic_object<selector_type>::user_add(new_client);
@@ -442,6 +446,18 @@ void basic_client<selector_type>::net_client_join(const packet& pack)
 	// The first client who joins is the local client
 	if(self == NULL) self = new_client;
 	on_join(*new_client, pack);
+
+	if(is_encrypted)
+	{
+		if(self == new_client)
+		{
+			throw bad_value(
+				"Local joining client has encrypted flag set"
+			);
+		}
+
+		new_client->set_encrypted();
+	}
 }
 
 template<typename selector_type>
@@ -455,6 +471,18 @@ void basic_client<selector_type>::net_client_part(const packet& pack)
 
 	on_part(*rem_user, pack);
 	basic_object<selector_type>::user_remove(rem_user);
+}
+
+template<typename selector_type>
+void basic_client<selector_type>::net_encryption_info(const packet& pack)
+{
+	unsigned int id = pack.get_param(0).parameter::as<int>();
+	user* encr_user = basic_object<selector_type>::user_find(id);
+
+	if(encr_user == NULL)
+		throw bad_value("Got encryption_info for nonexistant user");
+
+	encr_user->set_encrypted();
 }
 
 template<typename selector_type>
@@ -476,8 +504,8 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 		sigc::mem_fun(*this, &basic_client::on_recv_event) );
 	conn->close_event().connect(
 		sigc::mem_fun(*this, &basic_client::on_close_event) );
-	conn->encrypted_event().connect(
-		sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
+	//conn->encrypted_event().connect(
+	//	sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
 
 	conn->connect(addr);
 }

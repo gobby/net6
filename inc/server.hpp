@@ -68,7 +68,7 @@ public:
 
 	typedef sigc::signal<void, const user&, const packet&>
 		signal_data_type;
-	
+
 	/** Creates a new basic_server object.
 	 * @param ipv6 Whether to use IPv6.
 	 */
@@ -107,6 +107,10 @@ public:
 	/** Send a packet to a single user.
 	 */
 	virtual void send(const packet& pack, const user& to);
+
+	/** @brief Requests secure communication with the given user.
+	 */
+	virtual void request_encryption(const user& to);
 
 	/** Returns the underlaying TCP server socket object. The function
 	 * throws not_connected_error if the server has not been opened.
@@ -164,9 +168,10 @@ public:
 	/** Signal which may be used to append parameters to a client_join
 	 * packet which will be sent to existing users to announce the new join.
 	 * The first parameter is the new client's ID number, the second one
-	 * its user name, other parameters may be appended by you. The user
-	 * given to the signal handler is the use for which information has
-	 * to be appended, not the one to which they will be sent.
+	 * its user name, the third its encryption state. Other parameters may
+	 * be appended by you. The user given to the signal handler is the use
+	 * for which information has to be appended, not the one to which they
+	 * will be sent.
 	 */
 	signal_login_extend_type login_extend_event() const;
 
@@ -176,12 +181,13 @@ public:
 	signal_data_type data_event() const;
 	
 protected:
-	virtual void remove_client(const user* client);
+	void remove_client(const user* client);
 
-	virtual void on_accept_event(io_condition io);
-	virtual void on_recv_event(const packet& pack,
-	                           user& from);
-	virtual void on_close_event(user& user);
+	void on_accept_event(io_condition io);
+	void on_recv_event(const packet& pack,
+	                   user& from);
+	void on_close_event(user& user);
+	void on_encrypted_event(user& user);
 
 	virtual void on_connect(const user& user);
 	virtual void on_disconnect(const user& user);
@@ -282,6 +288,12 @@ void basic_server<selector_type>::send(const packet& pack, const user& to)
 {
 	// Enqueue packet
 	to.send(pack);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::request_encryption(const user& to)
+{
+	to.request_encryption();
 }
 
 template<typename selector_type>
@@ -394,7 +406,12 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 		)
 	);
 
-	// TODO: encryption_event
+	conn->encrypted_event().connect(
+		sigc::bind(
+			sigc::mem_fun(*this, &basic_server::on_encrypted_event),
+			sigc::ref(*client)
+		)
+	);
 
 	// Accept new client connection
 	if(use_ipv6)
@@ -438,6 +455,17 @@ template<typename selector_type>
 void basic_server<selector_type>::on_close_event(user& user)
 {
 	remove_client(&user);
+}
+
+template<typename selector_type>
+void basic_server<selector_type>::on_encrypted_event(user& user)
+{
+	user.set_encrypted();
+
+	// Tell about encrypted connection
+	net6::packet encr_pack("net6_encryption_info");
+	encr_pack << user.get_id();
+	send(encr_pack);
 }
 
 template<typename selector_type>
@@ -533,7 +561,7 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 
 		// Synchronise with other clients
 		packet self_pack("net6_client_join");
-		self_pack << user.get_id() << name;
+		self_pack << user.get_id() << name << user.is_encrypted();
 		on_login_extend(user, self_pack);
 		send(self_pack, user);
 
@@ -547,7 +575,8 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 
 			packet join_pack("net6_client_join");
 			join_pack << iter->second->get_id()
-			          << iter->second->get_name();
+			          << iter->second->get_name()
+			          << iter->second->is_encrypted();
 			on_login_extend(*iter->second, join_pack);
 
 			send(join_pack, user);

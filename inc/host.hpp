@@ -52,6 +52,12 @@ public:
 	 */
 	virtual void send(const packet& pack, const user& to);
 
+	/** @brief Requests encryption to the given user.
+	 *
+	 * Throws an error if <em>to</em> is the local user.
+	 */
+	virtual void request_encryption(const user& to);
+
 	/** Returns the local user.
 	 */
 	virtual user& get_self();
@@ -93,6 +99,20 @@ template<typename selector_type>
 void basic_host<selector_type>::send(const packet& pack, const user& to)
 {
 	if(&to != self) basic_server<selector_type>::send(pack, to);
+}
+
+template<typename selector_type>
+void basic_host<selector_type>::request_encryption(const user& to)
+{
+	if(&to == self)
+	{
+		throw std::logic_error(
+			"net6::basic_host::request_encryption:\n"
+			"Cannot request encryption to local client"
+		);
+	}
+
+	basic_server<selector_type>::request_encryption(to);
 }
 
 template<typename selector_type>
