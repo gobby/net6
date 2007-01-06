@@ -78,6 +78,20 @@ namespace
 		WSASetLastError(error);
 		return ret;
 	}
+#else
+	// Send data with MSG_NOSIGNAL
+	ssize_t net6_unix_send_func(gnutls_transport_ptr_t ptr,
+	                            const void* data,
+	                            size_t size)
+	{
+		// TODO: How to properly get the fd from ptr?
+		return send(
+			static_cast<int>(reinterpret_cast<intptr_t>(ptr)),
+			data,
+			size,
+			MSG_NOSIGNAL
+		);
+	}
 #endif
 
 #ifndef WIN32
@@ -176,14 +190,19 @@ net6::tcp_encrypted_socket_base::
 	);
 
 #ifdef WIN32
-	gnutls_transport_set_pull_func(
+	gnutls_transport_set_pull_function(
 		session,
 		net6_win32_io_func<void*, char*, ::recv>
 	);
 
-	gnutls_transport_set_push_func(
+	gnutls_transport_set_push_function(
 		session.
 		net6_win32_io_func<const void*, const char*, ::send>
+	);
+#else
+	gnutls_transport_set_push_function(
+		session,
+		net6_unix_send_func
 	);
 #endif
 
