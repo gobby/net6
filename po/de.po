@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: net6 1.1.0\n"
 "Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
 "POT-Creation-Date: 2005-06-16 20:48+0200\n"
-"PO-Revision-Date: 2005-06-16 21:57+0200\n"
+"PO-Revision-Date: 2005-07-28 19:48+0200\n"
 "Last-Translator: Armin Burgmeier <armin@0x539.de>\n"
 "Language-Team: German Translation Team <crew@0x539.de>\n"
 "MIME-Version: 1.0\n"
@@ -185,7 +185,7 @@ msgstr "Zielrechner nicht gefunden"
 
 #: src/error.cpp:396
 msgid "Nonauthoritative host not found"
-msgstr ""
+msgstr "Nicht-authoritativer Rechner nicht gefunden"
 
 #: src/error.cpp:398
 msgid "No data record of requested type"
