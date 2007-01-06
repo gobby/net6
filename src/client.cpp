@@ -116,6 +116,11 @@ net6::client::peer* net6::client::get_self() const
 	return self;
 }
 
+const net6::connection& net6::client::get_connection() const
+{
+	return conn;
+}
+
 net6::client::signal_join_type net6::client::join_event() const
 {
 	return signal_join;

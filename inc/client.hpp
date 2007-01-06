@@ -103,6 +103,10 @@ public:
 	/** Returns the peer object which represents this host in the network.
 	 */
 	peer* get_self() const;
+
+	/** Returns the underlaying net6::connection object.
+	 */
+	const connection& get_connection() const;
 	
 	/** Signal which is emitted every time a client joins the network.
 	 */
@@ -147,7 +151,7 @@ protected:
 	signal_close_type signal_close;
 	signal_login_failed_type signal_login_failed;
 };
-	
+
 }
 
 #endif

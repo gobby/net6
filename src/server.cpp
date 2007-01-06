@@ -180,6 +180,11 @@ net6::server::peer* net6::server::find(const std::string& name) const
 	return NULL;
 }
 
+const net6::tcp_server_socket& net6::server::get_socket() const
+{
+	return *serv_sock;
+}
+
 net6::server::signal_join_type net6::server::join_event() const
 {
 	return signal_join;

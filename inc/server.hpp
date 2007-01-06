@@ -182,6 +182,12 @@ public:
 	 */
 	peer* find(const std::string& name) const;
 
+	/** Returns the underlaying TCP server socket object. Note that this
+	 * function will cause a segmentation fault if the server has not
+	 * been opened.
+	 */
+	const tcp_server_socket& get_socket() const;
+
 	/** Signal which is emitted when a new client joins.
 	 */
 	signal_join_type join_event() const;
