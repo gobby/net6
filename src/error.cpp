@@ -442,14 +442,17 @@ net6::error::error(domain error_domain, int error_code)
 {
 }
 
-net6::error::error(domain error_domain)
- : std::runtime_error(
-	net6_strerror(domain_to_net6(error_domain, last_error(error_domain)) )
-   ), 
-   errcode(domain_to_net6(error_domain, last_error(error_domain)))
+net6::error::error(domain error_domain):
+	std::runtime_error(
+		net6_strerror(
+			errcode = domain_to_net6(
+				error_domain,
+				last_error(error_domain)
+			)
+		)
+	)
 {
 }
-		
 
 net6::error::error(code error_code)
  : std::runtime_error(net6_strerror(error_code) ), errcode(error_code)
