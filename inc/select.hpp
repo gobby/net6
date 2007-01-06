@@ -60,7 +60,7 @@ public:
 	 * @param sock Socket to check.
 	 * @param condition Condition to check the socket for.
 	 */
-	bool check(const socket& sock, socket::condition condition);
+	bool check(const socket& sock, socket::condition condition) const;
 
 	/** Selects infinitely until an event occurs on one or more
 	 * selected sockets. Connect to the socket's signals to handle

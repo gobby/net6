@@ -75,7 +75,8 @@ void net6::selector::remove(const socket& sock, socket::condition condition)
 	}
 }
 
-bool net6::selector::check(const socket& sock, socket::condition condition)
+bool
+net6::selector::check(const socket& sock, socket::condition condition) const
 {
 	if(condition & socket::INCOMING)
 		if(std::find(read_list.begin(), read_list.end(), sock) !=

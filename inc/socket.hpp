@@ -62,12 +62,14 @@ public:
 	/** Checks if this socket object references the same object as
 	 * <em>other</em>.
 	 */
-	bool operator==(const socket& other) { return data == other.data; }
+	bool operator==(const socket& other) const
+		{ return data == other.data; }
 
 	/** Checks if this socket object references another object as
 	 * <em>other</em>.
 	 */
-	bool operator!=(const socket& other) { return data != other.data; }
+	bool operator!=(const socket& other) const
+		{ return data != other.data; }
 
 	/** Signal which will be emitted if somehting occures with the socket.
 	 */
