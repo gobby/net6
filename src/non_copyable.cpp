@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <iostream>
+#include <stdexcept>
 #include "non_copyable.hpp"
 
 net6::non_copyable::non_copyable()
@@ -29,12 +29,12 @@ net6::non_copyable::~non_copyable()
 
 net6::non_copyable::non_copyable(const non_copyable& other)
 {
-	std::cerr << "Warning: Copying non_copyable" << std::endl;
+	throw std::runtime_error("net6::non_copyable::non_copyable");
 }
 
 net6::non_copyable& net6::non_copyable::operator=(const non_copyable& other)
 {
-	std::cerr << "Warning: Assigning non_copyable" << std::endl;
+	throw std::runtime_error("net6::non_copyable::operator=");
 	return *this;
 }
 
