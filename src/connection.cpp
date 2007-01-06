@@ -240,19 +240,20 @@ void net6::connection::on_recv(const net6::packet& pack)
 	{
 		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
 		          << "parameter type from " << remote_addr->get_name()
-		          << std::endl;
+		          << " in packet " << pack.get_command() << std::endl;
 	}
 	catch(net6::basic_parameter::bad_count& e)
 	{
 		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
 		          << "parameter count from " << remote_addr->get_name()
-		          << std::endl;
+		          << " in packet " << pack.get_command() << std::endl;
 	}
 	catch(net6::basic_parameter::bad_value& e)
 	{
 		std::cerr << "net6-Warning: Protocol mismatch! Received bad "
 		          << "parameter value from " << remote_addr->get_name()
-		          << ": " << e.what() << std::endl;
+		          << " in packet " << pack.get_command() << ": "
+		           << e.what() << std::endl;
 	}
 }
 
