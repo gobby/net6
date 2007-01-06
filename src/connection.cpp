@@ -54,15 +54,19 @@ const char* net6::connection::queue::get_data() const
 void net6::connection::queue::append(const char* new_data, size_type len)
 {
 	if(size + len > alloc)
-		data = static_cast<char*>(std::realloc(data, alloc *= 2) );
-	memcpy(data + size, new_data, len);
+	{
+		alloc = size + len;
+		data = static_cast<char*>(std::realloc(data, alloc) );
+	}
+
+	std::memcpy(data + size, new_data, len);
 	size += len;
 }
 
 void net6::connection::queue::remove(size_type len)
 {
 	assert(len <= size);
-	memmove(data, data + len, size - len);
+	std::memmove(data, data + len, size - len);
 	size -= len;
 }
 
