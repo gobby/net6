@@ -34,7 +34,7 @@ namespace
 
 #ifdef WIN32
 	// Required to turn WSA error codes into errno.
-	ssize_t net6_win32_send_func(gnutls_transport_ptr_t ptr,
+	ssize_t net6_win32_send_func(net6::gnutls_transport_ptr_t ptr,
 	                             const void* data,
 	                             size_t size)
 	{
@@ -55,7 +55,7 @@ namespace
 		return ret;
 	}
 
-	ssize_t net6_win32_recv_func(gnutls_transport_ptr_t ptr,
+	ssize_t net6_win32_recv_func(net6::gnutls_transport_ptr_t ptr,
 	                             void* data,
 	                             size_t size)
 	{
@@ -77,7 +77,7 @@ namespace
 	}
 #else
 	// Send data with MSG_NOSIGNAL
-	ssize_t net6_unix_send_func(gnutls_transport_ptr_t ptr,
+	ssize_t net6_unix_send_func(net6::gnutls_transport_ptr_t ptr,
 	                            const void* data,
 	                            size_t size)
 	{
