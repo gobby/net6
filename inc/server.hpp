@@ -228,11 +228,11 @@ public:
 protected:
 	void remove_client(peer* client);
 
-	void on_server_read(socket& sock, socket::condition io);
+	virtual void on_server_read(socket& sock, socket::condition io);
 
-	void on_client_recv(const packet& pack, peer& from);
-	void on_client_send(const packet& pack, peer& to);
-	void on_client_close(peer& from);
+	virtual void on_client_recv(const packet& pack, peer& from);
+	virtual void on_client_send(const packet& pack, peer& to);
+	virtual void on_client_close(peer& from);
 
 	tcp_server_socket* serv_sock;
 	std::list<peer*> peers;

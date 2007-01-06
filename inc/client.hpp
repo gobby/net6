@@ -132,13 +132,13 @@ public:
 	signal_login_failed_type login_failed_event() const;
 
 protected:
-	void on_client_recv(const packet& pack);
-	void on_client_send(const packet& pack);
-	void on_client_close();
+	virtual void on_client_recv(const packet& pack);
+	virtual void on_client_send(const packet& pack);
+	virtual void on_client_close();
 
-	void on_login_failed(const packet& pack);
-	void on_client_join(const packet& pack);
-	void on_client_part(const packet& pack);
+	virtual void on_login_failed(const packet& pack);
+	virtual void on_client_join(const packet& pack);
+	virtual void on_client_part(const packet& pack);
 
 	connection conn;
 	std::list<peer*> peers;
