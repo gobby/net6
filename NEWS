@@ -1,6 +1,9 @@
 net6
 ====
 
+Version 1.2.1:
+ * Improve gettext handling to allow translations in header files
+
 Version 1.2.0:
  * This release is both API- and ABI-incompatible to the 1.1.x series.
  * New boolean type added
