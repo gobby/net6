@@ -10,18 +10,12 @@ Major:
 Normal:
 
 Minor:
-  * Error code transmission (#16)
 
 Trivial:
 
 Enhancement:
   * Translate failure messages with gettext (#14)
 
-
-16: Error code transmission
----------------------------
-We should transmit error codes instead of error strings in net6. The client 
-may build a (localised, see #14) string out of it.
 
 14: Translate failure messages with gettext
 -------------------------------------------
