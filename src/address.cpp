@@ -40,7 +40,7 @@ namespace
 				WSAGetLastError()
 			);
 
-		// Checka address type
+		// Check address type
 		if(result->h_addrtype != family)
 			throw net6::error(net6::error::GETHOSTBYNAME, NO_DATA);
 
@@ -65,6 +65,30 @@ namespace
 			throw net6::error(net6::error::GETADDRINFO, gai_error);
 
 		return result;
+	}
+#endif
+
+#ifdef WIN32
+	// There is no inet_ntop on WIN32
+	inline const char *inet_ntop(int af, const void *__restrict src, char *__restrict dest, socklen_t size)
+	{
+		// IPV6 not supported (yet?)
+		if(AF_INET!=af)
+		{
+			printf(__FUNCTION__ " is only implemented for AF_INET address family on win32/msvc8");
+			abort();
+		}
+
+		// Format address
+		char *s=inet_ntoa(*reinterpret_cast<const in_addr*>(src));
+		if(!s)
+			return 0;
+
+		// Copy to given buffer
+		socklen_t len=(socklen_t)strlen(s);
+		if(len>=size)
+			return 0;
+		return strncpy(dest, s, len);
 	}
 #endif
 }
