@@ -30,14 +30,23 @@ AC_TRY_COMPILE([#include <sys/socket.h>],
 	       [ AC_MSG_RESULT(yes)
 	         AC_DEFINE(HAVE_MSG_NOSIGNAL, 1,
 			   [Define this symbol if you have MSG_NOSIGNAL]) ],
- 	       [ AC_MSG_RESULT(no)])
+ 	       [ AC_MSG_RESULT(no) ])
 AC_MSG_CHECKING(for SO_NOSIGPIPE)
 AC_TRY_COMPILE([#include <sys/socket.h>],
                [ int f = SO_NOSIGNAL; ],
                [ AC_MSG_RESULT(yes)
                  AC_DEFINE(HAVE_SO_NOSIGNAL, 1,
                            [Define this symbol if you have SO_NOSIGNAL]) ],
-               [ AC_MSG_RESULT(no)])
+               [ AC_MSG_RESULT(no) ])
+AC_MSG_CHECKING(for AI_ADDRCONFIG)
+AC_TRY_COMPILE([#include <sys/types.h>
+                #include <sys/socket.h>
+                #include <netdb.h>],
+               [ int f = AI_ADDRCONFIG; ],
+               [ AC_MSG_RESULT(yes)
+                 AC_DEFINE(HAVE_AI_ADDRCONFIG, 1,
+                           [Define this symbol if you have AI_ADDRCONFIG]) ],
+               [ AC_MSG_RESULT(no) ])
 
 AC_MSG_CHECKING([whether to enable WIN32 specific flags])
 case "$host_os" in
