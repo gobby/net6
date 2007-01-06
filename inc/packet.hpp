@@ -26,7 +26,7 @@ namespace net6
 {
 
 /** Represents a packet to send through the network to another host. A packet
- * exists of a command and zero ore more parameters of type int, float, or
+ * exists of a command and zero or more parameters of type int, float, or
  * std::string.
  */
 	
