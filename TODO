@@ -8,17 +8,40 @@ Critical:
 Major:
 
 Normal:
+  * Fix the permissions when building a release tarball (#46)
+  * The path containing the pkg-config specs should be determined (#47)
 
 Minor:
 
 Trivial:
 
 Enhancement:
-  * Translate failure messages with gettext (#14)
+  * net6: Localisation (#14)
 
 
-14: Translate failure messages with gettext
--------------------------------------------
+46: Fix the permissions when building a release tarball
+-------------------------------------------------------
+''darcs'' messes with the permissions when one checks out a working copy 
+from the repository as it does not preserve them at all. We should try to 
+regain the correct executable bits on the files before building a tarball 
+which gets distributed to other parties. Mostly it should not be a problem 
+but some might depend on calling a script directly without prefixing it 
+with ''/bin/sh''. This affects all components, but it is filed against net6 
+as this should be the next thing to be released.
+
+47: The path containing the pkg-config specs should be determined
+-----------------------------------------------------------------
+The path which receives our pkg-config spec files is currently hardcoded as 
+it was advised on the web. On FreeBSD it should not go into 
+''$(prefix)/libdata/pkgconfig'' instead of ''$(libdir)/pkgconfig''. 
+Autoconf does not even support a ''--libdata=DIR'' configuration option, 
+and I do not yet know any program which uses this. As Darwin also lacks a 
+''libdata'' subdirectory this probably needs just a special conditional for 
+FreeBSD. More input on this is certainly needed. This affects both ''net6'' 
+and ''libobby''.
+
+14: net6: Localisation
+----------------------
 The failure messages issued by net6 should be localised and translated with 
 gettext. Error code transmission (#16) should be implemented first so that 
 the client gets the message in his own locale and not in the one of the 
