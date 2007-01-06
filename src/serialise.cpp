@@ -33,3 +33,21 @@ const std::string& serialise::data::serialised() const
 	return m_serialised;
 }
 
+std::string
+serialise::context<std::string>::to_string(const data_type& from) const
+{
+	return from;
+}
+
+serialise::context<std::string>::data_type
+serialise::context<std::string>::from_string(const std::string& string) const
+{
+	return string;
+}
+
+std::string
+serialise::context<const char*>::to_string(const data_type& from) const
+{
+	return from;
+}
+

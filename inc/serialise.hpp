@@ -72,6 +72,45 @@ protected:
 	virtual void on_stream_setup(std::stringstream& stream) const;
 };
 
+/** String serialisation does not need any conversions.
+ */
+template<>
+class context<std::string>
+{
+public:
+	typedef std::string data_type;
+
+	// TODO: Return const string ref here?
+	virtual std::string to_string(const data_type& from) const;
+	virtual data_type from_string(const std::string& string) const;
+};
+
+/** const char* serialisation is only supported in one direction
+ * (const char* -> string). If you want to get certain data as const char*,
+ * get it as std::string and call c_str() on it.
+ */
+template<>
+class context<const char*>
+{
+public:
+	typedef const char* data_type;
+
+	virtual std::string to_string(const data_type& from) const;
+};
+
+/** char array serialisation is only supported in one direction
+ * (char[N] -> string). If you want to get certain data as a char array, get
+ * it as std::string and call c_str() on it.
+ */
+template<size_t N>
+class context<char[N]>: public context<std::string>
+{
+public:
+	typedef const char data_type[N];
+
+	virtual std::string to_string(const data_type& from) const;
+};
+
 /** A serialised object.
  */
 class data
@@ -106,7 +145,7 @@ std::string context<data_type>::to_string(const data_type& data) const
 {
 	std::stringstream stream;
 	on_stream_setup(stream);
-	stream >> data;
+	stream << data;
 	return stream.str();
 }
 
@@ -135,16 +174,22 @@ void hex_context<data_type>::on_stream_setup(std::stringstream& stream) const
 	stream >> std::hex;
 }
 
-template<typename type>
-data::data(const type& data, const context<type>& ctx):
+template<typename data_type>
+data::data(const data_type& data, const context<data_type>& ctx):
 	m_serialised(ctx.to_string(data) )
 {
 }
 
-template<typename type>
-type data::as(const context<type>& ctx) const
+template<typename data_type>
+data_type data::as(const context<data_type>& ctx) const
 {
 	return ctx.from_string(m_serialised);
+}
+
+template<size_t N>
+std::string context<char[N]>::to_string(const data_type& from) const
+{
+	return from;
 }
 
 } // namespace serialise
