@@ -1,7 +1,7 @@
-# net6 i18n German Translation
-# Copyright (C) YEAR 0x539 dev group
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# net6 l10n German Translation
+# Copyright (C) 2005 0x539 dev group
+# This file is distributed under the same license as the net6 package.
+# Armin Burgmeier <armin@0x539.de, 2005.
 #
 msgid ""
 msgstr ""
@@ -185,7 +185,6 @@ msgstr "Zielrechner nicht gefunden"
 
 #: src/error.cpp:396
 msgid "Nonauthoritative host not found"
-#msgstr "Nicht-Verbindlicher Zielrechner nicht gefunden"
 msgstr ""
 
 #: src/error.cpp:398
