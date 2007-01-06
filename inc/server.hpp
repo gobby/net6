@@ -571,9 +571,14 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 		// TODO: Check if this ID is already in use
 		if(new_id != 0)
 		{
+			// Re-insert into map because ID has changed
+			basic_object<selector_type>::users.erase(user.get_id());
+			basic_object<selector_type>::users[new_id] = user;
+
 			user.login(name, new_id);
 			if(id_counter < new_id)
 				id_counter = new_id;
+
 		}
 
 		// Synchronise with other clients
