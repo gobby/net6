@@ -70,13 +70,16 @@ namespace
 
 #ifdef WIN32
 	// There is no inet_ntop on WIN32
-	inline const char *inet_ntop(int af, const void *__restrict src, char *__restrict dest, socklen_t size)
+	inline const char *inet_ntop(int af, const void *__restrict src,
+	                             char *__restrict dest, socklen_t size)
 	{
 		// IPV6 not supported (yet?)
 		if(AF_INET!=af)
 		{
-			printf(__FUNCTION__ " is only implemented for AF_INET address family on win32/msvc8");
-			abort();
+			throw std::runtime_error(
+				"inet_ntop is only implemented for AF_INET "
+				"address family on win32"
+			);
 		}
 
 		// Format address
