@@ -52,6 +52,9 @@ net6::socket::socket(int domain, int type, int protocol)
 {
 	data->sock = ::socket(domain, type, protocol);
 	data->refcount = 1;
+
+	if(data->sock == INVALID_SOCKET)
+		throw error(error::SYSTEM);
 }
 
 net6::socket::socket(socket_type c_object)
