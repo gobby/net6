@@ -36,10 +36,10 @@ net6::packet::packet(const std::string& command,
 	params.reserve(size);
 }
 
-net6::packet::packet(connection::queue& queue)
+net6::packet::packet(queue& queue)
 {
 	// Check for a complete packet on the queue
-	connection::queue::size_type pack_pos = queue.packet_size();
+	net6::queue::size_type pack_pos = queue.packet_size();
 	if(pack_pos == queue.get_size() )
 		throw end_of_queue();
 
@@ -87,7 +87,7 @@ unsigned int net6::packet::get_param_count() const
 	return static_cast<unsigned int>(params.size() );
 }
 
-void net6::packet::enqueue(connection::queue& queue) const
+void net6::packet::enqueue(queue& queue) const
 {
 	// Packet command
 	std::string escaped_command = escape(command);

@@ -1,5 +1,5 @@
 /* net6 - Library providing IPv4/IPv6 network access
- * Copyright (C) 2005 Armin Burgmeier / 0x539 dev group
+ * Copyright (C) 2005, 2006 Armin Burgmeier / 0x539 dev group
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,78 +24,44 @@
 
 #include "non_copyable.hpp"
 #include "socket.hpp"
+#include "queue.hpp"
+#include "packet.hpp"
 
 namespace net6
 {
 
-class packet;
-
-/** Connection to another host.
+/** Abstract base connection class. Instantiate net6::connection.
  */
-
-class connection: public sigc::trackable, private non_copyable
+class connection_base: public sigc::trackable, private non_copyable
 {
 public:
-	/** Internal buffer for incoming or outgoing data.
-	 */
-	class queue: private non_copyable
-	{
-	public:
-		typedef size_t size_type;
-
-		queue();
-		~queue();
-
-		/** Returns the size of the queue.
-		 */
-		size_type get_size() const;
-
-		/** Returns the size of the next packet in the queue.
-		 */
-		size_type packet_size() const;
-
-		/** Returns a pointer to the data that is currently enqueued.
-		 */
-		const char* get_data() const;
-
-		/** Appends new data to the queue.
-		 */
-		void append(const char* new_data, size_type len);
-
-		/** Removes data from the queue.
-		 */
-		void remove(size_type len);
-
-	private:
-		char* data;
-		size_t size;
-		size_t alloc;
-	};
-
 	enum encrypted_state {
-		HANDSHAKING_RECV,
-		HANDSHAKING_SEND,
-		ENCRYPTED,
-		ENCRYPTED_PENDING
+		UNENCRYPTED,
+		ENCRYPTION_INITIATED_CLIENT,
+		ENCRYPTION_INITIATED_SERVER,
+		ENCRYPTION_HANDSHAKING,
+		ENCRYPTED
 	};
 
 	typedef sigc::signal<void, const packet&> signal_recv_type;
 	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;
-	typedef sigc::signal<void, encrypted_state> signal_encrypted_type;
+	typedef sigc::signal<void> signal_encrypted_type;
 
 	/** @brief Creates a new connection object and establishes a
 	 * connection to <em>addr</em>.
 	 */
-	connection(const address& addr);
+	connection_base(const address& addr);
 
 	/** @brief Wraps a socket into to a connection object.
 	 *
 	 * The ownership of the socket is transferred to the connection.
 	 * The remote host has the address <em>addr</em>.
 	 */
-	connection(std::auto_ptr<tcp_client_socket> sock,
-	           const address& addr);
+	connection_base(std::auto_ptr<tcp_client_socket> sock,
+	                const address& addr);
+
+	virtual ~connection_base();
 
 	/** Returns the remote internet address.
 	 */
@@ -105,23 +71,20 @@ public:
 	 */
 	const tcp_client_socket& get_socket() const;
 
-	/** Queues a packet to send it to the remote host. Note that the
-	 * socket has to be selected for socket::OUTGOING, if packets
-	 * have to be sent.
+	/** Queues a packet to send it to the remote host.
 	 */
 	void send(const packet& pack);
 
-	/** Signal which is emitted when a packet has been received. Note that
-	 * the underlaying socket has to be selected for socket::IN to
-	 * receive packets.
+	/** @brief Requests a secure connection to the remote end.
+	 *
+	 * signal_encrypted will be emitted when further traffic will be
+	 * encrypted.
+	 */
+	void request_encryption();
+
+	/** Signal which is emitted when a packet has been received.
 	 */
 	signal_recv_type recv_event() const;
-
-	/** Signal which is emitted when all data to be sent has been sent.
-	 * This is a good place to remove a socket::OUTGOING flag for the
-	 * underlaying socket.
-	 */
-	signal_send_type send_event() const;
 
 	/** Signal which is emitted when the connection has been lost. Note
 	 * that the connection is invalid after the close event occured!
@@ -134,19 +97,17 @@ public:
 	signal_encrypted_type encrypted_event() const;
 
 protected:
-	void on_sock_event(io_condition io);
+	virtual void set_select(io_condition cond) = 0;
+	virtual io_condition get_select() const = 0;
 
+	void on_recv(const packet& pack);
 	void on_send();
-	void on_recv(const net6::packet& pack);
 	void on_close();
-
-	void handle_handshake();
 
 	queue sendqueue;
 	queue recvqueue;
 
 	signal_recv_type signal_recv;
-	signal_send_type signal_send;
 	signal_close_type signal_close;
 	signal_encrypted_type signal_encrypted;
 
@@ -154,11 +115,88 @@ protected:
 	tcp_encrypted_socket* encrypted_sock;
 	std::auto_ptr<address> remote_addr;
 
-	queue::size_type block_pos;
-	bool master;
+	encrypted_state state;
+
+private:
+	void init_impl();
+
+	void on_sock_event(io_condition io);
+	void do_io(io_condition io);
+
+	void do_recv(const packet& pack);
+	void do_handshake();
+
+	void net_encryption(const packet& pack);
+	void net_encryption_ok(const packet& pack);
+	void net_encryption_failed(const packet& pack);
 };
 
+/** @brief Connection to another host.
+ */
+template<typename Selector>
+class connection: public connection_base
+{
+public:
+	typedef Selector selector_type;
+
+	/** @brief Establishes a new connection to the given address that
+	 * uses the given selector.
+	 */
+	connection(const address& addr,
+	           selector_type& sel);
+
+	/** @brief Creates a connection that takes ownership of the given
+	 * socket whose remote end has the address <em>addr</em>.
+	 */
+	connection(std::auto_ptr<tcp_client_socket> sock,
+	           const address& addr,
+	           selector_type& sel);
+
+	virtual ~connection();
+
+protected:
+	virtual void set_select(io_condition cond);
+	virtual io_condition get_select() const;
+
+	selector_type& selector;
+};
+
+template<typename Selector>
+connection<Selector>::connection(const address& addr,
+                                 selector_type& sel):
+	connection_base(addr), selector(sel)
+{
+	set_select(IO_INCOMING | IO_ERROR);
 }
 
-#endif
+template<typename Selector>
+connection<Selector>::connection(std::auto_ptr<tcp_client_socket> sock,
+                                 const address& addr,
+                                 selector_type& sel):
+	connection_base(sock, addr), selector(sel)
+{
+	set_select(IO_INCOMING | IO_ERROR);
+}
 
+template<typename Selector>
+connection<Selector>::~connection()
+{
+	// TODO: Should be done by connection_base dtor?
+	selector.set(*remote_sock, IO_NONE);
+}
+
+template<typename Selector>
+void connection<Selector>::set_select(io_condition cond)
+{
+	selector.set(*remote_sock, cond);
+}
+
+template<typename Selector>
+io_condition connection<Selector>::get_select() const
+{
+	return selector.get(*remote_sock);
+}
+
+} // namespace net6
+
+#endif // _NET6_CONNECTION_HPP_

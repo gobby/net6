@@ -19,8 +19,8 @@
 #include "error.hpp"
 #include "user.hpp"
 
-net6::user::user(unsigned int unique_id, connection* remote_conn)
- : id(unique_id), logged_in(false), conn(remote_conn)
+net6::user::user(unsigned int unique_id, connection_base* remote_conn):
+	id(unique_id), logged_in(false), conn(remote_conn)
 {
 }
 
@@ -49,7 +49,7 @@ const std::string& net6::user::get_name() const
 	return name;
 }
 
-net6::connection& net6::user::get_connection()
+net6::connection_base& net6::user::get_connection()
 {
 	if(conn.get() == NULL)
 		throw not_connected_error("net6::user::get_connection");
@@ -57,7 +57,7 @@ net6::connection& net6::user::get_connection()
 	return *conn.get();
 }
 
-const net6::connection& net6::user::get_connection() const
+const net6::connection_base& net6::user::get_connection() const
 {
 	if(conn.get() == NULL)
 		throw not_connected_error("net6::user::get_connection");

@@ -55,6 +55,9 @@ namespace login
 class error : public std::runtime_error
 {
 public:
+	// TODO: Multiple error classes, one for each domain. This would allow
+	// to use system-given error messages (strerror, gai_strerror, etc).
+
 	/** Error domain. Used by the error class to translate system
 	 * dependant error values to net6 error codes.
 	 */
@@ -115,6 +118,25 @@ public:
 		NO_MEMORY, // Insufficient memory is available
 		BROKEN_PIPE, // The connection was unexpectedly closed
 		NO_DEVICE, // Network device not available
+
+		// GnuTLS stuff
+		DECRYPTION_FAILED,
+		PRIME_UNACCEPTABLE,
+		ENCRYPTION_FAILED,
+		GOT_APPLICATION_DATA,
+		INSUFFICIENT_CREDENTIALS,
+		INVALID_REQUEST,
+		KEY_USAGE_VIOLATION,
+		MAC_VERIFY_FAILED,
+		NO_CERTIFICATE,
+		NO_TEMPORARY_DH_PARAMS,
+		NO_TEMPORARY_RSA_PARAMS,
+		PULL_ERROR,
+		PUSH_ERROR,
+		RANDOM_FAILED,
+		REHANDSHAKE,
+		UNEXPECTED_HANDSHAKE,
+		UNEXPECTED_PACKET,
 
 		UNKNOWN // This is a nonrecoverable error
 	};

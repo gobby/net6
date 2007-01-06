@@ -24,7 +24,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "serialise.hpp"
-#include "connection.hpp"
+#include "queue.hpp"
 
 namespace net6
 {
@@ -139,7 +139,7 @@ public:
 	 * by net6::connection to split incoming data into separate packets.
 	 * You will most certainly not need it.
 	 */
-	packet(connection::queue& queue);
+	packet(queue& queue);
 
 	/** Adds a new parameter to the packet.
 	 */
@@ -169,7 +169,7 @@ public:
 	 * is used by net6::connection to enqueue a packet for sending it to
 	 * a remote host. You will most certainly not need it.
 	 */
-	void enqueue(connection::queue& queue) const;
+	void enqueue(queue& queue) const;
 protected:
 	static std::string escape(const std::string& string);
 	static std::string unescape(const std::string& string);

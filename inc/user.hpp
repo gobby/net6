@@ -32,7 +32,7 @@ namespace net6
 class user : private non_copyable
 {
 public:
-	user(unsigned int unique_id, connection* remote_conn);
+	user(unsigned int unique_id, connection_base* remote_conn);
 
 	/** Log in the user with the given name, optionally changing his ID.
 	 * Note that this function is called automatically by the high-level
@@ -55,12 +55,12 @@ public:
 	/** Returns the connection to the user. If there is no direct
 	 * connection, not_connected_error is thrown.
 	 */
-	connection& get_connection();
+	connection_base& get_connection();
 
 	/** Returns the connection to the user. If there is no direct
 	 * connection, not_connected_error is thrown.
 	 */
-	const connection& get_connection() const;
+	const connection_base& get_connection() const;
 
 	/** Sends a packet to this user. Note that the underlaying socket will
 	 * not be added to any selector. Use the send function of a high-level
@@ -75,7 +75,7 @@ protected:
 	unsigned int id;
 	std::string name;
 	bool logged_in;
-	std::auto_ptr<connection> conn;
+	std::auto_ptr<connection_base> conn;
 };
 
 } // namespace net6

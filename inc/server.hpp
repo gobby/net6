@@ -43,6 +43,8 @@ template<typename selector_type>
 class basic_server : virtual public basic_object<selector_type>
 {
 public:
+	typedef connection<selector_type> connection_type;
+
 	typedef default_accumulator<bool, true> auth_accumulator;
 
 	typedef sigc::signal<void, const user&>
@@ -177,7 +179,6 @@ protected:
 	virtual void remove_client(const user* client);
 
 	virtual void on_accept_event(io_condition io);
-	virtual void on_send_event(user& to);
 	virtual void on_recv_event(const packet& pack,
 	                           user& from);
 	virtual void on_close_event(user& user);
@@ -279,14 +280,6 @@ void basic_server<selector_type>::send(const packet& pack)
 template<typename selector_type>
 void basic_server<selector_type>::send(const packet& pack, const user& to)
 {
-	// Get selector from base class
-	selector_type& selector = basic_object<selector_type>::get_selector();
-	const tcp_client_socket& user_socket = to.get_connection().get_socket();
-
-	// Set OUTGOING flag if it isn't already
-	selector.set(user_socket,
-		selector.get(user_socket) | IO_OUTGOING);
-
 	// Enqueue packet
 	to.send(pack);
 }
@@ -364,14 +357,6 @@ void basic_server<selector_type>::remove_client(const user* user)
 		on_part(*user);
 	on_disconnect(*user);
 
-	// Get selector from base class
-	selector_type& selector = basic_object<selector_type>::get_selector();
-	const tcp_client_socket& user_socket = 
-		user->get_connection().get_socket();
-
-	// Remove dead client from selector
-	selector.set(user_socket, IO_NONE);
-
 	// Store ID of client to remove
 	unsigned int user_id = user->get_id();
 	// Remove user to prevent server from sending the packet to the
@@ -390,6 +375,9 @@ void basic_server<selector_type>::remove_client(const user* user)
 template<typename selector_type>
 void basic_server<selector_type>::on_accept_event(io_condition io)
 {
+	// Get selector from base class
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
 	// Accept new client connection
 	user* client;
 	if(use_ipv6)
@@ -402,7 +390,7 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 
 		client = new user(
 			++ id_counter,
-			new connection(new_sock, addr)
+			new connection_type(new_sock, addr, selector)
 		);
 	}
 	else
@@ -415,27 +403,12 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 
 		client = new user(
 			++ id_counter,
-			new connection(new_sock, addr)
+			new connection_type(new_sock, addr, selector)
 		);
 	}
 
-	// Get selector from base class
-	selector_type& selector = basic_object<selector_type>::get_selector();
-
-	// Add new client into user list
+	const connection_base& conn = client->get_connection();
 	basic_object<selector_type>::user_add(client);
-
-	// Add to selector to receive data from this client
-	connection& conn = client->get_connection();
-	selector.set(conn.get_socket(), IO_INCOMING | IO_ERROR);
-
-	// Connect signal handlers
-	conn.send_event().connect(
-		sigc::bind(
-			sigc::mem_fun(*this, &basic_server::on_send_event),
-			sigc::ref(*client)
-		)
-	);
 
 	conn.recv_event().connect(
 		sigc::bind(
@@ -453,16 +426,6 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 
 	// Emit connection signal for new client
 	on_connect(*client);
-}
-
-template<typename selector_type>
-void basic_server<selector_type>::on_send_event(user& to)
-{
-	selector_type& selector = basic_object<selector_type>::get_selector();
-
-	// Remove OUTGOING from selector as no more data has to be sent
-	selector.set(to.get_connection().get_socket(),
-		selector.get(to.get_connection().get_socket() ) & ~IO_OUTGOING);
 }
 
 template<typename selector_type>

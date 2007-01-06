@@ -40,6 +40,8 @@ template<typename selector_type>
 class basic_client: virtual public basic_local<selector_type>
 {
 public:
+	typedef connection<selector_type> connection_type;
+
 	typedef sigc::signal<void, const user&, const packet&>
 		signal_join_type;
 	typedef sigc::signal<void, const user&, const packet&>
@@ -109,7 +111,7 @@ public:
 
 	/** Returns the underlaying net6::connection object.
 	 */
-	const connection& get_connection() const;
+	const connection_type& get_connection() const;
 	
 	/** Signal which is emitted every time a client joins the network.
 	 */
@@ -152,18 +154,15 @@ protected:
 	 */
 	virtual void on_recv_event(const packet& pack);
 
-	/** Signal handler that is called when all available data has been sent.
-	 */
-	virtual void on_send_event();
-
 	/** Signal handler that is called when the remote site closed the
 	 * connection.
 	 */
 	virtual void on_close_event();
 
-	/** Signal handler that is called on events related to encryption.
+	/** Signal handler that is called when the underlaying connection is
+	 * encrypted.
 	 */
-	virtual void on_encrypted_event(connection::encrypted_state state);
+	virtual void on_encrypted_event();
 
 	virtual void on_join(const user& user, const packet& pack);
 	virtual void on_part(const user& user, const packet& pack);
@@ -177,7 +176,7 @@ protected:
 	virtual void net_client_join(const packet& pack);
 	virtual void net_client_part(const packet& pack);
 
-	std::auto_ptr<connection> conn;
+	std::auto_ptr<connection_type> conn;
 	user* self;
 
 	signal_join_type signal_join;
@@ -240,8 +239,7 @@ void basic_client<selector_type>::request_encryption()
 	// the corresponding packet to the server. The handler
 	// code in the connection will take care of establishing
 	// the additional security layer.
-	packet pack("net6_encryption");
-	send(pack);
+	conn->request_encryption();
 }
 
 template<typename selector_type>
@@ -256,12 +254,6 @@ void basic_client<selector_type>::login(const std::string& username)
 template<typename selector_type>
 void basic_client<selector_type>::send(const packet& pack)
 {
-	selector_type& selector = basic_object<selector_type>::get_selector();
-
-	// Add OUTGOING flag it to the selector if it isn't already set
-	selector.set(conn->get_socket(),
-		selector.get(conn->get_socket() ) | IO_OUTGOING);
-
 	// Add packet to send queue
 	conn->send(pack);
 }
@@ -287,7 +279,8 @@ const user& basic_client<selector_type>::get_self() const
 }
 
 template<typename selector_type>
-const connection& basic_client<selector_type>::get_connection() const
+const typename basic_client<selector_type>::connection_type&
+basic_client<selector_type>::get_connection() const
 {
 	if(!is_connected() )
 		throw not_connected_error("net6::basic_client::get_connection");
@@ -358,17 +351,6 @@ void basic_client<selector_type>::on_recv_event(const packet& pack)
 }
 
 template<typename selector_type>
-void basic_client<selector_type>::on_send_event()
-{
-	selector_type& selector = basic_object<selector_type>::get_selector();
-
-	// Remove OUTGOING flag from selector as there is no more
-	// data to send
-	selector.set(conn->get_socket(),
-		selector.get(conn->get_socket() ) & ~IO_OUTGOING);
-}
-
-template<typename selector_type>
 void basic_client<selector_type>::on_close_event()
 {
 	// Disconnect from server
@@ -378,30 +360,9 @@ void basic_client<selector_type>::on_close_event()
 }
 
 template<typename selector_type>
-void basic_client<selector_type>::on_encrypted_event(
-	connection::encrypted_state state)
+void basic_client<selector_type>::on_encrypted_event()
 {
-	selector_type& selector = basic_object<selector_type>::get_selector();
-
-	switch(state)
-	{
-	case connection::HANDSHAKING_RECV:
-		selector.set(conn->get_socket(), IO_INCOMING);
-		break;
-	case connection::HANDSHAKING_SEND:
-		selector.set(conn->get_socket(), IO_OUTGOING);
-		break;
-	case connection::ENCRYPTED_PENDING:
-		// Flush the send queue, then emit the signal
-		// in the next case, as only one of the two
-		// is emitted.
-		selector.set(conn->get_socket(),
-			selector.get(conn->get_socket() ) | IO_OUTGOING);
-	case connection::ENCRYPTED:
-		// Notify the client that encryption is now used
-		on_encrypted();
-		break;
-	}
+	on_encrypted();
 }
 
 template<typename selector_type>
@@ -494,17 +455,14 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 		throw connected_error("net6::basic_client::connect");
 
 	// Connect to remote host
-	conn.reset(new connection(addr) );
-
-	// Add socket to selector
-	basic_object<selector_type>::get_selector().add(
-		conn->get_socket(),
-		IO_INCOMING | IO_ERROR
+	conn.reset(
+		new connection_type(
+			addr,
+			basic_object<selector_type>::get_selector()
+		)
 	);
 
 	// Install signal handlers
-	conn->send_event().connect(
-		sigc::mem_fun(*this, &basic_client::on_send_event) );
 	conn->recv_event().connect(
 		sigc::mem_fun(*this, &basic_client::on_recv_event) );
 	conn->close_event().connect(

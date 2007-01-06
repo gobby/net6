@@ -289,8 +289,13 @@ gnutls_session_t basic_tcp_encrypted_socket<Info>::create_session()
 	gnutls_credentials_set(session, GNUTLS_CRD_ANON, anoncred);
 	gnutls_dh_set_prime_bits(session, DH_BITS);
 
-	gnutls_transport_set_ptr(session, reinterpret_cast<gnutls_transport_ptr_t>(
-		cobj() ));
+
+	gnutls_transport_set_ptr(
+		session,
+		reinterpret_cast<gnutls_transport_ptr_t>(cobj())
+	);
+
+	gnutls_transport_set_lowat(session, 0);
 
 	return session;
 }

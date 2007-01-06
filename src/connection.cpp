@@ -1,5 +1,5 @@
 /* net6 - Library providing IPv4/IPv6 network access
- * Copyright (C) 2005 Armin Burgmeier / 0x539 dev group
+ * Copyright (C) 2005, 2006 Armin Burgmeier / 0x539 dev group
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,249 +17,94 @@
  */
 
 #include <iostream>
+
 #include "error.hpp"
-#include "packet.hpp"
 #include "connection.hpp"
 
-namespace
-{
-	const net6::connection::queue::size_type INVALID_POS =
-		static_cast<net6::connection::queue::size_type>(~0);
-};
-
-// We use malloc for the dynamic queue data to be available to use realloc
-// if the data exceeds the size of the queue.
-net6::connection::queue::queue()
- : data(static_cast<char*>(std::malloc(1024)) ), size(0), alloc(1024)
-{
-}
-
-net6::connection::queue::~queue()
-{
-	std::free(data);
-}
-
-net6::connection::queue::size_type net6::connection::queue::get_size() const
-{
-	return size;
-}
-
-net6::connection::queue::size_type net6::connection::queue::packet_size() const
-{
-	for(size_type i = 0; i < size; ++ i)
-		if(data[i] == '\n')
-			return i;
-	return size;
-}
-
-const char* net6::connection::queue::get_data() const
-{
-	return data;
-}
-
-void net6::connection::queue::append(const char* new_data, size_type len)
-{
-	// TODO: This function should raise an exception if the queue
-	// exceed a defined default size. This would, however, restrict
-	// the maximum packet size. The client could be advised to disconnect
-	// the offending client.
-	if(size + len > alloc)
-	{
-		alloc = size + len;
-		data = static_cast<char*>(std::realloc(data, alloc *= 2) );
-	}
-
-	std::memcpy(data + size, new_data, len);
-	size += len;
-}
-
-void net6::connection::queue::remove(size_type len)
-{
-	// TODO: Free a part of the allocated memory when only a half is used,
-	// or so.
-	if(len > size)
-		throw std::logic_error("net6::connection::queue::remove");
-
-	std::memmove(data, data + len, size - len);
-	size -= len;
-}
-
-net6::connection::connection(const address& addr):
+net6::connection_base::connection_base(const address& addr):
 	remote_sock(new tcp_client_socket(addr) ),
 	encrypted_sock(NULL),
 	remote_addr(addr.clone() ),
-	block_pos(INVALID_POS)
+	state(UNENCRYPTED)
 {
-	remote_sock->io_event().connect(
-		sigc::mem_fun(*this, &connection::on_sock_event) );
+	init_impl();
 }
 
-net6::connection::connection(std::auto_ptr<tcp_client_socket> sock,
-                             const address& addr):
-	remote_sock(sock), encrypted_sock(NULL),
+net6::connection_base::connection_base(std::auto_ptr<tcp_client_socket> sock,
+                                       const address& addr):
+	remote_sock(sock),
+	encrypted_sock(NULL),
 	remote_addr(addr.clone() ),
-	block_pos(INVALID_POS)
+	state(UNENCRYPTED)
 {
-	remote_sock->io_event().connect(
-		sigc::mem_fun(*this, &connection::on_sock_event) );
+	init_impl();
 }
 
-const net6::address& net6::connection::get_remote_address() const
+net6::connection_base::~connection_base()
+{
+}
+
+const net6::address& net6::connection_base::get_remote_address() const
 {
 	return *remote_addr;
 }
 
-const net6::tcp_client_socket& net6::connection::get_socket() const
-{
-	return *remote_sock;
-}
-
-void net6::connection::send(const packet& pack)
+void net6::connection_base::send(const packet& pack)
 {
 	pack.enqueue(sendqueue);
-	if(pack.get_command() == "net6_encryption" ||
-	   pack.get_command() == "net6_encryption_ok")
+
+	if(sendqueue.get_size() > 0)
 	{
-		// All unencrypted traffic needs to go to the peer
-		// first, then further sending is blocked.
-		block_pos = sendqueue.get_size();
-		// We need to determine who initiates the TLS handshake.
-		master = (pack.get_command() == "net6_encryption_ok");
+		io_condition flags = get_select();
+		if( (flags & IO_OUTGOING) == 0)
+			set_select(flags | IO_OUTGOING);
 	}
 }
 
-net6::connection::signal_recv_type net6::connection::recv_event() const
+void net6::connection_base::request_encryption()
+{
+	if(state != UNENCRYPTED)
+	{
+		throw std::logic_error(
+			"net6::connection::request_encryption:\n"
+			"Encryption request has already been performed"
+		);
+	}
+
+	// Request encryption from other side
+	packet pack("net6_encryption");
+	send(pack);
+
+	// Wait for net6_encryption_ok or net6_encryption_failed
+	state = ENCRYPTION_INITIATED_CLIENT;
+
+	// Block further outgoing traffic
+	sendqueue.block();
+}
+
+net6::connection_base::signal_recv_type
+net6::connection_base::recv_event() const
 {
 	return signal_recv;
 }
 
-net6::connection::signal_send_type net6::connection::send_event() const
-{
-	return signal_send;
-}
-
-net6::connection::signal_close_type net6::connection::close_event() const
+net6::connection_base::signal_close_type
+net6::connection_base::close_event() const
 {
 	return signal_close;
 }
 
-net6::connection::signal_encrypted_type
-net6::connection::encrypted_event() const
+net6::connection_base::signal_encrypted_type
+net6::connection_base::encrypted_event() const
 {
 	return signal_encrypted;
 }
 
-void net6::connection::on_sock_event(io_condition io)
+void net6::connection_base::on_sock_event(io_condition io)
 {
 	try
 	{
-		if(io & IO_INCOMING)
-		{
-			if(encrypted_sock && encrypted_sock->is_handshaking() )
-			{
-				handle_handshake();
-				return;
-			}
-
-			// Get up to 1024 bytes
-			char buffer[1024];
-			socket::size_type bytes =
-				remote_sock->recv(buffer, 1024);
-
-			if(bytes == 0)
-			{
-				on_close();
-			}
-			else
-			{
-				// Add to queue
-				recvqueue.append(buffer, bytes);
-
-				// First store the packets in a separate list
-				// to allow signal handlers to delete the
-				// connection object
-				std::list<packet> packet_list;
-
-				// Add all packets to the list until
-				// end of queue is found.
-				try
-				{
-					while(true)
-					{
-						packet_list.push_back(
-							packet(recvqueue)
-						);
-					}
-				}
-				catch(packet::end_of_queue&) {}
-
-				// Emit the signal_recv now. Because we do not
-				// depend on recvqueue for reading further
-				// data, the signal handler may destroy the
-				// connection object.
-				std::list<packet>::iterator iter;
-				for(iter = packet_list.begin();
-				    iter != packet_list.end();
-				    ++ iter)
-				{
-					on_recv(*iter);
-				}
-			}
-		}
-
-		if(io & IO_OUTGOING)
-		{
-			if(encrypted_sock && encrypted_sock->is_handshaking() )
-			{
-				handle_handshake();
-				return;
-			}
-
-			// Send at most block_pos bytes of data. This
-			// ensures that bytes after black_pos are not
-			// sent
-
-			// Is there something to send?
-			if(sendqueue.get_size() == 0 || block_pos == 0)
-			{
-				throw std::logic_error(
-					"net6::connection::on_sock_event"
-				);
-			}
-
-			// Send data from queue
-			queue::size_type len = sendqueue.get_size();
-			if(block_pos != INVALID_POS) len = block_pos;
-
-			socket::size_type bytes = remote_sock->send(
-				sendqueue.get_data(),
-				len
-			);
-
-			if(bytes <= 0)
-			{
-				on_close();
-			}
-			else
-			{
-				// Remove the data we successfully sent from
-				// the queue
-				sendqueue.remove(bytes);
-
-				if(block_pos != INVALID_POS)
-					block_pos -= bytes;
-
-				// Emit on_send signal if all available data
-				// has been sent
-				if(sendqueue.get_size() == 0 || block_pos == 0)
-					on_send();
-			}
-		}
-
-		if(io & IO_ERROR)
-		{
-			on_close();
-		}
+		do_io(io);
 	}
 	catch(net6::error& e)
 	{
@@ -275,42 +120,92 @@ void net6::connection::on_sock_event(io_condition io)
 	}
 }
 
-void net6::connection::on_send()
+void net6::connection_base::do_io(io_condition io)
 {
-	signal_send.emit();
-	if(master && block_pos == 0)
+	if(io & IO_INCOMING)
 	{
-		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
-		remote_sock.reset(encrypted_sock);
-		handle_handshake();
+		if(state == ENCRYPTION_HANDSHAKING)
+		{
+			do_handshake();
+			return;
+		}
+
+		char buffer[1024];
+		socket::size_type bytes = remote_sock->recv(buffer, 1024);
+
+		if(bytes == 0)
+		{
+			on_close();
+			return;
+		}
+
+		recvqueue.append(buffer, bytes);
+
+		// Store packets first to allow signal handlers to
+		// delete the connection object
+		std::list<packet> packet_list;
+
+		try
+		{
+			while(true)
+			{
+				packet_list.push_back(packet(recvqueue) );
+			}
+		}
+		catch(packet::end_of_queue&) {}
+
+		// Emit signal now as we do not depend anymore on members.
+		for(std::list<packet>::iterator iter = packet_list.begin();
+		    iter != packet_list.end();
+		    ++ iter)
+		{
+			on_recv(*iter);
+		}
+	}
+
+	if(io & IO_OUTGOING)
+	{
+		if(state == ENCRYPTION_HANDSHAKING)
+		{
+			do_handshake();
+			return;
+		}
+
+		if(sendqueue.get_size() == 0)
+		{
+			throw std::logic_error(
+				"net6::connection::on_sock_event:\n"
+				"Nothing to send in send queue"
+			);
+		}
+
+		socket::size_type bytes = remote_sock->send(
+			sendqueue.get_data(),
+			sendqueue.get_size()
+		);
+
+		if(bytes <= 0)
+		{
+			on_close();
+			return;
+		}
+
+		sendqueue.remove(bytes);
+		if(sendqueue.get_size() == 0)
+			on_send();
+	}
+
+	if(io & IO_ERROR)
+	{
+		on_close();
 	}
 }
 
-void net6::connection::on_recv(const net6::packet& pack)
+void net6::connection_base::on_recv(const packet& pack)
 {
-	// This is net6's use of TLS:
-	//  > net6_encryption
-	//  < net6_encryption_ok
-	//  < handshake
-	//  > handshake
-	if(pack.get_command() == "net6_encryption")
-	{
-		packet reply("net6_encryption_ok");
-		send(reply);
-		return;
-	}
-	else if(pack.get_command() == "net6_encryption_ok")
-	{
-		encrypted_sock =
-			new tcp_encrypted_socket_client(*remote_sock);
-		remote_sock.reset(encrypted_sock);
-		handle_handshake();
-		return;
-	}
-
 	try
 	{
-		signal_recv.emit(pack);
+		do_recv(pack);
 	}
 	catch(net6::bad_count& e)
 	{
@@ -334,32 +229,136 @@ void net6::connection::on_recv(const net6::packet& pack)
 	}
 }
 
-void net6::connection::on_close()
+void net6::connection_base::do_recv(const packet& pack)
 {
-	signal_close.emit();
+	if(pack.get_command() == "net6_encryption")
+		net_encryption(pack);
+	else if(pack.get_command() == "net6_encryption_ok")
+		net_encryption_ok(pack);
+	else if(pack.get_command() == "net6_encryption_failed")
+		net_encryption_failed(pack);
+	else
+		signal_recv.emit(pack);
 }
 
-void net6::connection::handle_handshake()
+void net6::connection_base::do_handshake()
 {
-	if(!encrypted_sock)
+	if(encrypted_sock == NULL)
+	{
 		throw std::logic_error(
-			"handle_handshake called and no encrypted "
-			"socket present"
+			"net6::connection::do_handshake:\n"
+			"No encrypted socket present"
 		);
+	}
 
 	if(encrypted_sock->handshake() )
 	{
-		block_pos = INVALID_POS;
-		signal_encrypted.emit(
-			(sendqueue.get_size() > 0) ? ENCRYPTED : ENCRYPTED_PENDING
-			);
+		// Done. Normal select
+		sendqueue.unblock();
+		net6::io_condition flags = net6::IO_INCOMING | net6::IO_ERROR;
+		if(sendqueue.get_size() > 0) flags |= net6::IO_OUTGOING;
+
+		state = ENCRYPTED;
+		set_select(flags);
+		signal_encrypted.emit();
 	}
 	else
 	{
-		signal_encrypted.emit(
-			encrypted_sock->get_dir() ?
-			HANDSHAKING_SEND : HANDSHAKING_RECV
-			);
+		net6::io_condition flags = net6::IO_ERROR;
+
+		// Select depending on current TLS direction
+		if(encrypted_sock->get_dir() )
+			set_select(flags | net6::IO_OUTGOING);
+		else
+			set_select(flags | net6::IO_INCOMING);
 	}
+}
+
+void net6::connection_base::on_send()
+{
+	if(state == ENCRYPTION_INITIATED_SERVER)
+	{
+		// All remaining data has been sent, we may now initiate the
+		// TLS handshake
+		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
+		remote_sock.reset(encrypted_sock);
+		state = ENCRYPTION_HANDSHAKING;
+		do_handshake();
+	}
+	else
+	{
+		// All available data has been sent, we need no longer to
+		// select for IO_OUTGOING
+		net6::io_condition flags = get_select();
+		if( (flags & IO_OUTGOING) == IO_OUTGOING)
+			set_select(flags & ~IO_OUTGOING);
+	}
+}
+
+void net6::connection_base::on_close()
+{
+	signal_close.emit();
+
+	// TODO: Set state to CLOSED?
+}
+
+void net6::connection_base::net_encryption(const packet& pack)
+{
+	if(state != UNENCRYPTED)
+	{
+		throw bad_value(
+			"Received encryption request in encrypted connection"
+		);
+	}
+
+	// Received encryption request
+	packet reply("net6_encryption_ok");
+	send(reply);
+
+	// Block further packets in order to perform a TLS handshake. This
+	// is done in on_send(), when all remaining data has been sent.
+	sendqueue.block();
+	state = ENCRYPTION_INITIATED_SERVER;
+}
+
+void net6::connection_base::net_encryption_ok(const packet& pack)
+{
+	if(state != ENCRYPTION_INITIATED_CLIENT)
+	{
+		throw bad_value(
+			"Received encryption reply without having "
+			"requested encryption"
+		);
+	}
+
+	encrypted_sock = new tcp_encrypted_socket_client(*remote_sock);
+	remote_sock.reset(encrypted_sock);
+
+	state = ENCRYPTION_HANDSHAKING;
+	do_handshake();
+}
+
+void net6::connection_base::net_encryption_failed(const packet& pack)
+{
+	if(state != ENCRYPTION_INITIATED_CLIENT)
+	{
+		throw bad_value(
+			"Received encryption reply without having "
+			"requested encryption"
+		);
+	}
+
+	sendqueue.unblock();
+	state = UNENCRYPTED;
+
+	net6::io_condition flags = net6::IO_INCOMING | net6::IO_ERROR;
+	if(sendqueue.get_size() > 0) flags |= net6::IO_OUTGOING;
+	set_select(flags);
+}
+
+void net6::connection_base::init_impl()
+{
+	remote_sock->io_event().connect(
+		sigc::mem_fun(*this, &connection_base::on_sock_event) );
 }
 

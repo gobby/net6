@@ -24,6 +24,9 @@
 #include <netdb.h>
 #endif
 
+#include <iostream>
+#include <gnutls/gnutls.h>
+
 #include "error.hpp"
 #include "common.hpp"
 
@@ -298,6 +301,62 @@ namespace
 #endif
 	}
 
+	net6::error::code tls_to_net6(int code)
+	{
+		// TODO: Add more, or, better, remove error code and replace
+		// by gnutls_strerror().
+		switch(code)
+		{
+		case GNUTLS_E_AGAIN:
+			return net6::error::WOULD_BLOCK;
+		case GNUTLS_E_DECRYPTION_FAILED:
+			return net6::error::DECRYPTION_FAILED;
+		case GNUTLS_E_DH_PRIME_UNACCEPTABLE:
+			return net6::error::PRIME_UNACCEPTABLE;
+		case GNUTLS_E_ENCRYPTION_FAILED:
+			return net6::error::ENCRYPTION_FAILED;
+		case GNUTLS_E_GOT_APPLICATION_DATA:
+			return net6::error::GOT_APPLICATION_DATA;
+		case GNUTLS_E_INSUFFICIENT_CREDENTIALS:
+			return net6::error::INSUFFICIENT_CREDENTIALS;
+		case GNUTLS_E_INTERRUPTED:
+			return net6::error::INTERRUPTED;
+		case GNUTLS_E_INVALID_REQUEST:
+			return net6::error::INVALID_REQUEST;
+		case GNUTLS_E_KEY_USAGE_VIOLATION:
+			return net6::error::KEY_USAGE_VIOLATION;
+		case GNUTLS_E_MAC_VERIFY_FAILED:
+			return net6::error::MAC_VERIFY_FAILED;
+		case GNUTLS_E_NO_CERTIFICATE_FOUND:
+			return net6::error::NO_CERTIFICATE;
+		case GNUTLS_E_NO_TEMPORARY_DH_PARAMS:
+			return net6::error::NO_TEMPORARY_DH_PARAMS;
+		case GNUTLS_E_NO_TEMPORARY_RSA_PARAMS:
+			return net6::error::NO_TEMPORARY_RSA_PARAMS;
+		case GNUTLS_E_PK_DECRYPTION_FAILED:
+			return net6::error::DECRYPTION_FAILED;
+		case GNUTLS_E_PK_ENCRYPTION_FAILED:
+			return net6::error::ENCRYPTION_FAILED;
+		case GNUTLS_E_PULL_ERROR:
+			return net6::error::PULL_ERROR;
+		case GNUTLS_E_PUSH_ERROR:
+			return net6::error::PUSH_ERROR;
+		case GNUTLS_E_RANDOM_FAILED:
+			return net6::error::RANDOM_FAILED;
+		case GNUTLS_E_RECEIVED_ILLEGAL_PARAMETER:
+			return net6::error::INVALID_ARGUMENT;
+		case GNUTLS_E_REHANDSHAKE:
+			return net6::error::REHANDSHAKE;
+		case GNUTLS_E_UNEXPECTED_HANDSHAKE_PACKET:
+			return net6::error::UNEXPECTED_HANDSHAKE;
+		case GNUTLS_E_UNEXPECTED_PACKET:
+			return net6::error::UNEXPECTED_PACKET;
+		default:
+			std::cerr << "GNUTLS errcode: " << code << std::endl;
+			return net6::error::UNKNOWN;
+		}
+	}
+
 	/** Translates a system dependant error value from a given domain
 	 * into a net6 error code
 	 */
@@ -312,6 +371,8 @@ namespace
 			return gai_to_net6(error_code);
 		case net6::error::GETHOSTBYNAME:
 			return ghbn_to_net6(error_code);
+		case net6::error::GNUTLS:
+			return tls_to_net6(error_code);
 		default:
 			throw std::logic_error(
 				"domain_to_net6:\n"
@@ -419,6 +480,45 @@ namespace
 			return _("Broken pipe");
 		case net6::error::NO_DEVICE:
 			return _("No such device");
+		case net6::error::DECRYPTION_FAILED:
+			return _("Decryption has failed");
+		case net6::error::PRIME_UNACCEPTABLE:
+			return _("The Diffie Hellman prime sent by the server "
+			         "is not acceptable (not long enough)");
+		case net6::error::ENCRYPTION_FAILED:
+			return _("Encryption has failed");
+		case net6::error::GOT_APPLICATION_DATA:
+			return _("TLS Application data were received, while "
+			         "expecting handshake data");
+		case net6::error::INSUFFICIENT_CREDENTIALS:
+			return _("Insufficient credentials for that request");
+		case net6::error::INVALID_REQUEST:
+			return _("The request is invalid");
+		case net6::error::KEY_USAGE_VIOLATION:
+			return _("Key usage violation in certificate has "
+			         "been detected");
+		case net6::error::MAC_VERIFY_FAILED:
+			return _("The Message Authentication Code "
+			         "verification failed");
+		case net6::error::NO_CERTIFICATE:
+			return _("The peer did not send any certificate");
+		case net6::error::NO_TEMPORARY_DH_PARAMS:
+			return _("No temporary DH parameters were found");
+		case net6::error::NO_TEMPORARY_RSA_PARAMS:
+			return _("No temporary RSA parameters were found");
+		case net6::error::PULL_ERROR:
+			return _("Error in the pull function");
+		case net6::error::PUSH_ERROR:
+			return _("Error in the push function");
+		case net6::error::RANDOM_FAILED:
+			return _("Failed to acquire random data");
+		case net6::error::REHANDSHAKE:
+			return _("Rehandshake was requested by the peer");
+		case net6::error::UNEXPECTED_HANDSHAKE:
+			return _("An unexpected TLS handshake packet "
+			         "was received");
+		case net6::error::UNEXPECTED_PACKET:
+			return _("An unexpected TLS packet was received");
 		case net6::error::UNKNOWN:
 			return _("A nonrecoverable error has occured");
 		default:
