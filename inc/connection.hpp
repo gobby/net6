@@ -72,9 +72,17 @@ public:
 		size_t alloc;
 	};
 
+	enum encrypted_state {
+		HANDSHAKING_RECV,
+		HANDSHAKING_SEND,
+		ENCRYPTED,
+		ENCRYPTED_PENDING
+	};
+
 	typedef sigc::signal<void, const packet&> signal_recv_type;
 	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;
+	typedef sigc::signal<void, encrypted_state> signal_encrypted_type;
 
 	/** @brief Creates a new connection object and establishes a
 	 * connection to <em>addr</em>.
@@ -120,6 +128,11 @@ public:
 	 */
 	signal_close_type close_event() const;
 
+	/** Signal which is emitted when the connection is guaranteed to
+	 * be encrypted.
+	 */
+	signal_encrypted_type encrypted_event() const;
+
 protected:
 	void on_sock_event(io_condition io);
 
@@ -127,17 +140,24 @@ protected:
 	void on_recv(const net6::packet& pack);
 	void on_close();
 
+	void handle_handshake();
+
 	queue sendqueue;
 	queue recvqueue;
 
 	signal_recv_type signal_recv;
 	signal_send_type signal_send;
 	signal_close_type signal_close;
+	signal_encrypted_type signal_encrypted;
 
 	std::auto_ptr<tcp_client_socket> remote_sock;
+	tcp_encrypted_socket* encrypted_sock;
 	std::auto_ptr<address> remote_addr;
+
+	queue::size_type block_pos;
+	bool master;
 };
-	
+
 }
 
 #endif

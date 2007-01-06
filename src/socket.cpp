@@ -128,6 +128,39 @@ void net6::client_info::init(gnutls_session_t* session)
 	gnutls_init(session, GNUTLS_CLIENT);
 }
 
+bool net6::tcp_encrypted_socket::handshake()
+{
+	if(!handshaking)
+	{
+		int flags = fcntl(cobj(), F_GETFL);
+		if(fcntl(cobj(), F_SETFL, flags | O_NONBLOCK) == -1)
+			throw net6::error(net6::error::SYSTEM);
+		handshaking = true;
+	}
+
+	int ret = gnutls_handshake(session);
+
+	if(ret == 0)
+	{
+		handshaking = false;
+		int flags = fcntl(cobj(), F_GETFL);
+		if(fcntl(cobj(), F_SETFL, flags & ~O_NONBLOCK) == -1)
+			throw net6::error(net6::error::SYSTEM);
+		return true;
+	}
+
+	if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
+		return false;
+
+	throw net6::error(net6::error::GNUTLS, ret);
+}
+
+net6::tcp_encrypted_socket::tcp_encrypted_socket(socket_type cobj,
+                                                 gnutls_session_t sess) :
+	tcp_client_socket(cobj), session(sess), handshaking(false)
+{
+}
+
 net6::tcp_server_socket::tcp_server_socket(const address& bind_addr):
 	tcp_socket(bind_addr)
 {
