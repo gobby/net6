@@ -228,7 +228,7 @@ void net6::server::remove_client(peer* client)
 		sock_sel.remove(client->get_socket(), socket::OUTGOING);
 
 	packet pack("net6_client_part");
-	pack << client->get_id(); 
+	pack << client->get_id();
 	send(pack);
 	delete client;
 }
@@ -295,8 +295,10 @@ void net6::server::on_close_event(peer& from)
 	remove_client(&from);
 }
 
+#include <iostream>
 void net6::server::on_connect(peer& client)
 {
+	std::cout << "Connection from " << client.get_address().get_name() << std::endl;
 	signal_connect.emit(client);
 }
 
@@ -341,14 +343,9 @@ void net6::server::net_client_login(peer& from, const packet& pack)
 	// Is already logged in
 	if(from.is_logged_in() ) return;
 
-	// Verify packet correctness
-	if(pack.get_param_count() < 1) return;
-	if(pack.get_param(0).get_type() != packet::param::STRING)
-		return;
-
 	// Get wished user name
 	// TODO: trim name?
-	const std::string& name = pack.get_param(0).as_string();
+	const std::string& name = pack.get_param(0).as<std::string>();
 
 	// Check for valid user name
 	if(name.empty() )

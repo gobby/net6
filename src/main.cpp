@@ -23,6 +23,7 @@
 #include <signal.h>
 #include "error.hpp"
 #include "main.hpp"
+#include "packet.hpp"
 
 unsigned int net6::main::refcount = 0;
 
@@ -41,6 +42,18 @@ net6::main::main()
 #else
 	signal(SIGPIPE, SIG_IGN);
 #endif
+
+	// Register basic types
+	packet::register_type(
+		parameter<int>::TYPE_ID,
+		sigc::ptr_fun(parameter<int>::from_string)
+	);
+
+	packet::register_type(
+		parameter<std::string>::TYPE_ID,
+		sigc::ptr_fun(parameter<std::string>::from_string)
+	);
+	
 	refcount ++;
 }
 

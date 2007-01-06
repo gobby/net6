@@ -16,138 +16,10 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <sstream>
 #include "packet.hpp"
 
-namespace
-{
-	template<typename to_type, typename from_type>
-	to_type convert(const from_type& from)
-	{
-		std::stringstream conv_stream;
-		conv_stream << from;
-		to_type to;
-		conv_stream >> to;
-		return to;
-	}
-
-	template<typename to_type>
-	to_type from_string(const std::string& string)
-	{
-		return convert<to_type, std::string>(string);
-	}
-
-	template<typename from_type>
-	std::string to_string(const from_type& from)
-	{
-		return convert<std::string, from_type>(from);
-	}
-}
-
-net6::packet::param::param()
- : type(INT)
-{
-}
-
-net6::packet::param::param(int val)
- : type(INT)
-{
-	data.i = val;
-}
-
-net6::packet::param::param(unsigned int val)
- : type(INT)
-{
-	data.i = static_cast<int>(val);
-}
-
-net6::packet::param::param(float val)
- : type(FLOAT)
-{
-	data.f = val;
-}
-
-net6::packet::param::param(const std::string& val)
- : type(STRING)
-{
-	data.s = new std::string(val);
-}
-
-net6::packet::param::param(const param& other)
- : type(other.type)
-{
-	switch(type)
-	{
-	case INT:
-		data.i = other.data.i;
-		break;
-	case FLOAT:
-		data.f = other.data.f;
-		break;
-	case STRING:
-		data.s = new std::string(*other.data.s);
-		break;
-	}
-}
-
-net6::packet::param::~param()
-{
-	clear_memory();
-}
-
-net6::packet::param& net6::packet::param::operator=(const param& other)
-{
-	if(&other == this)
-		return *this;
-
-	switch(other.type)
-	{
-	case INT:
-		clear_memory();
-		data.i = other.data.i;
-		break;
-	case FLOAT:
-		clear_memory();
-		data.f = other.data.f;
-		break;
-	case STRING:
-		if(type == STRING)
-			*data.s = *other.data.s;
-		else
-			data.s = new std::string(*other.data.s);
-	}
-
-	type = other.type;
-	return *this;
-}
-
-int net6::packet::param::as_int() const
-{
-	return data.i;
-}
-
-float net6::packet::param::as_float() const
-{
-	return data.f;
-}
-
-const std::string& net6::packet::param::as_string() const
-{
-	return *data.s;
-}
-
-net6::packet::param::type_type net6::packet::param::get_type() const
-{
-	return type;
-}
-
-void net6::packet::param::clear_memory()
-{
-	if(type == STRING)
-		delete data.s;
-}
-
 const unsigned int net6::packet::DEFAULT_PRIORITY = 1000;
+net6::packet::type_lookup_map net6::packet::type_map;
 
 net6::packet::packet(unsigned int priority)
  : prio(priority)
@@ -165,22 +37,41 @@ net6::packet::packet(const packet& other)
  : command(other.command), prio(other.prio)
 {
 	params.resize(other.params.size() );
-	std::copy(other.params.begin(), other.params.end(), params.begin() );
+	for(std::vector<basic_parameter*>::size_type i = 0;
+	    i < params.size();
+	    ++i)
+		params[i] = other.params[i]->clone();
 }
 
 net6::packet::~packet()
 {
+	for(std::vector<basic_parameter*>::const_iterator i = params.begin();
+	    i != params.end();
+	    ++ i)
+		delete *i;
 }
 
 net6::packet& net6::packet::operator=(const packet& other)
 {
+	// TODO: Optimize this function by reusing existing parameters
 	if(&other == this)
 		return *this;
 
+	// Delete existing parameters
+	for(std::vector<basic_parameter*>::const_iterator i = params.begin();
+	    i != params.end();
+	    ++ i)
+		delete *i;
+
+	// Take new command
 	command = other.command;
 
+	// Take new parameters
 	params.resize(other.params.size() );
-	std::copy(other.params.begin(), other.params.end(), params.begin() );
+	for(std::vector<basic_parameter>::size_type i = 0;
+	    i < params.size();
+	    ++i)
+		params[i] = other.params[i]->clone();
 
 	return *this;
 }
@@ -195,9 +86,12 @@ unsigned int net6::packet::get_priority() const
 	return prio;
 }
 
-const net6::packet::param& net6::packet::get_param(unsigned int index) const
+const net6::basic_parameter& net6::packet::get_param(unsigned int index) const
 {
-	return params[index];
+	if(index >= params.size() )
+		throw basic_parameter::bad_count();
+
+	return *params[index];
 }
 
 unsigned int net6::packet::get_param_count() const
@@ -207,48 +101,20 @@ unsigned int net6::packet::get_param_count() const
 
 std::string net6::packet::get_raw_string() const
 {
-	std::vector<param>::const_iterator i;
-
-	// Calculate string size
-	std::string::size_type str_size = command.length() + 2;
-	for(i = params.begin(); i != params.end(); ++ i)
+	// TODO: Preallocate memory?
+	std::string str = escape(command);
+	for(std::vector<basic_parameter*>::const_iterator i = params.begin();
+	    i != params.end();
+	    ++ i)
 	{
-		switch(i->get_type() )
-		{
-		case param::INT:
-			str_size += 12;
-			break;
-		case param::FLOAT:
-			str_size += 12;
-			break;
-		case param::STRING:
-			str_size += (i->as_string().length() + 2);
-			break;
-		}
+		const basic_parameter& param = **i;
+
+		str += ":";
+		str += param.get_type_id();
+		str += escape(param.to_string() );
 	}
-
-	std::string str;
-	str.reserve(str_size);
-	str = escape(command);
-
-	for(i = params.begin(); i != params.end(); ++ i)
-	{
-		switch(i->get_type() )
-		{
-		// First parameter character indicates parameter type
-		case param::INT:
-			str += (":i" + to_string<int>(i->as_int()) );
-			break;
-		case param::FLOAT:
-			str += (":f" + to_string<float>(i->as_float()) );
-			break;
-		case param::STRING:
-			str += (":s" + escape(i->as_string()) );
-			break;
-		}
-	}
-
 	str += "\n";
+
 	return str;
 }
 
@@ -262,6 +128,12 @@ void net6::packet::set_raw_string(const std::string& raw_string)
 		prev = ++ pos;
 	}
 	set_raw_param(raw_string.substr(prev, raw_string.length() - prev - 1) );
+}
+
+void net6::packet::register_type(identification_type type,
+                                 type_lookup_slot slot)
+{
+	type_map[type] = slot;
 }
 
 std::string net6::packet::escape(const std::string& string)
@@ -321,22 +193,9 @@ void net6::packet::set_raw_param(const std::string& param_string)
 		command = unescape(param_string);
 	else
 	{
-		// Check parameter type
-		switch(param_string[0])
-		{
-		case 'i':
-			params.push_back(param(
-				from_string<int>(param_string.substr(1) ) ));
-			break;
-		case 'f':
-			params.push_back(param(
-				from_string<float>(param_string.substr(1) ) ));
-			break;
-		case 's':
-			params.push_back(param(
-				unescape(param_string.substr(1)) ) );
-			break;
-		}
+		type_lookup_map::const_iterator i =
+			type_map.find(param_string[0]);
+		params.push_back(i->second(unescape(param_string.substr(1))) );
 	}
 }
 

@@ -198,20 +198,13 @@ void net6::client::on_login_extend(packet& pack)
 
 void net6::client::net_login_failed(const packet& pack)
 {
-	if(pack.get_param_count() < 1) return;
-	if(pack.get_param(0).get_type() != packet::param::INT) return;
-
-	on_login_failed(static_cast<login::error>(pack.get_param(0).as_int()) );
+	on_login_failed(static_cast<login::error>(pack.get_param(0).as<int>()));
 }
 
 void net6::client::net_client_join(const packet& pack)
 {
-	if(pack.get_param_count() < 2) return;
-	if(pack.get_param(0).get_type() != packet::param::INT) return;
-	if(pack.get_param(1).get_type() != packet::param::STRING) return;
-
-	int id = pack.get_param(0).as_int();
-	const std::string& name = pack.get_param(1).as_string();
+	int id = pack.get_param(0).as<int>();
+	const std::string& name = pack.get_param(1).as<std::string>();
 
 	peer* new_client = new peer(id, name);
 	peers.push_back(new_client);
@@ -223,10 +216,7 @@ void net6::client::net_client_join(const packet& pack)
 
 void net6::client::net_client_part(const packet& pack)
 {
-	if(pack.get_param_count() < 1) return;
-	if(pack.get_param(0).get_type() != packet::param::INT) return;
-
-	int id = pack.get_param(0).as_int();
+	int id = pack.get_param(0).as<int>();
 	peer* rem_peer = find(id);
 	
 	if(!rem_peer) return;
