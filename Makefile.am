@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libnet6.la
 #     ^     :     ^    :       ^
 #     |     :   minor  :       |
 # interface :  changes : compatibility
-libnet6_la_LDFLAGS = -version-info 1:0:0 -release 1.0
+libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1.1
 
 libnet6_la_LIBADD = $(libnet6_LIBS)
 
@@ -49,7 +49,7 @@ libnet6_la_SOURCES = \
 	src/socket.cpp
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = net6-1.0.pc
+pkgconfig_DATA = net6-1.1.pc
 
 # gettext
 SUBDIRS = po .

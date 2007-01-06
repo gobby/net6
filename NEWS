@@ -2,6 +2,7 @@ net6
 ====
 
 Version 1.1.0:
+ * This release is both API- and ABI-incompatible to the 1.0.x series.
  * Numeric error code transmission
  * Compilation fixed for FreeBSD
  * More dynamic type system
