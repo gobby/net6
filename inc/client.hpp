@@ -79,12 +79,12 @@ public:
 	/** Wait infinitely for incoming network events. Those events are
 	 * handled by the client object.
 	 */
-	void select();
+	virtual void select();
 
 	/** Wait for incoming events or until timeout exceeds. Those events
 	 * are handled by the client object.
 	 */
-	void select(unsigned int timeout);
+	virtual void select(unsigned int timeout);
 
 	/** Send a packet to the network server.
 	 */

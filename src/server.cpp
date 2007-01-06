@@ -89,69 +89,22 @@ net6::server::server(bool ipv6)
 net6::server::server(unsigned int port, bool ipv6)
  : serv_sock(NULL), use_ipv6(ipv6), id_counter(0)
 {
-	if(use_ipv6)
-	{
-		ipv6_address bind_addr(port);
-		serv_sock = new tcp_server_socket(bind_addr);
-	}
-	else
-	{
-		ipv4_address bind_addr(port);
-		serv_sock = new tcp_server_socket(bind_addr);
-	}
-
-	sock_sel.add(*serv_sock, socket::INCOMING);
-
-	serv_sock->read_event().connect(
-		sigc::mem_fun(*this, &server::on_server_read) );
+	reopen_impl(port);
 }
 
 net6::server::~server()
 {
-	if(serv_sock)
-	{
-		sock_sel.remove(*serv_sock, socket::INCOMING);
-		delete serv_sock;
-		serv_sock = NULL;
-	}
-
-	std::list<peer*>::iterator peer_it;
-	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
-		delete *peer_it;
+	shutdown_impl();
 }
 
 void net6::server::shutdown()
 {
-	if(serv_sock)
-	{
-		sock_sel.remove(*serv_sock, socket::INCOMING);
-		delete serv_sock;
-		serv_sock = NULL;
-	}
-
-	std::list<peer*>::iterator peer_it;
-	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
-		delete *peer_it;
-	peers.clear();
+	shutdown_impl();
 }
 
 void net6::server::reopen(unsigned int port)
 {
-	if(use_ipv6)
-	{
-		ipv6_address bind_addr(port);
-		serv_sock = new tcp_server_socket(bind_addr);
-	}
-	else
-	{
-		ipv4_address bind_addr(port);
-		serv_sock = new tcp_server_socket(bind_addr);
-	}
-
-	sock_sel.add(*serv_sock, socket::INCOMING);
-
-	serv_sock->read_event().connect(
-		sigc::mem_fun(*this, &server::on_server_read) );
+	reopen_impl(port);
 }
 
 void net6::server::kick(peer& client)
@@ -387,3 +340,37 @@ void net6::server::on_join(peer& new_peer)
 {
 	signal_join.emit(new_peer);
 }
+
+void net6::server::shutdown_impl()
+{
+	if(serv_sock)
+	{
+		sock_sel.remove(*serv_sock, socket::INCOMING);
+		delete serv_sock;
+		serv_sock = NULL;
+	}
+
+	std::list<peer*>::iterator peer_it;
+	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
+		delete *peer_it;
+	peers.clear();
+}
+
+void net6::server::reopen_impl(unsigned int port)
+{
+	if(use_ipv6)
+	{
+		ipv6_address bind_addr(port);
+		serv_sock = new tcp_server_socket(bind_addr);
+	}
+	else
+	{
+		ipv4_address bind_addr(port);
+		serv_sock = new tcp_server_socket(bind_addr);
+	}
+
+	sock_sel.add(*serv_sock, socket::INCOMING);
+	serv_sock->read_event().connect(
+		sigc::mem_fun(*this, &server::on_server_read) );
+}
+

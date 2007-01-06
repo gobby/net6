@@ -157,12 +157,12 @@ public:
 	/** Wait infinitely for incoming events. The events themselves
 	 * are handled by the server.
 	 */
-	void select();
+	virtual void select();
 
 	/** Wait for incoming events or until <em>timeout</em> exceeds. The
 	 * events themselves are handled by the server.
 	 */
-	void select(unsigned int timeout);
+	virtual void select(unsigned int timeout);
 
 	/** Send a packet to all the connected and logined peers.
 	 */
@@ -249,6 +249,22 @@ protected:
 	signal_login_auth_type signal_login_auth;
 	signal_login_extend_type signal_login_extend;
 	signal_data_type signal_data;
+
+private:
+	/** Private implementations for the shutdown() and reopen() functions.
+	 * They are used by shutdown() and reopen() as well as by the
+	 * constructor/destructor. They are necessary because a normal
+	 * reopen()-Call in the constructor is not treated virtual because a
+	 * derived object is not instanciated at this point. The code in these
+	 * functions can not be executed directly by reopen() or shutdown()
+	 * because those are virtual functions, so they would be called twice
+	 * in a derived object (net6::server::server would call
+	 * net6::server::reopen, and derived::derived would call derived::reopen
+	 * which would call its base function, net6::server::reopen to provide
+	 * its functionallity in the case that it is not called by a constructor
+	 */
+	void shutdown_impl();
+	void reopen_impl(unsigned int port);
 };
 	
 }
