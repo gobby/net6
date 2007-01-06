@@ -1,5 +1,5 @@
 /* net6 - Library providing IPv4/IPv6 network access
- * Copyright (C) 2005 Armin Burgmeier / 0x539 dev group
+ * Copyright (C) 2005, 2006 Armin Burgmeier / 0x539 dev group
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -195,7 +195,6 @@ packet& packet::operator<<(const data_type& value)
 	return *this;
 }
 
-}
+} // namespace net6
 
-#endif
-
+#endif // _NET6_PACKET_HPP_

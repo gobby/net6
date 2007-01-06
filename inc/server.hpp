@@ -37,6 +37,19 @@
 namespace net6
 {
 
+/** Packet handlers may throw this error if they received an invalid packet.
+ *
+ * The server will then close the connection to the client it comes from.
+ * Use this error in case where you cannot ensure synchonisation anymore. If
+ * the connection to the client is still valid, net6::bad_value is preferable.
+ */
+class bad_packet: public std::runtime_error
+{
+public:
+	bad_packet(const std::string& reason):
+		std::runtime_error(reason) {}
+};
+
 /** High-level TCP dedicated server object.
  */
 template<typename selector_type>
@@ -518,11 +531,20 @@ void basic_server<selector_type>::on_login_extend(const user& user, packet& pack
 template<typename selector_type>
 void basic_server<selector_type>::on_data(const user& user, const packet& pack)
 {
-	signal_data.emit(user, pack);
+	try
+	{
+		signal_data.emit(user, pack);
+	}
+	catch(bad_packet& e)
+	{
+		// TODO: Print reason to stderr?
+		remove_client(&user);
+	}
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::net_client_login(user& user, const packet& pack)
+void basic_server<selector_type>::
+	net_client_login(user& user, const packet& pack)
 {
 	// Is already logged in
 	if(user.is_logged_in() ) return;
