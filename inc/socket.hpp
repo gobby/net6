@@ -41,7 +41,7 @@ public:
 	enum condition {
 		INCOMING = 0x01,
 		OUTGOING = 0x02,
-		ERROR = 0x04
+		IOERROR = 0x04
 	};
 
 	typedef sigc::signal<void, socket&, condition> signal_read_type;
