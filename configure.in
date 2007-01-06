@@ -41,7 +41,7 @@ PKG_CHECK_MODULES([libnet6], [sigc++-2.0])
 
 # gettext / i18n
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION
+AM_GNU_GETTEXT_VERSION([0.14.0])
 
 AC_CONFIG_FILES([po/Makefile.in Makefile])
 AC_OUTPUT([net6-1.0.pc])
