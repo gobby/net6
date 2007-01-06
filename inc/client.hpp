@@ -95,6 +95,10 @@ public:
 	 */
 	void login(const std::string& username);
 
+	/** Returns whether the local user is logged in.
+	 */
+	bool is_logged_in() const;
+
 	/** Send a packet to the network server.
 	 */
 	virtual void send(const packet& pack);
@@ -249,6 +253,12 @@ void basic_client<selector_type>::login(const std::string& username)
 	login_pack << username;
 	on_login_extend(login_pack);
 	send(login_pack);
+}
+
+template<typename selector_type>
+bool basic_client<selector_type>::is_logged_in() const
+{
+	return conn.get() != NULL && self != NULL;
 }
 
 template<typename selector_type>
