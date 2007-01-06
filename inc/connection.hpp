@@ -46,6 +46,12 @@ public:
 		CLOSED
 	};
 
+	enum keepalive_state {
+		KEEPALIVE_DISABLED,
+		KEEPALIVE_ENABLED,
+		KEEPALIVE_WAITING
+	};
+
 	typedef sigc::signal<void, const packet&> signal_recv_type;
 	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;
@@ -75,6 +81,16 @@ public:
 	/** Returns the underlaying TCP socket object.
 	 */
 	const tcp_client_socket& get_socket() const;
+
+	/** @brief Sets whether the connection shall send keepalives to the
+	 * remote site if the connection is idle.
+	 */
+	void set_enable_keepalives(bool enable);
+
+	/** @brief Returns whether the connection sends keepalives to the
+	 * remote site.
+	 */
+	bool get_enable_keepalives() const;
 
 	/** Queues a packet to send it to the remote host.
 	 */
@@ -116,6 +132,9 @@ protected:
 	virtual void set_select(io_condition cond) = 0;
 	virtual io_condition get_select() const = 0;
 
+	virtual void set_timeout(unsigned long timeout) = 0;
+	virtual unsigned long get_timeout() const = 0;
+
 	void on_recv(const packet& pack);
 	void on_send();
 	void on_close();
@@ -134,6 +153,7 @@ protected:
 	std::auto_ptr<address> remote_addr;
 
 	conn_state state;
+	keepalive_state keepalive;
 
 private:
 	void setup_signal();
@@ -146,10 +166,14 @@ private:
 	void do_recv(const packet& pack);
 	void do_handshake();
 
+	void start_keepalive_timer();
+	void stop_keepalive_timer();
+
 	void net_encryption(const packet& pack);
 	void net_encryption_ok(const packet& pack);
 	void net_encryption_failed(const packet& pack);
 	void net_encryption_begin(const packet& pack);
+	void net_ping(const packet& pack);
 };
 
 /** @brief Connection to another host.
@@ -167,6 +191,9 @@ public:
 protected:
 	virtual void set_select(io_condition cond);
 	virtual io_condition get_select() const;
+
+	virtual void set_timeout(unsigned long timeout);
+	virtual unsigned long get_timeout() const;
 
 	selector_type& selector;
 };
@@ -194,6 +221,23 @@ template<typename Selector>
 io_condition connection<Selector>::get_select() const
 {
 	return selector.get(*remote_sock);
+}
+
+template<typename Selector>
+void connection<Selector>::set_timeout(unsigned long timeout)
+{
+	// Set IO_TIMEOUT if necessary
+	io_condition flags = selector.get(*remote_sock);
+	if( (flags & IO_TIMEOUT) == IO_NONE)
+		selector.set(*remote_sock, flags | IO_TIMEOUT);
+
+	selector.set_timeout(*remote_sock, timeout);
+}
+
+template<typename Selector>
+unsigned long connection<Selector>::get_timeout() const
+{
+	return selector.get_timeout(*remote_sock);
 }
 
 } // namespace net6

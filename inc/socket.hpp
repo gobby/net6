@@ -46,7 +46,8 @@ enum io_condition
 	IO_NONE     = 0x00,
 	IO_INCOMING = 0x01,
 	IO_OUTGOING = 0x02,
-	IO_ERROR    = 0x04
+	IO_ERROR    = 0x04,
+	IO_TIMEOUT  = 0x08
 };
 
 NET6_DEFINE_ENUM_OPS(io_condition)

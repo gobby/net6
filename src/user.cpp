@@ -107,7 +107,16 @@ void net6::user::request_encryption() const
 	conn->request_encryption(false);
 }
 
+void net6::user::set_enable_keepalives(bool enable) const
+{
+	if(conn.get() == NULL)
+		throw not_connected_error("net6::user::set_enable_keepalives");
+
+	conn->set_enable_keepalives(enable);
+}
+
 void net6::user::on_encryption_failed()
 {
 	signal_encryption_failed.emit();
 }
+

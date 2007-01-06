@@ -27,9 +27,10 @@ namespace net6
 {
 
 /** Participiant in a Client/Server network.
+ *
+ * TODO: Make connection_user or something that derives from user
  */
-
-class user : private non_copyable
+class user: private non_copyable
 {
 public:
 	typedef sigc::signal<void> signal_encrypted_type;
@@ -98,6 +99,13 @@ public:
 	 */
 	void request_encryption() const;
 
+	/** @brief Sets whether to send keepalives to this user.
+	 *
+	 * If there is no direct connection to this user available,
+	 * not_connected_error is thrown.
+	 */
+	void set_enable_keepalives(bool enable) const;
+
 protected:
 	void on_encryption_failed();
 
@@ -115,4 +123,3 @@ protected:
 } // namespace net6
 
 #endif // _NET6_USER_HPP_
-

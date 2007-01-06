@@ -103,7 +103,7 @@ public:
  * it as std::string and call c_str() on it.
  */
 template<size_t N>
-class context<char[N]>: public context<std::string>
+class context<char[N]>
 {
 public:
 	typedef const char data_type[N];

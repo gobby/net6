@@ -35,10 +35,7 @@ namespace net6
 class selector
 {
 public:
-	typedef default_accumulator<bool, false> socket_accumulator;
-
-	typedef sigc::signal<bool, const socket&, io_condition>
-		::accumulated<socket_accumulator> signal_socket_event_type;
+	typedef sigc::signal<void, const socket&, io_condition> signal_io_type;
 
 	// Virtual destructor makes the compiler happy
 	virtual ~selector() {}
@@ -60,50 +57,73 @@ public:
 	 * deemed appropriate.
 	 *
 	 * @param sock The socket to watch for conditions to occur
-	 * @param condition A combination of conditions to watch for
+	 * @param condition A combination of conditions to watch for. If the
+	 *        condition contains net6::IO_TIMEOUT, a timeout value must
+	 *        be set via the selector::set_timeout function that tells
+	 *        the selector when to emit the timeout.
 	 */
 	void set(const socket& sock,
 	         io_condition condition);
 
-	/** Selects infinitely until an event occurs on one or more
-	 * selected sockets. Connect to the socket's signals to handle
-	 * those events.
+	/** @brief Emits a timeout signal for the given socket after
+	 * <em>timeout</em> milliseconds.
+	 *
+	 * The signal is only emitted when the socket is watched for
+	 * net6::IO_TIMEOUT.
+	 *
+	 * A previous timeout for this socket is automatically cancelled
+	 * through this function. If <em>timeout</em> is 0, no new timeout
+	 * is set. Note that calling set without net6::IO_TIMEOUT also cancels
+	 * the timeout for a socket. The timeout is automatically unset when
+	 * it has elapsed.
 	 */
-	void select() const;
+	void set_timeout(const socket& sock, unsigned long timeout);
 
-	/** Selects until an event occurs on ore or more selectes sockets, or
-	 * the timeout exceeds. Connect to the socket's signals to handle
-	 * those events.
+	/** @brief Returns the remaining milliseconds to elapse until
+	 * the timeout for the given socket is triggered.
+	 *
+	 * The function returns 0 if no timeout is set for the socket.
+	 */
+	unsigned long get_timeout(const socket& sock);
+
+	/** @brief Selects infinitely until an event occurs on one or more
+	 * selected sockets.
+	 */
+	void select();
+
+	/** @brief Selects until an event occurs on ore or more
+	 * selectes sockets, or the given timeout exceeds.
+	 *
 	 * @param timeout Timeout in milliseconds. May be 0 to perform
 	 * a quick poll.
 	 */
-	void select(unsigned long timeout) const;
+	void select(unsigned long timeout);
 
-	/** Signal which is emitted every time an event occurs on a socket.
-	 * The signal handler may return true to indicate that he has handled
-	 * this event. The event handler for the socket will not be
-	 * emitted then. Usually you should use the socket signals to handle
-	 * socket events. Use this hook only if you want to prevent the
-	 * selector from emitting the socket's signals. Use with care!
+	/** @brief Runs in a blocking call until someone calls selector::quit.
 	 */
-	signal_socket_event_type socket_event() const;
+	void run();
+
+	/** @brief Makes the selector return from run().
+	 *
+	 * Does not work from a different thread as the one that called run().
+	 */
+	void quit();
 
 protected:
-	typedef std::map<const socket*, io_condition> map_type;
+	struct selected_type {
+		io_condition condition;
+		unsigned long timeout_begin;
+		unsigned long timeout;
+	};
 
-	void select_impl(timeval* tv) const;
+	typedef std::map<const socket*, selected_type> map_type;
+
+	void select_impl(timeval* tv);
 
 	map_type sock_map;
-	signal_socket_event_type signal_socket_event;
-
-	/** May be overwritten to do things before/after the socket_event
-	 * signal is emitted.
-	 */
-	virtual bool on_socket_event(const socket& sock,
-	                             io_condition cond);
+	bool running;
 };
-	
+
 }
 
-#endif
-
+#endif // _NET6_SELECT_HPP_

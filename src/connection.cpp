@@ -21,11 +21,23 @@
 #include "error.hpp"
 #include "connection.hpp"
 
+namespace
+{
+	// Send a keepalive when we got nothing from the remote site
+	// since one minute.
+	const unsigned long KEEPALIVE_INTERVAL_TIME = 60000;
+
+	// Wait half a minute for a reply after having sent a keepalive
+	// packet
+	const unsigned long KEEPALIVE_WAIT_TIME = 30000;
+}
+
 net6::connection_base::connection_base():
 	remote_sock(NULL),
 	encrypted_sock(NULL),
 	remote_addr(NULL),
-	state(CLOSED)
+	state(CLOSED),
+	keepalive(KEEPALIVE_DISABLED)
 {
 }
 
@@ -50,6 +62,9 @@ void net6::connection_base::connect(const address& addr)
 	state = UNENCRYPTED;
 
 	set_select(IO_ERROR | IO_INCOMING);
+
+	if(keepalive == KEEPALIVE_ENABLED)
+		start_keepalive_timer();
 }
 
 void net6::connection_base::assign(std::auto_ptr<tcp_client_socket> sock,
@@ -70,11 +85,49 @@ void net6::connection_base::assign(std::auto_ptr<tcp_client_socket> sock,
 	state = UNENCRYPTED;
 
 	set_select(IO_ERROR | IO_INCOMING);
+	if(keepalive == KEEPALIVE_ENABLED)
+		start_keepalive_timer();
 }
 
 const net6::address& net6::connection_base::get_remote_address() const
 {
+	if(state == CLOSED)
+	{
+		throw std::logic_error(
+			"net6::connection_base::get_remote_address:\n"
+			"Connection is closed"
+		);
+	}
+
 	return *remote_addr;
+}
+
+const net6::tcp_client_socket& net6::connection_base::get_socket() const
+{
+	if(state == CLOSED)
+	{
+		throw std::logic_error(
+			"net6::connection_base::get_socket:\n"
+			"Connection is closed"
+		);
+	}
+
+	return *remote_sock;
+}
+
+void net6::connection_base::set_enable_keepalives(bool enable)
+{
+	if(keepalive == KEEPALIVE_DISABLED)
+	{
+		keepalive = KEEPALIVE_ENABLED;
+		if(state == UNENCRYPTED || state == ENCRYPTED)
+			start_keepalive_timer();
+	}
+	else
+	{
+		keepalive = KEEPALIVE_DISABLED;
+		stop_keepalive_timer();
+	}
 }
 
 void net6::connection_base::send(const packet& pack)
@@ -120,6 +173,15 @@ void net6::connection_base::request_encryption(bool as_client)
 
 	// Block further outgoing traffic
 	sendqueue.block();
+
+	// Note that we do not stop the timer in KEEPALIVE_WAITING. A new
+	// keepalive packet could not leave the connection since the send
+	// queue has been blocked, but a response for an already sent
+	// keepalive can still be retrieved.
+	if(keepalive == KEEPALIVE_ENABLED)
+	{
+		stop_keepalive_timer();
+	}
 }
 
 net6::connection_base::signal_recv_type
@@ -202,6 +264,30 @@ void net6::connection_base::do_io(io_condition io)
 			return;
 		}
 
+		// Got something
+		switch(keepalive)
+		{
+		case KEEPALIVE_ENABLED:
+			// Refresh keepalive timer
+			if(get_timeout() < KEEPALIVE_INTERVAL_TIME * 9 / 10)
+				set_timeout(KEEPALIVE_INTERVAL_TIME);
+
+			io &= ~IO_TIMEOUT;
+			break;
+		case KEEPALIVE_WAITING:
+			// Got something we waited for. Note that this must
+			// not necessarily be a net6_pong packet. The
+			// connection is alive and that is all we wanted to
+			// know.
+			keepalive = KEEPALIVE_ENABLED;
+
+			set_timeout(KEEPALIVE_INTERVAL_TIME);
+			io &= ~IO_TIMEOUT;
+			break;
+		default:
+			break;
+		}
+
 		recvqueue.append(buffer, bytes);
 
 		// Clear remaining data in GnuTLS cache
@@ -280,6 +366,26 @@ void net6::connection_base::do_io(io_condition io)
 			on_send();
 	}
 
+	if(io & IO_TIMEOUT)
+	{
+		if(keepalive == KEEPALIVE_ENABLED)
+		{
+			// Timer has elapsed: We have not got a packet since
+			// 60 seconds. Keepalive the connection.
+			net6::packet pack("net6_ping");
+			send(pack);
+
+			// Wait for response
+			keepalive = KEEPALIVE_WAITING;
+			set_timeout(KEEPALIVE_WAIT_TIME);
+		}
+		else if(keepalive == KEEPALIVE_WAITING)
+		{
+			// Did not get a response since 30 seconds
+			on_close();
+		}
+	}
+
 	if(io & IO_ERROR)
 	{
 		on_close();
@@ -324,6 +430,10 @@ void net6::connection_base::do_recv(const packet& pack)
 		net_encryption_failed(pack);
 	else if(pack.get_command() == "net6_encryption_begin")
 		net_encryption_begin(pack);
+	else if(pack.get_command() == "net6_ping")
+		net_ping(pack);
+	else if(pack.get_command() == "net6_pong")
+		; // no-op. Action is taken in do_io
 	else
 		signal_recv.emit(pack);
 }
@@ -367,6 +477,10 @@ void net6::connection_base::do_handshake()
 
 		state = ENCRYPTED;
 		set_select(flags);
+
+		if(keepalive == KEEPALIVE_ENABLED)
+			start_keepalive_timer();
+
 		signal_encrypted.emit();
 
 #ifdef WIN32
@@ -417,6 +531,9 @@ void net6::connection_base::on_close()
 {
 	state = CLOSED;
 
+	if(keepalive == KEEPALIVE_WAITING)
+		keepalive = KEEPALIVE_ENABLED;
+
 	set_select(IO_NONE);
 	sendqueue.clear();
 	recvqueue.clear();
@@ -426,6 +543,32 @@ void net6::connection_base::on_close()
 	encrypted_sock = NULL;
 
 	signal_close.emit();
+}
+
+void net6::connection_base::setup_signal()
+{
+	remote_sock->io_event().connect(
+		sigc::mem_fun(*this, &connection_base::on_sock_event) );
+}
+
+void net6::connection_base::start_keepalive_timer()
+{
+	/*io_condition flags = get_select();
+	if( (flags & IO_TIMEOUT) == IO_NONE)
+		set_select(flags | IO_TIMEOUT);*/
+
+	set_timeout(KEEPALIVE_INTERVAL_TIME);
+}
+
+void net6::connection_base::stop_keepalive_timer()
+{
+	io_condition flags = get_select();
+	if( (flags & IO_TIMEOUT) == IO_TIMEOUT)
+		set_select(flags & ~IO_TIMEOUT);
+
+	// Wait no longer for a reply
+	if(keepalive == KEEPALIVE_WAITING)
+		keepalive = KEEPALIVE_ENABLED;
 }
 
 void net6::connection_base::net_encryption(const packet& pack)
@@ -449,6 +592,10 @@ void net6::connection_base::net_encryption(const packet& pack)
 		state = ENCRYPTION_INITIATED_SERVER;
 	else
 		state = ENCRYPTION_INITIATED_CLIENT;
+
+	// Stop keepalive timer for the handshaking period.
+	if(keepalive != KEEPALIVE_DISABLED)
+		stop_keepalive_timer();
 }
 
 void net6::connection_base::net_encryption_ok(const packet& pack)
@@ -461,6 +608,13 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 			"requested encryption"
 		);
 	}
+
+	// Stop keepalive timer now. The keepalive timer has not
+	// necessarily been stopped at this point. It is possible that
+	// the state was KEEPALIVE_WAITING while doing the encryption
+	// request.
+	if(keepalive != KEEPALIVE_DISABLED)
+		stop_keepalive_timer();
 
 	if(state == ENCRYPTION_REQUESTED_CLIENT)
 	{
@@ -508,6 +662,9 @@ void net6::connection_base::net_encryption_failed(const packet& pack)
 	if(sendqueue.get_size() > 0) flags |= net6::IO_OUTGOING;
 	set_select(flags);
 
+	if(keepalive == KEEPALIVE_ENABLED)
+		start_keepalive_timer();
+
 	signal_encryption_failed.emit();
 }
 
@@ -524,8 +681,8 @@ void net6::connection_base::net_encryption_begin(const packet& pack)
 	begin_handshake(new tcp_encrypted_socket_client(*remote_sock));
 }
 
-void net6::connection_base::setup_signal()
+void net6::connection_base::net_ping(const packet& pack)
 {
-	remote_sock->io_event().connect(
-		sigc::mem_fun(*this, &connection_base::on_sock_event) );
+	net6::packet reply("net6_pong");
+	send(reply);
 }

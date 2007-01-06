@@ -116,7 +116,12 @@ public:
 	/** Returns the underlaying net6::connection object.
 	 */
 	const connection_type& get_connection() const;
-	
+
+	/** @brief Sets whether to send keepalives to the server when
+	 * the connection is inactive.
+	 */
+	void set_enable_keepalives(bool enable);
+
 	/** Signal which is emitted every time a client joins the network.
 	 */
 	signal_join_type join_event() const;
@@ -297,6 +302,19 @@ basic_client<selector_type>::get_connection() const
 		throw not_connected_error("net6::basic_client::get_connection");
 
 	return *conn;
+}
+
+template<typename selector_type>
+void basic_client<selector_type>::set_enable_keepalives(bool enable)
+{
+	if(!is_connected() )
+	{
+		throw not_connected_error(
+			"net6::basic_client::set_enable_keepalives"
+		);
+	}
+
+	conn->set_enable_keepalives(enable);
 }
 
 template<typename selector_type>
