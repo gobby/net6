@@ -35,6 +35,9 @@ namespace
 	{
 		switch(af)
 		{
+#ifndef WIN32
+		case AF_UNIX: return PF_UNIX;
+#endif
 		case AF_INET: return PF_INET;
 		case AF_INET6: return PF_INET6;
 		default:
@@ -135,7 +138,7 @@ void net6::socket::invalidate()
 }
 
 net6::tcp_socket::tcp_socket(const address& addr):
-	socket(address_to_protocol(addr.get_family()), SOCK_STREAM, IPPROTO_TCP)
+	socket(address_to_protocol(addr.get_family()), SOCK_STREAM, 0)
 {
 }
 
