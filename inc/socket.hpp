@@ -149,6 +149,14 @@ public:
 	 */
 	bool get_dir() const;
 
+	/** @brief Returns the amount of bytes remaining in the GnuTLS buffers.
+	 *
+	 * If a socket is selected for IO_INCOMING, the selector would not
+	 * return for this socket even if there is still data to be read when
+	 * GnuTLS already read that data and keeps it in its internal buffer.
+	 */
+	size_type get_pending() const;
+
 	/** @brief Tries to send <em>len</em> bytes of data starting at 
 	 * <em>buf</em>.
 	 *

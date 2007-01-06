@@ -205,6 +205,12 @@ bool net6::tcp_encrypted_socket_base::get_dir() const
 }
 
 net6::tcp_encrypted_socket_base::size_type
+net6::tcp_encrypted_socket_base::get_pending() const
+{
+	return gnutls_record_check_pending(session);
+}
+
+net6::tcp_encrypted_socket_base::size_type
 net6::tcp_encrypted_socket_base::send(const void* buf, size_type len) const
 {
 	return io_impl<const void*, gnutls_record_send>(buf, len);

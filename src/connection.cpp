@@ -162,6 +162,9 @@ void net6::connection_base::on_sock_event(io_condition io)
 	try
 	{
 		do_io(io);
+
+		while(encrypted_sock && encrypted_sock->get_pending() > 0)
+			do_io(IO_INCOMING);
 	}
 	catch(net6::error& e)
 	{
@@ -198,6 +201,9 @@ void net6::connection_base::do_io(io_condition io)
 			on_close();
 			return;
 		}
+
+		std::string bufstr(buffer, bytes);
+		std::cout << "Received [" << bytes << "]: " << bufstr << std::endl;
 
 		recvqueue.append(buffer, bytes);
 
