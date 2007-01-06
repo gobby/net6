@@ -9,7 +9,7 @@ libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1.2
 libnet6_la_LIBADD = $(libnet6_LIBS)
 
 if WIN32
-libnet6_la_LIBADD += -lws2_32
+libnet6_la_LIBADD += -lws2_32 -lintl
 libnet6_la_LDFLAGS += -no-undefined
 endif
 
