@@ -149,7 +149,7 @@ void net6::selector::select_impl(timeval* tv)
 	                      &errorfs, tv);
 
 	if(retval == -1)
-		throw error();
+		throw error(net6::error::SYSTEM);
 
 	// Check for selected sockets
 	std::list<socket*> read_event, write_event, error_event;

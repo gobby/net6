@@ -47,7 +47,7 @@ namespace
 		addrinfo* result;
 		int gai_error = getaddrinfo(hostname, NULL, &hint, &result);
 		if(gai_error != 0)
-			throw net6::error(gai_error, gai_strerror(gai_error) );
+			throw net6::error(net6::error::GETADDRINFO, gai_error);
 
 		return result;
 	}
