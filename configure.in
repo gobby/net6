@@ -40,15 +40,18 @@ AC_TRY_COMPILE([#include <sys/socket.h>],
                [ AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING([whether to enable WIN32 specific flags])
-if test "x$host_os" = "xmingw32" ; then
+case "$host_os" in
+*mingw*)
 	win32=true
 	addlibs="-lws2_32" 
 	AC_MSG_RESULT([yes])
-else
+	;;
+*)
 	win32=false
 	addlibs=""
 	AC_MSG_RESULT([no])
-fi
+	;;
+esac
 AC_SUBST(addlibs)
 AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
 
