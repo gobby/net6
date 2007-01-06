@@ -1,245 +1,377 @@
-Sun May  8 01:55:36 CEST 2005  Philipp Kern <phil@0x539.de>
+Thu Jul 28 17:48:26 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Added missing string to German translation
+
+Wed Jul 27 16:39:42 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * host inherits virtually from server
+
+Mon Jul 25 03:00:02 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Sun Jul 24 18:02:35 UTC 2005  Philipp Kern <phil@0x539.de>
+  * This release is both API- and ABI-incompatible to the 1.0.x series
+
+Sat Jul 23 23:01:30 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Minor addition to the release notes
+
+Thu Jul 21 16:55:53 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Changes by libtool
+
+Thu Jul 21 16:51:53 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Added default_accumulator in Makefile.am
+
+Thu Jul 21 16:44:12 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Fixed buffer overflow when sending much data with a packet
+
+Thu Jul 21 15:17:45 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Added default_accumulator template
+
+Thu Jul 21 14:54:38 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Fixed possible SEGV with custom parameter types
+
+Wed Jul 20 15:45:39 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Support float type as packet parameter
+
+Tue Jul 19 19:33:05 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * long packet parameters wrapping to int
+
+Mon Jul 18 08:21:08 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Increase the maximum error code
+
+Thu Jun 30 19:18:39 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Fixed silly typo in socket::operator!=
+
+Fri Jun 24 21:22:30 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Shuffle gettext Makefile to get built correctly
+
+Fri Jun 24 08:35:49 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Bumped SONAME as net6 1.1.0 is ABI-incompatible to 1.0.0
+
+Thu Jun 23 19:38:51 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Removed debug log
+
+Sun Jun 19 08:02:55 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Updated de.po's header
+
+Sun Jun 19 03:00:02 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Sat Jun 18 11:00:56 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Fixed version number in pkg-config spec
+
+Sat Jun 18 06:05:06 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Updated NEWS with 1.1.0 information
+
+Fri Jun 17 03:00:01 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Thu Jun 16 20:55:05 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Un'fuzzy'ed the German translation
+
+Thu Jun 16 20:39:33 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Initial German translation
+
+Thu Jun 16 20:35:48 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Removed autogen.sh, it is superseded by autoreconf
+
+Thu Jun 16 19:34:54 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Fix the permissions when building the tarball [fixes #46]
+
+Thu Jun 16 19:18:36 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Implemented internationalisation [fixes #14]
+
+Thu Jun 16 16:34:14 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Added bad_format exception
+
+Thu Jun 16 15:32:27 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * More dynamic type system
+
+Tue Jun 14 03:00:01 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Sat Jun 11 13:37:32 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Some getaddrinfo() error values do not exist on FreeBSD [xorAxAx]
+
+Tue Jun  7 03:00:02 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Mon Jun  6 16:28:15 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Transmit error codes rather than error strings [fixes #16]
+
+Sun Jun  5 03:00:01 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Sat Jun  4 16:00:03 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Use gethostbyname for address resolution on win32 [fixes #19]
+
+Fri Jun  3 03:00:02 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Thu Jun  2 21:01:51 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Thu Jun  2 20:49:18 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Thu Jun  2 20:47:57 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Thu Jun  2 20:40:35 UTC 2005  Trac <trac@darcs.0x539.de>
+  * TODO updated
+
+Mon May 30 11:26:31 UTC 2005  Armin Burgmeier <armin@0x539.de>
+  * Allow to choose client's ID
+
+Thu May 19 19:31:51 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Opened new 1.1 tree
+
+Thu May 19 19:31:44 UTC 2005  Philipp Kern <phil@0x539.de>
+  tagged net6-1.0.0
+
+Thu May 19 19:31:21 UTC 2005  Philipp Kern <phil@0x539.de>
+  * Updated ChangeLog for release
+
+Sat May  7 23:55:36 UTC 2005  Philipp Kern <phil@0x539.de>
   * Use 1.0 as API identifier instead of 1
 
-Thu May  5 17:34:52 CEST 2005  Philipp Kern <phil@0x539.de>
+Thu May  5 15:34:52 UTC 2005  Philipp Kern <phil@0x539.de>
   * Typo corrected, updated autotools helper scripts
 
-Sat Apr 16 12:33:12 CEST 2005  Philipp Kern <phil@0x539.de>
+Sat Apr 16 10:33:12 UTC 2005  Philipp Kern <phil@0x539.de>
   UNDO: Development for 1.0.x is now in feature freeze, 1.1.x opened
 
-Sat Apr 16 12:33:12 CEST 2005  Philipp Kern <phil@0x539.de>
+Sat Apr 16 10:33:12 UTC 2005  Philipp Kern <phil@0x539.de>
   * Development for 1.0.x is now in feature freeze, 1.1.x opened
 
-Wed May  4 14:11:38 CEST 2005  Philipp Kern <phil@0x539.de>
+Wed May  4 12:11:38 UTC 2005  Philipp Kern <phil@0x539.de>
   * Mac OS X build fix, typo correction in configure.in
 
-Tue Apr 26 15:27:37 CEST 2005  Philipp Kern <phil@0x539.de>
+Tue Apr 26 13:27:37 UTC 2005  Philipp Kern <phil@0x539.de>
   * Added boringfile
 
-Wed Apr 20 08:50:59 CEST 2005  Philipp Kern <phil@0x539.de>
+Wed Apr 20 06:50:59 UTC 2005  Philipp Kern <phil@0x539.de>
   * Fixed minor typo in a comment
 
-Sun Apr 17 17:29:27 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 17 15:29:27 UTC 2005  Philipp Kern <phil@0x539.de>
   * Gather host information correctly
 
-Sat Apr 16 17:36:23 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr 16 15:36:23 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Some more win32 build fixes
 
-Fri Apr 15 23:03:56 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr 15 21:03:56 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Replaced the custom_login API by a login_extend-like one.
 
-Fri Apr 15 22:52:17 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr 15 20:52:17 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Server does not release peer list in shutdown_impl(), but in ~server()
 
-Fri Apr 15 21:25:18 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr 15 19:25:18 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Fixed some consistency issues
 
-Fri Apr 15 17:00:54 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr 15 15:00:54 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Removed EXPORT-stuff, libobby works well without
 
-Fri Apr 15 16:52:06 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr 15 14:52:06 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * net6::connection treats Connection resets like EOF
 
-Fri Apr 15 16:51:14 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr 15 14:51:14 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * net6::error stores the error code
 
-Fri Apr 15 00:48:34 CEST 2005  Philipp Kern <phil@0x539.de>
+Thu Apr 14 22:48:34 UTC 2005  Philipp Kern <phil@0x539.de>
   * Deactivated ENODATA, EBADMSG: not BSD-compatible
 
-Thu Apr 14 23:07:48 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Thu Apr 14 21:07:48 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Added error codes
 
-Thu Apr 14 19:38:55 CEST 2005  Philipp Kern <phil@0x539.de>
+Thu Apr 14 17:38:55 UTC 2005  Philipp Kern <phil@0x539.de>
   tagged stable 2005-04-14
 
-Tue Apr 12 20:22:11 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Tue Apr 12 18:22:11 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Emit select signals with sockets in the selector instead of creating new ones
 
-Mon Apr 11 17:53:35 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Mon Apr 11 15:53:35 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Selector hooks to prevent socket events to be emitted
 
-Sun Apr 10 22:31:19 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 10 20:31:19 UTC 2005  Philipp Kern <phil@0x539.de>
   * Changed the version number of the newly contributed ebuild
 
-Sun Apr 10 22:24:50 CEST 2005  Thomas Glatt <tom@0x539.de>
+Sun Apr 10 20:24:50 UTC 2005  Thomas Glatt <tom@0x539.de>
   * net6 ebuild
 
-Sun Apr 10 22:07:29 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 10 20:07:29 UTC 2005  Philipp Kern <phil@0x539.de>
   * Changed copyright notice in AUTHORS to reflect LGPL-2.1
 
-Sun Apr 10 16:30:31 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 10 14:30:31 UTC 2005  Philipp Kern <phil@0x539.de>
   * Substitute addlibs correctly
 
-Sun Apr 10 14:29:16 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 10 12:29:16 UTC 2005  Philipp Kern <phil@0x539.de>
   * Replaced shell expansion in .pc with a macro one
 
-Sun Apr 10 12:41:05 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 10 10:41:05 UTC 2005  Philipp Kern <phil@0x539.de>
   * Fixed WIN32 build support
 
-Sun Apr 10 11:37:19 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr 10 09:37:19 UTC 2005  Philipp Kern <phil@0x539.de>
   * Untested autotools support for WIN32
 
-Sat Apr  9 20:34:59 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr  9 18:34:59 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * net6::main counts references to allow multiple instanciations
 
-Sat Apr  9 17:32:12 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr  9 15:32:12 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Some win32 fixes
 
-Sat Apr  9 16:53:34 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr  9 14:53:34 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Renamed ERROR to IOERROR in inc/socket.hpp
 
-Sat Apr  9 16:48:16 CEST 2005  Philipp Kern <phil@0x539.de>
+Sat Apr  9 14:48:16 UTC 2005  Philipp Kern <phil@0x539.de>
   * ERROR -> IOERROR
 
-Sat Apr  9 16:09:01 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr  9 14:09:01 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Removed trailing / on INCLUDES variable leading to compile problems on win32
 
-Sat Apr  9 13:48:26 CEST 2005  Philipp Kern <phil@0x539.de>
+Sat Apr  9 11:48:26 UTC 2005  Philipp Kern <phil@0x539.de>
   * Relicensed under the LGPL-2.1
 
-Sat Apr  9 12:48:15 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr  9 10:48:15 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Avoided code reduplication in server thorugh private *_impl functions
 
-Sat Apr  9 12:35:34 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sat Apr  9 10:35:34 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Store incoming packets is a list instead of building them directly to allow a signal handler to delete the connection object
 
-Sat Apr  9 00:53:15 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 22:53:15 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * server-ctor does not call reopen() because it does not care about its virtualness
 
-Sat Apr  9 00:13:53 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 22:13:53 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Virtual destructor for non_copyable
 
-Sat Apr  9 00:10:59 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 22:10:59 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Virtual destructor for net6::client
 
-Sat Apr  9 00:07:27 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 22:07:27 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * peers list has not been cleared at shutdown() -> Leading to segfault if called twice
 
-Sat Apr  9 00:01:37 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 22:01:37 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Condition to allow multiple calls to shutdown()
 
-Fri Apr  8 22:02:16 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 20:02:16 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * TODO entry
 
-Fri Apr  8 21:20:15 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 19:20:15 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * +on_join in server, TODO entry to provide such methods for other signals, too
 
-Fri Apr  8 21:03:23 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 19:03:23 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Fixed a memleak in net6::server::shutdown
 
-Fri Apr  8 20:03:52 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 18:03:52 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Virtualised net6::client::send
 
-Fri Apr  8 20:01:39 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 18:01:39 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Virtualised event handlers
 
-Fri Apr  8 19:27:13 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  8 17:27:13 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Added methods to access the underlaying socket objects for server and client
 
-Thu Apr  7 19:33:20 CEST 2005  Philipp Kern <phil@0x539.de>
+Thu Apr  7 17:33:20 UTC 2005  Philipp Kern <phil@0x539.de>
   tagged stable 2005-04-07
 
-Mon Apr  4 23:30:53 CEST 2005  Philipp Kern <phil@0x539.de>
+Mon Apr  4 21:30:53 UTC 2005  Philipp Kern <phil@0x539.de>
   * Fix version in NEWS
 
-Sun Apr  3 21:21:27 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr  3 19:21:27 UTC 2005  Philipp Kern <phil@0x539.de>
   * Fixed test/ by replacing socket constants
 
-Sun Apr  3 20:02:21 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr  3 18:02:21 UTC 2005  Philipp Kern <phil@0x539.de>
   * Some content for the mostly empty documentation files
 
-Sun Apr  3 19:36:22 CEST 2005  Philipp Kern <phil@0x539.de>
+Sun Apr  3 17:36:22 UTC 2005  Philipp Kern <phil@0x539.de>
   * Check NEWS on ``make dist'', versioned automake dependency
 
-Sun Apr  3 16:46:23 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sun Apr  3 14:46:23 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Virtual destructors for host and server
 
-Fri Apr  1 18:09:32 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Fri Apr  1 16:09:32 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Splitted login event to pre-login and post-login
 
-Wed Mar 30 13:51:16 CEST 2005  Philipp Kern <phil@0x539.de>
+Wed Mar 30 11:51:16 UTC 2005  Philipp Kern <phil@0x539.de>
   * Replace socket constants to use better, longer names
 
-Sun Mar 27 22:51:55 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sun Mar 27 20:51:55 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * self-login for net6::host
 
-Sun Mar 27 22:51:30 CEST 2005  Armin Burgmeier <armin@0x539.de>
+Sun Mar 27 20:51:30 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * DEFAULT_PRIORITY as constant
 
-Tue Mar 22 22:46:51 CET 2005  Armin Burgmeier <armin@0x539.de>
+Tue Mar 22 21:46:51 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Fixed missing <string> include in packet.hpp
 
-Sat Mar 19 16:09:04 CET 2005  Philipp Kern <phil@0x539.de>
+Sat Mar 19 15:09:04 UTC 2005  Philipp Kern <phil@0x539.de>
   tagged stable 2005-03-19
 
-Wed Mar 16 16:05:09 CET 2005  Armin Burgmeier <armin@0x539.de>
+Wed Mar 16 15:05:09 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Emit login_signal before login_extend_signal.
 
-Wed Mar 16 13:04:54 CET 2005  Armin Burgmeier <armin@0x539.de>
+Wed Mar 16 12:04:54 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Extra parameters for login packets
 
-Wed Mar 16 11:36:59 CET 2005  Armin Burgmeier <armin@0x539.de>
+Wed Mar 16 10:36:59 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * net6::host
 
-Tue Mar 15 18:51:43 CET 2005  Armin Burgmeier <armin@0x539.de>
+Tue Mar 15 17:51:43 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Added unsigned int constructor to param
 
-Tue Mar 15 18:19:03 CET 2005  Armin Burgmeier <armin@0x539.de>
+Tue Mar 15 17:19:03 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Added non_copyable base class
 
-Mon Mar 14 19:53:56 CET 2005  Armin Burgmeier <armin@0x539.de>
+Mon Mar 14 18:53:56 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Updated tests to new API
 
-Mon Mar 14 19:53:37 CET 2005  Armin Burgmeier <armin@0x539.de>
+Mon Mar 14 18:53:37 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Packet priorities
 
-Mon Mar 14 19:52:26 CET 2005  Armin Burgmeier <armin@0x539.de>
+Mon Mar 14 18:52:26 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * custom login authentification
 
-Mon Mar 14 19:51:31 CET 2005  Armin Burgmeier <armin@0x539.de>
+Mon Mar 14 18:51:31 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Standard constructor for net6::ipvn_address
 
-Mon Mar 14 18:17:38 CET 2005  Armin Burgmeier <armin@0x539.de>
+Mon Mar 14 17:17:38 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Actual TODO list
 
-Sun Mar  6 10:05:05 CET 2005  Philipp Kern <phil@0x539.de>
+Sun Mar  6 09:05:05 UTC 2005  Philipp Kern <phil@0x539.de>
   * Added libtool binary compatibility version
 
-Sat Mar  5 22:25:01 CET 2005  Armin Burgmeier <armin@0x539.de>
+Sat Mar  5 21:25:01 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Fixed segfault caused by selecting on dead sockets
 
-Sat Mar  5 15:20:48 CET 2005  Armin Burgmeier <armin@0x539.de>
+Sat Mar  5 14:20:48 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Remove socket from selector when removing a client connection
 
-Sat Mar  5 15:17:34 CET 2005  Armin Burgmeier <armin@0x539.de>
+Sat Mar  5 14:17:34 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Fixed inversed IPv4 address output on big endian machines
 
-Fri Mar  4 18:18:44 CET 2005  Armin Burgmeier <armin@0x539.de>
+Fri Mar  4 17:18:44 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * inline documentation used by doxygen
 
-Thu Mar  3 21:37:36 CET 2005  Philipp Kern <phil@0x539.de>
+Thu Mar  3 20:37:36 UTC 2005  Philipp Kern <phil@0x539.de>
   * Change all headers for improved casing.
 
-Thu Mar  3 21:34:19 CET 2005  Philipp Kern <phil@0x539.de>
+Thu Mar  3 20:34:19 UTC 2005  Philipp Kern <phil@0x539.de>
   * address.hpp: Add dots to sentences, change ipv? to IPv?.
 
-Thu Mar  3 21:10:13 CET 2005  Armin Burgmeier <armin@0x539.de>
+Thu Mar  3 20:10:13 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * some address doc fixes
 
-Thu Mar  3 21:08:14 CET 2005  Armin Burgmeier <armin@0x539.de>
+Thu Mar  3 20:08:14 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * address documentation
 
-Thu Mar  3 13:17:20 CET 2005  Philipp Kern <phil@0x539.de>
+Thu Mar  3 12:17:20 UTC 2005  Philipp Kern <phil@0x539.de>
   * Added doxygen configuration file
 
-Wed Mar  2 21:58:21 CET 2005  Philipp Kern <phil@0x539.de>
+Wed Mar  2 20:58:21 UTC 2005  Philipp Kern <phil@0x539.de>
   * Remove old object file directory
 
-Wed Mar  2 21:44:17 CET 2005  Philipp Kern <phil@0x539.de>
+Wed Mar  2 20:44:17 UTC 2005  Philipp Kern <phil@0x539.de>
   * autotoolise
 
-Wed Mar  2 21:24:10 CET 2005  Armin Burgmeier <armin@0x539.de>
+Wed Mar  2 20:24:10 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * fixed include directives
 
-Wed Mar  2 21:08:58 CET 2005  Armin Burgmeier <armin@0x539.de>
+Wed Mar  2 20:08:58 UTC 2005  Armin Burgmeier <armin@0x539.de>
   * Initial revision
