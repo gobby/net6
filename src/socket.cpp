@@ -126,9 +126,9 @@ namespace
 {
 	const unsigned int DH_BITS = 1024;
 
-	gnutls_session_t create_session(gnutls_connection_end_t end)
+	net6::gnutls_session_t create_session(net6::gnutls_connection_end_t end)
 	{
-		gnutls_session_t session;
+		net6::gnutls_session_t session;
 		gnutls_init(&session, end);
 		return session;
 	}

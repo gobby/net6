@@ -38,6 +38,8 @@ typedef gnutls_session gnutls_session_t;
 typedef gnutls_anon_client_credentials gnutls_anon_client_credentials_t;
 typedef gnutls_anon_server_credentials gnutls_anon_server_credentials_t;
 typedef gnutls_transport_ptr gnutls_transport_ptr_t;
+typedef gnutls_dh_params gnutls_dh_params_t;
+typedef gnutls_connection_end gnutls_connection_end_t;
 
 enum io_condition
 {

@@ -341,8 +341,10 @@ namespace
 			return net6::error::PULL_ERROR;
 		case GNUTLS_E_PUSH_ERROR:
 			return net6::error::PUSH_ERROR;
+#ifdef GNUTLS_E_RANDOM_FAILED
 		case GNUTLS_E_RANDOM_FAILED:
 			return net6::error::RANDOM_FAILED;
+#endif
 		case GNUTLS_E_RECEIVED_ILLEGAL_PARAMETER:
 			return net6::error::INVALID_ARGUMENT;
 		case GNUTLS_E_REHANDSHAKE:
