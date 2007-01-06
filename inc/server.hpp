@@ -196,7 +196,7 @@ public:
 protected:
 	void remove_client(const user* client);
 
-	void on_accept_event(io_condition io);
+	void on_accept_event(tcp_server_socket& sock, io_condition io);
 	void on_recv_event(const packet& pack,
 	                   user& from);
 	void on_close_event(user& user);
@@ -219,6 +219,8 @@ protected:
 	virtual void net_client_login(user& from, const packet& pack);
 
 	std::auto_ptr<tcp_server_socket> serv_sock;
+	std::auto_ptr<tcp_server_socket> serv6_sock;
+
 	bool use_ipv6;
 	unsigned int id_counter;
 
@@ -400,7 +402,8 @@ void basic_server<selector_type>::remove_client(const user* user)
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::on_accept_event(io_condition io)
+void basic_server<selector_type>::on_accept_event(tcp_server_socket& sock,
+                                                  io_condition io)
 {
 	// Get selector from base class
 	selector_type& selector = basic_object<selector_type>::get_selector();
@@ -430,26 +433,24 @@ void basic_server<selector_type>::on_accept_event(io_condition io)
 
 	conn->set_dh_params(params);
 
-	// Accept new client connection
-	if(use_ipv6)
+	if(&sock == serv_sock.get())
+	{
+		ipv4_address addr;
+		std::auto_ptr<tcp_client_socket> new_sock(sock.accept(addr));
+		conn->assign(new_sock, addr);
+	}
+	else if(&sock == serv6_sock.get())
 	{
 		ipv6_address addr;
-
-		std::auto_ptr<tcp_client_socket> new_sock(
-			serv_sock->accept(addr)
-		);
-
+		std::auto_ptr<tcp_client_socket> new_sock(sock.accept(addr));
 		conn->assign(new_sock, addr);
 	}
 	else
 	{
-		ipv4_address addr;
-
-		std::auto_ptr<tcp_client_socket> new_sock(
-			serv_sock->accept(addr)
+		throw std::logic_error(
+			"net6::basic_server::on_accept_event:\n"
+			"Accept is nor from ipv4 neither from ipv6 socket"
 		);
-
-		conn->assign(new_sock, addr);
 	}
 
 	basic_object<selector_type>::user_add(client.get() );
@@ -631,32 +632,63 @@ void basic_server<selector_type>::shutdown_impl()
 	basic_object<selector_type>::users.clear();
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
-	selector.set(*serv_sock, IO_NONE);
-	serv_sock.reset(NULL);
+	if(serv_sock.get() != NULL)
+	{
+		selector.set(*serv_sock, IO_NONE);
+		serv_sock.reset(NULL);
+	}
+
+	if(serv6_sock.get() != NULL)
+	{
+		selector.set(*serv6_sock, IO_NONE);
+		serv6_sock.reset(NULL);
+	}
 }
 
 template<typename selector_type>
 void basic_server<selector_type>::reopen_impl(unsigned int port)
 {
-	// Open socket on local port
-	if(use_ipv6)
-	{
-		ipv6_address bind_addr(port);
-		serv_sock.reset(new tcp_server_socket(bind_addr) );
-	}
-	else
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
+	// Open IPv4 socket on local port
+	if(!use_ipv6)
 	{
 		ipv4_address bind_addr(port);
 		serv_sock.reset(new tcp_server_socket(bind_addr) );
+
+		selector.set(*serv_sock,
+			selector.get(*serv_sock) | IO_INCOMING
+		);
+
+		serv_sock->io_event().connect(
+			sigc::bind<0>(
+				sigc::mem_fun(
+					*this,
+					&basic_server::on_accept_event
+				),
+				sigc::ref(*serv_sock)
+			)
+		);
 	}
+	else
+	{
+		ipv6_address bind_addr(port);
+		serv6_sock.reset(new tcp_server_socket(bind_addr) );
 
-	selector_type& selector = basic_object<selector_type>::get_selector();
+		selector.set(*serv6_sock,
+			selector.get(*serv6_sock) | IO_INCOMING
+		);
 
-	// Add incoming flag to selector to accept client connections
-	selector.set(*serv_sock,
-		selector.get(*serv_sock) | IO_INCOMING);
-	serv_sock->io_event().connect(
-		sigc::mem_fun(*this, &basic_server::on_accept_event) );
+		serv6_sock->io_event().connect(
+			sigc::bind<0>(
+				sigc::mem_fun(
+					*this,
+					&basic_server::on_accept_event
+				),
+				sigc::ref(*serv6_sock)
+			)
+		);
+	}
 }
 
 } // namespace net6

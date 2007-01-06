@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include "common.hpp"
+#include "config.hpp"
 #include "error.hpp"
 #include "address.hpp"
 
@@ -152,7 +153,11 @@ net6::ipv4_address::create_from_hostname(const std::string& hostname,
 #ifdef WIN32
 	hostent* info = resolve_generic(hostname.c_str(), AF_INET, 0);
 #else
-	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET, 0);
+#ifdef HAVE_AI_ADDRCONFIG
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET, AI_ADDRCONFIG);
+#else
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET, 0);
+#endif
 	sockaddr_in* ai_addr = reinterpret_cast<sockaddr_in*>(info->ai_addr);
 #endif
 
@@ -205,7 +210,11 @@ net6::ipv4_address::list(const std::string& hostname, unsigned int port)
 #ifdef WIN32
 	hostent* info = resolve_generic(hostname.c_str(), AF_INET, 0);
 #else
-	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET, 0);
+#ifdef HAVE_AI_ADDRCONFIG
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET, AI_ADDRCONFIG);
+#else
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET, 0);
+#endif
 #endif
 
 #ifdef WIN32
@@ -334,7 +343,11 @@ net6::ipv6_address::create_from_hostname(const std::string& hostname,
 #ifdef WIN32
 	hostent* info = resolve_generic(hostname.c_str(), AF_INET6, 0);
 #else
-	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET6, 0);
+#ifdef HAVE_AI_ADDRCONFIG
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET6, AI_ADDRCONFIG);
+#else
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET6, 0);
+#endif
 	sockaddr_in6* ai_addr = reinterpret_cast<sockaddr_in6*>(info->ai_addr);
 #endif
 
@@ -418,7 +431,11 @@ net6::ipv6_address::list(const std::string& hostname, unsigned int port,
 #ifdef WIN32
 	hostent* info = resolve_generic(hostname.c_str(), AF_INET6, 0);
 #else
-	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET6, 0);
+#ifdef HAVE_AI_ADDRCONFIG
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET6, AI_ADDRCONFIG);
+#else
+	addrinfo* info = resolve_generic(hostname.c_str(), AF_INET6, 0);
+#endif
 #endif
 
 #ifdef WIN32
