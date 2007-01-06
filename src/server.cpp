@@ -99,9 +99,12 @@ net6::server::~server()
 
 void net6::server::shutdown()
 {
-	sock_sel.remove(*serv_sock, socket::INCOMING);
-	delete serv_sock;
-	serv_sock = NULL;
+	if(serv_sock)
+	{
+		sock_sel.remove(*serv_sock, socket::INCOMING);
+		delete serv_sock;
+		serv_sock = NULL;
+	}
 
 	std::list<peer*>::iterator peer_it;
 	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
