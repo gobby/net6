@@ -63,7 +63,7 @@ public:
 	 * <em>addr</em>.
 	 */
 	client(const address& addr);
-	~client();
+	virtual ~client();
 
 	/** Send a login request with the specified user name. On success,
 	 * a join_event with peer==self is emitted, otherwise a
