@@ -9,7 +9,6 @@ Major:
 
 Normal:
   * Encryption support (#109) [security]
-  * Encryption (#110)
 
 Minor:
 
@@ -23,9 +22,4 @@ Enhancement:
 net6 should support transport level security through a symmetric block 
 cipher like AES with a key provided by the client to protect the data 
 stream which is currently in plain-text.
-
-110: Encryption
----------------
-Support encryption in the net6 network layer, possibly through GNU TLS or 
-through an own implementation.
 
