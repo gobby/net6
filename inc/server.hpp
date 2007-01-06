@@ -155,9 +155,7 @@ public:
 	 * parameter in the login packet is always the user name the client
 	 * would like to have. Others are set by the client's login_extend
 	 * signal handler. Check in login_auth if they are correct, if you
-	 * define any. The signal hanlder may return an ID for the new client.
-	 * Be sure that the given ID is not alreayd in use. If it returns the
-	 * special value 0, net6 chooses automatically a new id.
+	 * define any.
 	 */
 	signal_login_type login_event() const;
 

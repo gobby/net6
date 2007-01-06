@@ -74,7 +74,7 @@ namespace
 	                             char *__restrict dest, socklen_t size)
 	{
 		// IPV6 not supported (yet?)
-		if(AF_INET!=af)
+		if(AF_INET != af)
 		{
 			throw std::runtime_error(
 				"inet_ntop is only implemented for AF_INET "
@@ -83,15 +83,12 @@ namespace
 		}
 
 		// Format address
-		char *s=inet_ntoa(*reinterpret_cast<const in_addr*>(src));
-		if(!s)
-			return 0;
+		char* s = inet_ntoa(*reinterpret_cast<const in_addr*>(src));
+		if(s == NULL) return NULL;
 
 		// Copy to given buffer
-		socklen_t len=(socklen_t)strlen(s);
-		if(len>=size)
-			return 0;
-		return strncpy(dest, s, len);
+		socklen_t len = static_cast<socklen_t>(strlen(s) );
+		return strncpy(dest, s, size < (len + 1) ? size : (len + 1) );
 	}
 #endif
 }
