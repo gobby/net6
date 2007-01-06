@@ -210,7 +210,7 @@ void net6::server::remove_client(peer* client)
 		sock_sel.remove(client->get_socket(), socket::OUT);
 
 	packet pack("net6_client_part");
-	pack << static_cast<int>(client->get_id() );
+	pack << client->get_id(); //static_cast<int>(client->get_id() );
 	send(pack);
 	delete client;
 }
@@ -290,7 +290,7 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 	
 			from.login(name);
 			packet self_pack("net6_client_join");
-			self_pack << static_cast<int>(from.get_id() ) << name;
+			self_pack << from.get_id() << name; //static_cast<int>(from.get_id() ) << name;
 			send(self_pack, from);
 
 			std::list<peer*>::iterator it;
@@ -300,7 +300,7 @@ void net6::server::on_client_recv(const packet& pack, peer& from)
 				if(*it == &from) continue;
 
 				packet join_pack("net6_client_join");
-				join_pack << static_cast<int>( (*it)->get_id() )
+				join_pack << (*it)->get_id()
 				          << (*it)->get_name();
 
 				send(join_pack, from);

@@ -55,6 +55,12 @@ net6::packet::param::param(int val)
 	data.i = val;
 }
 
+net6::packet::param::param(unsigned int val)
+ : type(INT)
+{
+	data.i = static_cast<int>(val);
+}
+
 net6::packet::param::param(float val)
  : type(FLOAT)
 {
