@@ -1,6 +1,9 @@
 net6
 ====
 
+Version 1.2.2:
+ * Translation update
+
 Version 1.2.1:
  * Improve gettext handling to allow translations in header files
 
