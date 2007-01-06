@@ -43,7 +43,7 @@ const char* net6::_(const char* msgid)
 	{
 		throw std::logic_error(
 			"net6::_:\n"
-			"init_gettext() has not yet been called. Most "
+			"init_gettext() has not yet been called. "
 			"This certainly means that you have\n"
 			"not created a net6::main object."
 		);
