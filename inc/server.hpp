@@ -22,6 +22,7 @@
 #include <sigc++/signal.h>
 
 #include "non_copyable.hpp"
+#include "error.hpp"
 #include "peer.hpp"
 #include "address.hpp"
 #include "socket.hpp"
@@ -34,7 +35,7 @@ namespace net6
 
 /** High-level TCP dedicated server object.
  */
-	
+
 class server : public sigc::trackable, private non_copyable
 {
 public:
@@ -145,7 +146,7 @@ public:
 	typedef sigc::signal<void, peer&> signal_join_type;
 	typedef sigc::signal<void, peer&> signal_part_type;
 
-	typedef sigc::signal<bool, peer&, const packet&, std::string&>
+	typedef sigc::signal<bool, peer&, const packet&, login::error&>
 		::accumulated<auth_accumulator> signal_login_auth_type;
 	typedef sigc::signal<unsigned int, peer&, const packet&>
 		::accumulated<login_accumulator> signal_login_type;
@@ -237,9 +238,12 @@ public:
 	signal_part_type part_event() const;
 
 	/** Signal which may be used to prevent that a user joins the session.
-	 * Returning false means that the login has failed, the std::string-
-	 * Parameter may hold an error string describing why the login failed
-	 * (Such as 'Color already in use' or something).
+	 * Returning false means that the login has failed, the login::error
+	 * parameter may be used to describe why the login failed. You can
+	 * declare your own errors and assign them to this variable. These
+	 * should have values between net6::login::ERROR_MAX + 1 to UINT32_MAX.
+	 * This variable will be sent with the login_failed packet. The client
+	 * may then show up an error string reporting what has gone wrong.
 	 */
 	signal_login_auth_type login_auth_event() const;
 
@@ -285,7 +289,7 @@ protected:
 	virtual void on_join(peer& client);
 	virtual void on_part(peer& client);
 	virtual bool on_login_auth(peer& client, const packet& pack,
-	                           std::string& reason);
+	                           login::error& error);
 	virtual unsigned int on_login(peer& client, const packet& pack);
 	virtual void on_login_extend(peer& client, packet& pack);
 	virtual void on_data(peer& client, const packet& pack);

@@ -24,6 +24,32 @@
 namespace net6
 {
 
+/** Login error.
+ */
+namespace login
+{
+	/** Type for login errors.
+	 */
+	typedef unsigned int error;
+
+	/** A client tried to login with an invalid name, such as "".
+	 */
+	extern const error ERROR_NAME_INVALID;
+
+	/** The name a client wants to have is already in use.
+	 */
+	extern const error ERROR_NAME_IN_USE;
+
+	/** Maximum value of error values. Values above this may be used to
+	 * provide own login errors.
+	 */
+	extern const error ERROR_MAX;
+
+	/** Returns a string describing the login error.
+	 */
+	std::string errstring(error err);
+}
+
 /** Common net6 error reporting class.
  */
 	

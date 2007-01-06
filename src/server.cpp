@@ -316,9 +316,9 @@ void net6::server::on_part(peer& client)
 }
 
 bool net6::server::on_login_auth(peer& client, const packet& pack,
-                                 std::string& reason)
+                                 login::error& error)
 {
-	return signal_login_auth.emit(client, pack, reason);
+	return signal_login_auth.emit(client, pack, error);
 }
 
 unsigned int net6::server::on_login(peer& client, const packet& pack)
@@ -354,20 +354,20 @@ void net6::server::net_client_login(peer& from, const packet& pack)
 	if(name.empty() )
 	{
 		packet pack("net6_login_failed");
-		pack << "Invalid name";
+		pack << static_cast<int>(login::ERROR_NAME_INVALID);
 		send(pack, from);
 	}
 	// Check for existing user name
 	else if(find(name) != NULL)
 	{
 		packet pack("net6_login_failed");
-		pack << "Name is already in use";
+		pack << static_cast<int>(login::ERROR_NAME_IN_USE);
 		send(pack, from);
 	}
 	else
 	{
 		// Check for login_auth
-		std::string reason;
+		login::error reason;
 		if(!on_login_auth(from, pack, reason) )
 		{
 			packet pack("net6_login_failed");

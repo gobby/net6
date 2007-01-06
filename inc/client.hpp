@@ -22,6 +22,7 @@
 #include <sigc++/signal.h>
 
 #include "non_copyable.hpp"
+#include "error.hpp"
 #include "peer.hpp"
 #include "address.hpp"
 #include "socket.hpp"
@@ -53,7 +54,7 @@ public:
 	typedef sigc::signal<void, peer&, const packet&> signal_part_type;
 	typedef sigc::signal<void, const packet&> signal_data_type;
 	typedef sigc::signal<void> signal_close_type;
-	typedef sigc::signal<void, const std::string&> signal_login_failed_type;
+	typedef sigc::signal<void, login::error> signal_login_failed_type;
 	typedef sigc::signal<void, packet&> signal_login_extend_type;
 
 //	client(const std::string& hostname, unsigned int port,
@@ -142,7 +143,7 @@ protected:
 	virtual void on_part(peer& client, const packet& pack);
 	virtual void on_data(const packet& pack);
 	virtual void on_close();
-	virtual void on_login_failed(const std::string& reason);
+	virtual void on_login_failed(login::error error);
 	virtual void on_login_extend(packet& pack);
 
 	virtual void net_login_failed(const packet& pack);

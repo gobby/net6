@@ -186,9 +186,9 @@ void net6::client::on_close()
 	signal_close.emit();
 }
 
-void net6::client::on_login_failed(const std::string& reason)
+void net6::client::on_login_failed(login::error error)
 {
-	signal_login_failed.emit(reason);
+	signal_login_failed.emit(error);
 }
 
 void net6::client::on_login_extend(packet& pack)
@@ -199,9 +199,9 @@ void net6::client::on_login_extend(packet& pack)
 void net6::client::net_login_failed(const packet& pack)
 {
 	if(pack.get_param_count() < 1) return;
-	if(pack.get_param(0).get_type() != packet::param::STRING) return;
+	if(pack.get_param(0).get_type() != packet::param::INT) return;
 
-	on_login_failed(pack.get_param(0).as_string() );
+	on_login_failed(static_cast<login::error>(pack.get_param(0).as_int()) );
 }
 
 void net6::client::net_client_join(const packet& pack)

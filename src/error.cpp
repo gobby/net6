@@ -26,6 +26,24 @@
 
 #include "error.hpp"
 
+// Login error codes
+const net6::login::error net6::login::ERROR_NAME_INVALID = 1;
+const net6::login::error net6::login::ERROR_NAME_IN_USE = 2;
+const net6::login::error net6::login::ERROR_MAX = 2;
+
+std::string net6::login::errstring(error err)
+{
+	switch(err)
+	{
+	case net6::login::ERROR_NAME_INVALID:
+		return "Invalid name";
+	case net6::login::ERROR_NAME_IN_USE:
+		return "Name is already in use";
+	default:
+		return "An unknown login error occured";
+	}
+}
+
 namespace
 {
 	/** Translates a system dependant error value to net6 error codes.
