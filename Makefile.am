@@ -20,6 +20,7 @@ pkginclude_HEADERS = \
 	inc/peer.hpp \
 	inc/select.hpp \
 	inc/server.hpp \
+	inc/host.hpp \
 	inc/socket.hpp
 
 libnet6_la_SOURCES = \
@@ -33,6 +34,7 @@ libnet6_la_SOURCES = \
 	src/peer.cpp \
 	src/select.cpp \
 	src/server.cpp \
+	src/host.cpp \
 	src/socket.cpp
 
 libnet6_la_LIBADD = $(libnet6_LIBS)

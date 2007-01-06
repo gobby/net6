@@ -49,6 +49,7 @@ public:
 		typedef connection::signal_send_type signal_send_type;
 		typedef connection::signal_close_type signal_close_type;
 
+		peer(unsigned int id);
 		peer(unsigned int id, const tcp_client_socket& sock,
 		     const address& addr);
 		~peer();
@@ -97,7 +98,7 @@ public:
 		signal_close_type close_event() const;
 	protected:
 		bool logined;
-		connection conn;
+		connection* conn;
 	};
 
 	/** Accumulator for signal_auth_type: It returns TRUE if no slots
@@ -167,7 +168,7 @@ public:
 
 	/** Send a packet to a single peer.
 	 */
-	void send(const packet& pack, peer& to);
+	virtual void send(const packet& pack, peer& to);
 
 	/** Lookup a peer with the given id. If the peer is not connected to
 	 * the server, NULL is returned.

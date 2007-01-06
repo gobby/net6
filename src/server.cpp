@@ -19,14 +19,20 @@
 #include <sigc++/bind.h>
 #include "server.hpp"
 
+net6::server::peer::peer(unsigned int id)
+ : net6::peer(id, ""), logined(false), conn(NULL)
+{
+}
+
 net6::server::peer::peer(unsigned int id, const tcp_client_socket& sock,
                          const address& addr)
- : net6::peer(id, ""), logined(false), conn(sock, addr)
+ : net6::peer(id, ""), logined(false), conn(new net6::connection(sock, addr) )
 {
 }
 
 net6::server::peer::~peer()
 {
+	delete conn;
 }
 
 void net6::server::peer::login(const std::string& username)
@@ -42,37 +48,37 @@ bool net6::server::peer::is_logined() const
 
 void net6::server::peer::send(const packet& pack)
 {
-	conn.send(pack);
+	conn->send(pack);
 }
 
 unsigned int net6::server::peer::send_queue_size() const
 {
-	return conn.send_queue_size();
+	return conn->send_queue_size();
 }
 
 const net6::tcp_client_socket& net6::server::peer::get_socket() const
 {
-	return conn.get_socket();
+	return conn->get_socket();
 }
 
 const net6::address& net6::server::peer::get_address() const
 {
-	return conn.get_remote_address();
+	return conn->get_remote_address();
 }
 
 net6::server::peer::signal_recv_type net6::server::peer::recv_event() const
 {
-	return conn.recv_event();
+	return conn->recv_event();
 }
 
 net6::server::peer::signal_send_type net6::server::peer::send_event() const
 {
-	return conn.send_event();
+	return conn->send_event();
 }
 
 net6::server::peer::signal_close_type net6::server::peer::close_event() const
 {
-	return conn.close_event();
+	return conn->close_event();
 }
 
 net6::server::server(bool ipv6)
