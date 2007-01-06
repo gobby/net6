@@ -334,10 +334,10 @@ void basic_client<selector_type>::on_send_event()
 template<typename selector_type>
 void basic_client<selector_type>::on_close_event()
 {
-	// Emit close signal
-	on_close();
 	// Disconnect from server
 	disconnect();
+	// Emit close signal
+	on_close();
 }
 
 template<typename selector_type>
