@@ -591,9 +591,18 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 template<typename selector_type>
 void basic_server<selector_type>::shutdown_impl()
 {
+	for(typename basic_object<selector_type>::user_const_iterator iter =
+		basic_object<selector_type>::users.begin();
+	    iter != basic_object<selector_type>::users.end();
+	    ++ iter)
+	{
+		delete iter->second;
+	}
+
+	basic_object<selector_type>::users.clear();
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
-	selector.set(*serv_sock, selector.get(*serv_sock) & ~IO_INCOMING);
+	selector.set(*serv_sock, IO_NONE);
 	serv_sock.reset(NULL);
 }
 
