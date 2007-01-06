@@ -54,3 +54,10 @@ SUBDIRS = po .
 EXTRA_DIST = config.rpath mkinstalldirs
 libnet6_la_CPPFLAGS = -DLOCALEDIR=\""$(datadir)/locale"\"
 
+# Fix some permissions if they are not set properly when building the tarball
+dist-hook:
+	chmod u+x $(distdir)/ltmain.sh $(distdir)/missing \
+	          $(distdir)/install-sh $(distdir)/config.guess \
+	          $(distdir)/config.sub $(distdir)/config.rpath \
+	          $(distdir)/depcomp $(distdir)/mkinstalldirs
+
