@@ -4,10 +4,13 @@ lib_LTLIBRARIES = libnet6.la
 #     ^     :     ^    :       ^
 #     |     :   minor  :       |
 # interface :  changes : compatibility
-libnet6_la_LDFLAGS = -no-undefined -version-info 0:0:0 -release 1 
+libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1 
+
+libnet6_la_LIBADD = $(libnet6_LIBS)
 
 if WIN32
-	libnet6_la_LDADD = -lws2_32
+libnet6_la_LIBADD += -lws2_32
+libnet6_la_LDFLAGS += -no-undefined
 endif
 
 INCLUDES = $(libnet6_CFLAGS) -Iinc
@@ -40,8 +43,6 @@ libnet6_la_SOURCES = \
 	src/server.cpp \
 	src/host.cpp \
 	src/socket.cpp
-
-libnet6_la_LIBADD = $(libnet6_LIBS)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = net6-1.0.pc
