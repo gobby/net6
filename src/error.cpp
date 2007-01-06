@@ -24,7 +24,6 @@
 #include <netdb.h>
 #endif
 
-#include <iostream>
 #include <gnutls/gnutls.h>
 
 #include "error.hpp"
@@ -356,7 +355,6 @@ namespace
 		case GNUTLS_E_UNEXPECTED_PACKET_LENGTH:
 			return net6::error::UNEXPECTED_PACKET_LENGTH;
 		default:
-			std::cerr << "GNUTLS errcode: " << code << std::endl;
 			return net6::error::UNKNOWN;
 		}
 	}
