@@ -219,6 +219,24 @@ public:
 	 : parameter<int>(static_cast<int>(value) ) { }
 };
 
+/** Same for long and unsigned long.
+ * TODO: Make long the default type because a long value may be truncated if
+ * it exceeds the maximum size of an int.
+ */
+template<>
+class parameter<long> : public parameter<int> {
+public:
+	parameter(long value)
+	 : parameter<int>(static_cast<int>(value) ) { }
+};
+
+template<>
+class parameter<unsigned long> : public parameter<unsigned int> {
+public:
+	parameter(unsigned long value)
+	 : parameter<unsigned int>(static_cast<unsigned int>(value) ) { }
+};
+
 /** String parameter.
  */
 template<>
