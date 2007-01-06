@@ -1,6 +1,11 @@
 net6
 ====
 
+Version 1.2.0:
+ * This release is both API- and ABI-incompatible to the 1.1.x series.
+ * New boolean type added
+ * Heavily refactored through intensive use of templates
+
 Version 1.1.0:
  * This release is both API- and ABI-incompatible to the 1.0.x series.
  * Numeric error code transmission
