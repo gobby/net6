@@ -237,6 +237,15 @@ public:
 	 : parameter<unsigned int>(static_cast<unsigned int>(value) ) { }
 };
 
+/** Boolean parameter.
+ */
+template<>
+class parameter<bool> : public parameter<int> {
+public:
+	parameter(bool value)
+	 : parameter<int>(static_cast<int>( (value) ? 1 : 0) ) { }
+};
+
 /** String parameter.
  */
 template<>
