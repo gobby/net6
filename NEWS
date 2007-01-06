@@ -6,6 +6,7 @@ Version 1.3.0:
  * Interface changes in the selector
  * Allow the use of the net6 protocol with Unix domain sockets
  * Send keep-alives to detect dropped clients
+ * Correctly listen on IPv6 if possible
 
 Version 1.2.2:
  * Translation update
