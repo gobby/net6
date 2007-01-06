@@ -27,6 +27,24 @@
 
 namespace
 {
+#ifdef WIN32
+	// We do not use getaddrinfo on WIN32
+	hostent* resolve_generic(const char* hostname, int family, int flags)
+	{
+		hostent* result = gethostbyname(hostname);
+		if(result == NULL)
+			throw net6::error(
+				net6::error::GETHOSTBYNAME,
+				WSAGetLastError()
+			);
+
+		// Checka address type
+		if(result->h_addrtype != family)
+			throw net6::error(net6::error::GETHOSTBYNAME, NO_DATA);
+
+		return result;
+	}
+#else
 	addrinfo* resolve_generic(const char* hostname, int family, int flags)
 	{
 		addrinfo hint;
@@ -46,6 +64,7 @@ namespace
 
 		return result;
 	}
+#endif
 }
 
 net6::address::address()
@@ -95,14 +114,22 @@ net6::ipv4_address::create_from_hostname(const std::string& hostname,
 {
 	ipv4_address addr;
 	addr.addr = reinterpret_cast<sockaddr*>(new sockaddr_in);
+#ifdef WIN32
+	hostent* info = resolve_generic(hostname.c_str(), AF_INET, 0);
+#else
 	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET, 0);
 	sockaddr_in* ai_addr = reinterpret_cast<sockaddr_in*>(info->ai_addr);
+#endif
 
 	addr.cobj()->sin_family = AF_INET;
 	addr.cobj()->sin_port = htons(port);
+#ifdef WIN32
+	addr.cobj()->sin_addr.s_addr = *((uint32_t*)info->h_addr_list[0]);
+#else
 	addr.cobj()->sin_addr.s_addr = ai_addr->sin_addr.s_addr;
-
 	freeaddrinfo(info);
+#endif
+
 	return addr;
 }
 
@@ -140,16 +167,35 @@ std::list<net6::ipv4_address>
 net6::ipv4_address::list(const std::string& hostname, unsigned int port)
 {
 	std::list<ipv4_address> result;
+#ifdef WIN32
+	hostent* info = resolve_generic(hostname.c_str(), AF_INET, 0);
+#else
 	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET, 0);
+#endif
 
+#ifdef WIN32
+	for(int cur = 0; cur < info->h_length; ++ cur)
+#else
 	for(addrinfo* cur = info; cur != NULL; cur = cur->ai_next)
+#endif
 	{
+#ifdef WIN32
+		result.push_back(
+			ipv4_address::create_from_address(
+				*((uint32_t*)info->h_addr_list[cur]),
+				port
+			)
+		);
+#else
 		sockaddr_in* in = reinterpret_cast<sockaddr_in*>(cur->ai_addr);
 		in->sin_port = htons(port);
 		result.push_back(ipv4_address(in) );
+#endif
 	}
 
+#ifndef WIN32
 	freeaddrinfo(info);
+#endif
 	return result;
 }
 
@@ -252,17 +298,34 @@ net6::ipv6_address::create_from_hostname(const std::string& hostname,
 {
 	ipv6_address addr;
 	addr.addr = reinterpret_cast<sockaddr*>(new sockaddr_in6);
+#ifdef WIN32
+	hostent* info = resolve_generic(hostname.c_str(), AF_INET6, 0);
+#else
 	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET6, 0);
 	sockaddr_in6* ai_addr = reinterpret_cast<sockaddr_in6*>(info->ai_addr);
+#endif
 
 	addr.cobj()->sin6_family = AF_INET6;
 	addr.cobj()->sin6_port = htons(port);
 	addr.cobj()->sin6_flowinfo = flowinfo;
-	std::copy(ai_addr->sin6_addr.s6_addr, ai_addr->sin6_addr.s6_addr + 16,
-	          addr.cobj()->sin6_addr.s6_addr);
+#ifdef WIN32
+	std::copy(
+		info->h_addr_list[0],
+		info->h_addr_list[0] + 16,
+		addr.cobj()->sin6_addr.s6_addr
+	);
+#else
+	std::copy(
+		ai_addr->sin6_addr.s6_addr,
+		ai_addr->sin6_addr.s6_addr + 16,
+	        addr.cobj()->sin6_addr.s6_addr
+	);
+#endif
 	addr.cobj()->sin6_scope_id = scope_id;
 
+#ifndef WIN32
 	freeaddrinfo(info);
+#endif
 	return addr;
 }
 
@@ -319,19 +382,42 @@ net6::ipv6_address::list(const std::string& hostname, unsigned int port,
                          unsigned int flowinfo, unsigned int scope_id)
 {
 	std::list<ipv6_address> result;
+#ifdef WIN32
+	hostent* info = resolve_generic(hostname.c_str(), AF_INET6, 0);
+#else
 	addrinfo* info = resolve_generic(hostname.c_str(), PF_INET6, 0);
+#endif
 
+#ifdef WIN32
+	for(int cur = 0; cur < info->h_length; ++ cur)
+#else
 	for(addrinfo* cur = info; cur != NULL; cur = cur->ai_next)
+#endif
 	{
+#ifdef WIN32
+		result.push_back(
+			ipv6_address::create_from_address(
+				reinterpret_cast<uint8_t*>(
+					info->h_addr_list[cur]
+				),
+				port,
+				flowinfo,
+				scope_id
+			)
+		);
+#else
 		sockaddr_in6* in;
 		in = reinterpret_cast<sockaddr_in6*>(cur->ai_addr);
 		in->sin6_port = htons(port);
 		in->sin6_flowinfo = flowinfo;
 		in->sin6_scope_id = scope_id;
 		result.push_back(ipv6_address(in) );
+#endif
 	}
 
+#ifndef WIN32
 	freeaddrinfo(info);
+#endif
 	return result;
 }
 

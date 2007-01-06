@@ -207,6 +207,9 @@ namespace
 		}
 	}
 
+	/** Translates an error code reported by getaddrinfo to a net6 error
+	 * code.
+	 */
 	net6::error::code gai_to_net6(int code)
 	{
 		using net6::error;
@@ -241,6 +244,29 @@ namespace
 		}
 	}
 
+	/** Translates an error code reported by gethostbyname into a net6
+	 * error code.
+	 */
+	net6::error::code ghbn_to_net6(int code)
+	{
+#ifdef WIN32
+		return system_to_net6(code);
+#else
+		switch(code)
+		{
+		case HOST_NOT_FOUND:
+			return net6::error::HOSTNAME_NOT_FOUND;
+		case NO_ADDRESS:
+		//case NO_DATA: // same value as NO_ADDRESS
+			return net6::error::NO_DATA_RECORD;
+		case TRY_AGAIN:
+			return net6::error::TEMPORARY_FAILURE;
+		default:
+			return net6::error::UNKNOWN;
+		}
+#endif
+	}
+
 	/** Translates a system dependant error value from a given domain
 	 * into a net6 error code
 	 */
@@ -254,6 +280,8 @@ namespace
 			return system_to_net6(error_code);
 		case net6::error::GETADDRINFO:
 			return gai_to_net6(error_code);
+		case net6::error::GETHOSTBYNAME:
+			return ghbn_to_net6(error_code);
 		}
 	}
 
