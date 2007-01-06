@@ -137,6 +137,7 @@ public:
 		REHANDSHAKE,
 		UNEXPECTED_HANDSHAKE,
 		UNEXPECTED_PACKET,
+		UNEXPECTED_PACKET_LENGTH,
 
 		UNKNOWN // This is a nonrecoverable error
 	};

@@ -351,6 +351,8 @@ namespace
 			return net6::error::UNEXPECTED_HANDSHAKE;
 		case GNUTLS_E_UNEXPECTED_PACKET:
 			return net6::error::UNEXPECTED_PACKET;
+		case GNUTLS_E_UNEXPECTED_PACKET_LENGTH:
+			return net6::error::UNEXPECTED_PACKET_LENGTH;
 		default:
 			std::cerr << "GNUTLS errcode: " << code << std::endl;
 			return net6::error::UNKNOWN;
@@ -519,6 +521,9 @@ namespace
 			         "was received");
 		case net6::error::UNEXPECTED_PACKET:
 			return _("An unexpected TLS packet was received");
+		case net6::error::UNEXPECTED_PACKET_LENGTH:
+			return _("A TLS packet with unexpected length "
+			         "was received.");
 		case net6::error::UNKNOWN:
 			return _("A nonrecoverable error has occured");
 		default:

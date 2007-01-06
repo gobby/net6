@@ -166,7 +166,10 @@ void net6::connection_base::on_sock_event(io_condition io)
 	catch(net6::error& e)
 	{
 		if(e.get_code() == error::CONNECTION_RESET ||
-		   e.get_code() == error::BROKEN_PIPE)
+		   e.get_code() == error::BROKEN_PIPE ||
+		   e.get_code() == error::PULL_ERROR ||
+		   e.get_code() == error::PUSH_ERROR ||
+		   e.get_code() == error::UNEXPECTED_PACKET_LENGTH) // TLS...
 		{
 			on_close();
 		}
