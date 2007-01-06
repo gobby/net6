@@ -50,8 +50,8 @@ public:
 		signal_data_type;
 	typedef sigc::signal<void>
 		signal_close_type;
-//	typedef sigc::signal<void>
-//		signal_encrypted_type;
+	typedef sigc::signal<void>
+		signal_encrypted_type;
 	typedef sigc::signal<void, login::error>
 		signal_login_failed_type;
 	typedef sigc::signal<void, packet&>
@@ -135,6 +135,11 @@ public:
 	 */
 	signal_close_type close_event() const;
 
+	/** Signal that will be emitted when the encryption to the server
+	 * is guaranteed to be secure.
+	 */
+	signal_encrypted_type encrypted_event() const;
+
 	/** Signal which is emitted, if a login request failed, for example
 	 * if the wished user name was already in use by another client.
 	 */
@@ -158,10 +163,16 @@ protected:
 	 */
 	void on_close_event();
 
+	/** Signal handler that is called when a secure connection is
+	 * guaranteed to be secure.
+	 */
+	void on_encrypted_event();
+
 	virtual void on_join(const user& user, const packet& pack);
 	virtual void on_part(const user& user, const packet& pack);
 	virtual void on_data(const packet& pack);
 	virtual void on_close();
+	virtual void on_encrypted();
 	virtual void on_login_failed(login::error error);
 	virtual void on_login_extend(packet& pack);
 
@@ -177,6 +188,7 @@ protected:
 	signal_part_type signal_part;
 	signal_data_type signal_data;
 	signal_close_type signal_close;
+	signal_encrypted_type signal_encrypted;
 	signal_login_failed_type signal_login_failed;
 	signal_login_extend_type signal_login_extend;
 
@@ -315,12 +327,12 @@ basic_client<selector_type>::close_event() const
 	return signal_close;
 }
 
-/*template<typename selector_type>
+template<typename selector_type>
 typename basic_client<selector_type>::signal_encrypted_type
 basic_client<selector_type>::encrypted_event() const
 {
 	return signal_encrypted;
-}*/
+}
 
 template<typename selector_type>
 typename basic_client<selector_type>::signal_login_failed_type
@@ -360,11 +372,11 @@ void basic_client<selector_type>::on_close_event()
 	on_close();
 }
 
-/*template<typename selector_type>
+template<typename selector_type>
 void basic_client<selector_type>::on_encrypted_event()
 {
 	on_encrypted();
-}*/
+}
 
 template<typename selector_type>
 void basic_client<selector_type>::on_join(const user& user, const packet& pack)
@@ -390,11 +402,11 @@ void basic_client<selector_type>::on_close()
 	signal_close.emit();
 }
 
-/*template<typename selector_type>
+template<typename selector_type>
 void basic_client<selector_type>::on_encrypted()
 {
 	signal_encrypted.emit();
-}*/
+}
 
 template<typename selector_type>
 void basic_client<selector_type>::on_login_failed(login::error error)
@@ -437,13 +449,6 @@ void basic_client<selector_type>::net_client_join(const packet& pack)
 
 	if(is_encrypted)
 	{
-		if(self == new_client)
-		{
-			throw bad_value(
-				"Local joining client has encrypted flag set"
-			);
-		}
-
 		new_client->set_encrypted();
 	}
 }
@@ -492,8 +497,8 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 		sigc::mem_fun(*this, &basic_client::on_recv_event) );
 	conn->close_event().connect(
 		sigc::mem_fun(*this, &basic_client::on_close_event) );
-	//conn->encrypted_event().connect(
-	//	sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
+	conn->encrypted_event().connect(
+		sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
 
 	conn->connect(addr);
 }
