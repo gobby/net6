@@ -137,7 +137,10 @@ class server_info
 public:
 	typedef gnutls_anon_server_credentials_t credentials_type;
 
-	static void init(gnutls_session_t* session);
+	static void init(gnutls_session_t* session,
+	                 credentials_type* anoncred);
+	static void init_primes(gnutls_session_t session,
+	                        credentials_type anoncred);
 };
 
 class client_info
@@ -145,7 +148,10 @@ class client_info
 public:
 	typedef gnutls_anon_client_credentials_t credentials_type;
 
-	static void init(gnutls_session_t* session);
+	static void init(gnutls_session_t* session,
+	                 credentials_type* anoncred);
+	static void init_primes(gnutls_session_t session,
+	                        credentials_type anoncred);
 };
 #endif
 
@@ -183,7 +189,7 @@ public:
 	virtual size_type recv(void* buf, size_type len) const;
 
 private:
-	gnutls_session_t create_session();
+	gnutls_session_t create_session(int fd);
 
 	typename Info::credentials_type anoncred;
 
@@ -278,21 +284,20 @@ public:
 };
 
 template<typename Info>
-gnutls_session_t basic_tcp_encrypted_socket<Info>::create_session()
+gnutls_session_t basic_tcp_encrypted_socket<Info>::create_session(int fd)
 {
 	gnutls_session_t session;
 	const int kx_prio[] = { GNUTLS_KX_ANON_DH, 0 };
 
-	Info::init(&session);
+	Info::init(&session, &anoncred);
 	gnutls_set_default_priority(session);
 	gnutls_kx_set_priority(session, kx_prio);
+	Info::init_primes(session, anoncred);
 	gnutls_credentials_set(session, GNUTLS_CRD_ANON, anoncred);
-	gnutls_dh_set_prime_bits(session, DH_BITS);
-
 
 	gnutls_transport_set_ptr(
 		session,
-		reinterpret_cast<gnutls_transport_ptr_t>(cobj())
+		reinterpret_cast<gnutls_transport_ptr_t>(fd)
 	);
 
 	gnutls_transport_set_lowat(session, 0);
@@ -303,7 +308,7 @@ gnutls_session_t basic_tcp_encrypted_socket<Info>::create_session()
 template<typename Info>
 basic_tcp_encrypted_socket<Info>::
 	basic_tcp_encrypted_socket(tcp_client_socket& sock):
-	tcp_encrypted_socket(sock.cobj(), create_session() )
+	tcp_encrypted_socket(sock.cobj(), create_session(sock.cobj()) )
 {
 	sock.invalidate();
 }
@@ -311,6 +316,8 @@ basic_tcp_encrypted_socket<Info>::
 template<typename Info>
 basic_tcp_encrypted_socket<Info>::~basic_tcp_encrypted_socket()
 {
+	// TODO: Memory management of GNUTLS credentials
+	// (And don't forget the dh_params in socket.cpp)
 	gnutls_bye(session, GNUTLS_SHUT_WR);
 	gnutls_deinit(session);
 }

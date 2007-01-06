@@ -118,6 +118,7 @@ protected:
 	encrypted_state state;
 
 private:
+	void setup_signal();
 	void init_impl();
 
 	void on_sock_event(io_condition io);

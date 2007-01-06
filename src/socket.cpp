@@ -122,14 +122,37 @@ net6::socket::size_type net6::tcp_client_socket::recv(void* buf,
 	return result;
 }
 
-void net6::server_info::init(gnutls_session_t* session)
+void net6::server_info::init(gnutls_session_t* session,
+                             credentials_type* anoncred)
 {
 	gnutls_init(session, GNUTLS_SERVER);
+	gnutls_anon_allocate_server_credentials(anoncred);
 }
 
-void net6::client_info::init(gnutls_session_t* session)
+void net6::server_info::init_primes(gnutls_session_t session,
+                                    credentials_type anoncred)
+{
+	// TODO: Generate diffie-hellman parameters somewhere else
+	gnutls_dh_params_t params;
+	gnutls_dh_params_init(&params);
+	gnutls_dh_params_generate2(params,
+		basic_tcp_encrypted_socket<server_info>::DH_BITS);
+	gnutls_anon_set_server_dh_params(anoncred, params);
+}
+
+void net6::client_info::init(gnutls_session_t* session,
+                             credentials_type* anoncred)
 {
 	gnutls_init(session, GNUTLS_CLIENT);
+	gnutls_anon_allocate_client_credentials(anoncred);
+}
+
+void net6::client_info::init_primes(gnutls_session_t session,
+                                    credentials_type anoncred)
+{
+	// Set the minimum acceptable prime size
+	gnutls_dh_set_prime_bits(session,
+		basic_tcp_encrypted_socket<client_info>::DH_BITS);
 }
 
 bool net6::tcp_encrypted_socket::handshake()

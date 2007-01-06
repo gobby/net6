@@ -246,8 +246,16 @@ void net6::connection_base::do_handshake()
 	if(encrypted_sock == NULL)
 	{
 		throw std::logic_error(
-			"net6::connection::do_handshake:\n"
+			"net6::connection_base::do_handshake:\n"
 			"No encrypted socket present"
+		);
+	}
+
+	if(state != ENCRYPTION_HANDSHAKING)
+	{
+		throw std::logic_error(
+			"net6::connection_base::do_handshake:\n"
+			"Invalid state"
 		);
 	}
 
@@ -280,8 +288,12 @@ void net6::connection_base::on_send()
 	{
 		// All remaining data has been sent, we may now initiate the
 		// TLS handshake
+		set_select(IO_NONE);
+
 		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
 		remote_sock.reset(encrypted_sock);
+		setup_signal();
+
 		state = ENCRYPTION_HANDSHAKING;
 		do_handshake();
 	}
@@ -331,8 +343,11 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 		);
 	}
 
+	set_select(IO_NONE);
+
 	encrypted_sock = new tcp_encrypted_socket_client(*remote_sock);
 	remote_sock.reset(encrypted_sock);
+	setup_signal(); // TODO: Make one method that merges this with on_send
 
 	state = ENCRYPTION_HANDSHAKING;
 	do_handshake();
@@ -356,9 +371,13 @@ void net6::connection_base::net_encryption_failed(const packet& pack)
 	set_select(flags);
 }
 
-void net6::connection_base::init_impl()
+void net6::connection_base::setup_signal()
 {
 	remote_sock->io_event().connect(
 		sigc::mem_fun(*this, &connection_base::on_sock_event) );
 }
 
+void net6::connection_base::init_impl()
+{
+	setup_signal();
+}
