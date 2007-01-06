@@ -29,6 +29,9 @@ pkginclude_HEADERS = \
 	inc/host.hpp \
 	inc/socket.hpp
 
+noinst_HEADERS = \
+	inc/common.hpp
+
 libnet6_la_SOURCES = \
 	src/non_copyable.cpp \
 	src/address.cpp \
@@ -45,4 +48,9 @@ libnet6_la_SOURCES = \
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = net6-1.0.pc
+
+# gettext
+SUBDIRS = po .
+EXTRA_DIST = config.rpath mkinstalldirs
+libnet6_la_CPPFLAGS = -DLOCALEDIR=\""$(datadir)/locale"\"
 

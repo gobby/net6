@@ -6,6 +6,7 @@ AC_INIT([net6], [1.1.0], [armin@0x539.de])
 AM_INIT_AUTOMAKE(1.9 check-news)
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([inc/main.hpp])
+AC_CONFIG_HEADER([inc/config.hpp])
 
 # Extract host information.
 AC_CANONICAL_HOST
@@ -38,6 +39,10 @@ AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
 # Checks for libraries.
 PKG_CHECK_MODULES([libnet6], [sigc++-2.0])
 
-AC_CONFIG_FILES([Makefile])
+# gettext / i18n
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION
+
+AC_CONFIG_FILES([Makefile po/Makefile.in])
 AC_OUTPUT([net6-1.0.pc])
 

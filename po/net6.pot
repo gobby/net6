@@ -1,0 +1,217 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR 0x539 dev group
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
+"POT-Creation-Date: 2005-06-16 20:48+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/error.cpp:40
+msgid "Invalid name"
+msgstr ""
+
+#: src/error.cpp:42
+msgid "Name is already in use"
+msgstr ""
+
+#: src/error.cpp:44
+msgid "An unknown login error occured"
+msgstr ""
+
+#: src/error.cpp:318
+msgid "Interrupted function call"
+msgstr ""
+
+#: src/error.cpp:320
+msgid "Access denied"
+msgstr ""
+
+#: src/error.cpp:322
+msgid "Bad address"
+msgstr ""
+
+#: src/error.cpp:324
+msgid "Invalid argument"
+msgstr ""
+
+#: src/error.cpp:326
+msgid "Too many open files"
+msgstr ""
+
+#: src/error.cpp:328
+msgid "Resource temporarily unavailable"
+msgstr ""
+
+#: src/error.cpp:330
+msgid "Operation already in progress"
+msgstr ""
+
+#: src/error.cpp:332
+msgid "Socket operation on non-socket"
+msgstr ""
+
+#: src/error.cpp:334
+msgid "Destination address required"
+msgstr ""
+
+#: src/error.cpp:336
+msgid "Message too long"
+msgstr ""
+
+#: src/error.cpp:338
+msgid "Protocol wrong type for socket"
+msgstr ""
+
+#: src/error.cpp:340
+msgid "Bad protocol option"
+msgstr ""
+
+#: src/error.cpp:342
+msgid "Protocol not supported"
+msgstr ""
+
+#: src/error.cpp:344
+msgid "Socket type not supported"
+msgstr ""
+
+#: src/error.cpp:346
+msgid "Operation not supported"
+msgstr ""
+
+#: src/error.cpp:348
+msgid "Protocol family not supported"
+msgstr ""
+
+#: src/error.cpp:350
+msgid "Address family not supported"
+msgstr ""
+
+#: src/error.cpp:352
+msgid "Address is already in use"
+msgstr ""
+
+#: src/error.cpp:354
+msgid "Cannot assign requested address"
+msgstr ""
+
+#: src/error.cpp:356
+msgid "Network is down"
+msgstr ""
+
+#: src/error.cpp:358
+msgid "Network is unreachable"
+msgstr ""
+
+#: src/error.cpp:360
+msgid "Network dropped connection on reset"
+msgstr ""
+
+#: src/error.cpp:362
+msgid "Software caused connection abort"
+msgstr ""
+
+#: src/error.cpp:364
+msgid "Connection reset by peer"
+msgstr ""
+
+#: src/error.cpp:366
+msgid "No buffer space available"
+msgstr ""
+
+#: src/error.cpp:368
+msgid "Socket is already connected"
+msgstr ""
+
+#: src/error.cpp:370
+msgid "Socket is not connected"
+msgstr ""
+
+#: src/error.cpp:372
+msgid "Cannot send after socket shutdown"
+msgstr ""
+
+#: src/error.cpp:374
+msgid "Connection timed out"
+msgstr ""
+
+#: src/error.cpp:376
+msgid "Connection refused"
+msgstr ""
+
+#: src/error.cpp:378
+msgid "Host is down"
+msgstr ""
+
+#: src/error.cpp:380
+msgid "No route to host"
+msgstr ""
+
+#: src/error.cpp:382
+msgid "Too many processes"
+msgstr ""
+
+#: src/error.cpp:384
+msgid "Network subsystem is unavailable"
+msgstr ""
+
+#: src/error.cpp:386
+msgid "Winsock.dll version out of range"
+msgstr ""
+
+#: src/error.cpp:388
+msgid "Successful WSAStartup not yet performed"
+msgstr ""
+
+#: src/error.cpp:390
+msgid "Graceful shutdown in progress"
+msgstr ""
+
+#: src/error.cpp:392
+msgid "Class type not found"
+msgstr ""
+
+#: src/error.cpp:394
+msgid "Host not found"
+msgstr ""
+
+#: src/error.cpp:396
+msgid "Nonauthoritative host not found"
+msgstr ""
+
+#: src/error.cpp:398
+msgid "No data record of requested type"
+msgstr ""
+
+#: src/error.cpp:400
+msgid "Specified event object handle is invalid"
+msgstr ""
+
+#: src/error.cpp:402
+msgid "One or more parameters are invalid"
+msgstr ""
+
+#: src/error.cpp:404
+msgid "No more memory is available"
+msgstr ""
+
+#: src/error.cpp:406
+msgid "Broken pipe"
+msgstr ""
+
+#: src/error.cpp:408
+msgid "No such device"
+msgstr ""
+
+#: src/error.cpp:410
+msgid "A nonrecoverable error has occured"
+msgstr ""

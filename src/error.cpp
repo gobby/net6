@@ -25,6 +25,7 @@
 #endif
 
 #include "error.hpp"
+#include "common.hpp"
 
 // Login error codes
 const net6::login::error net6::login::ERROR_NAME_INVALID = 1;
@@ -36,11 +37,11 @@ std::string net6::login::errstring(error err)
 	switch(err)
 	{
 	case net6::login::ERROR_NAME_INVALID:
-		return "Invalid name";
+		return _("Invalid name");
 	case net6::login::ERROR_NAME_IN_USE:
-		return "Name is already in use";
+		return _("Name is already in use");
 	default:
-		return "An unknown login error occured";
+		return _("An unknown login error occured");
 	}
 }
 
@@ -314,99 +315,99 @@ namespace
 		switch(error_code)
 		{
 		case net6::error::INTERRUPTED:
-			return "Interrupted function call";
+			return _("Interrupted function call");
 		case net6::error::ACCESS_DENIED:
-			return "Access denied";
+			return _("Access denied");
 		case net6::error::BAD_ADDRESS:
-			return "Bad address";
+			return _("Bad address");
 		case net6::error::INVALID_ARGUMENT:
-			return "Invalid argument";
+			return _("Invalid argument");
 		case net6::error::TOO_MANY_FILES:
-			return "Too many open files";
+			return _("Too many open files");
 		case net6::error::WOULD_BLOCK:
-			return "Resource temporarily unavailable";
+			return _("Resource temporarily unavailable");
 		case net6::error::OPERATION_IN_PROGRESS:
-			return "Operation already in progress";
+			return _("Operation already in progress");
 		case net6::error::NOT_SOCKET:
-			return "Socket operation on non-socket";
+			return _("Socket operation on non-socket");
 		case net6::error::DESTINATION_ADDRESS_REQUIRED:
-			return "Destination address required";
+			return _("Destination address required");
 		case net6::error::MESSAGE_TOO_LONG:
-			return "Message too long";
+			return _("Message too long");
 		case net6::error::WRONG_PROTOCOL_TYPE:
-			return "Protocol wrong type for socket";
+			return _("Protocol wrong type for socket");
 		case net6::error::BAD_PROTOCOL_OPTION:
-			return "Bad protocol option";
+			return _("Bad protocol option");
 		case net6::error::PROTOCOL_NOT_SUPPORTED:
-			return "Protocol not supported";
+			return _("Protocol not supported");
 		case net6::error::SOCKET_NOT_SUPPORTED:
-			return "Socket type not supported";
+			return _("Socket type not supported");
 		case net6::error::OPERATION_NOT_SUPPORTED:
-			return "Operation not supported";
+			return _("Operation not supported");
 		case net6::error::PROTOCOL_FAMILY_NOT_SUPPORTED:
-			return "Protocol family not supported";
+			return _("Protocol family not supported");
 		case net6::error::ADDRESS_FAMILY_NOT_SUPPORTED:
-			return "Address family not supported";
+			return _("Address family not supported");
 		case net6::error::ADDRESS_IN_USE:
-			return "Address is already in use";
+			return _("Address is already in use");
 		case net6::error::ADDRESS_UNAVAILABLE:
-			return "Cannot assign requested address";
+			return _("Cannot assign requested address");
 		case net6::error::NETWORK_DOWN:
-			return "Network is down";
+			return _("Network is down");
 		case net6::error::NETWORK_UNREACHABLE:
-			return "Network is unreachable";
+			return _("Network is unreachable");
 		case net6::error::NETWORK_RESET:
-			return "Network dropped connection on reset";
+			return _("Network dropped connection on reset");
 		case net6::error::CONNECTION_ABORTED:
-			return "Software caused connection abort";
+			return _("Software caused connection abort");
 		case net6::error::CONNECTION_RESET:
-			return "Connection reset by peer";
+			return _("Connection reset by peer");
 		case net6::error::NO_BUFFER_SPACE:
-			return "No buffer space available";
+			return _("No buffer space available");
 		case net6::error::SOCKET_IS_CONNECTED:
-			return "Socket is already connected";
+			return _("Socket is already connected");
 		case net6::error::SOCKET_NOT_CONNECTED:
-			return "Socket is not connected";
+			return _("Socket is not connected");
 		case net6::error::SOCKET_SHUTDOWN:
-			return "Cannot send after socket shutdown";
+			return _("Cannot send after socket shutdown");
 		case net6::error::CONNECTION_TIMEOUT:
-			return "Connection timed out";
+			return _("Connection timed out");
 		case net6::error::CONNECTION_REFUSED:
-			return "Connection refused";
+			return _("Connection refused");
 		case net6::error::HOST_DOWN:
-			return "Host is down";
+			return _("Host is down");
 		case net6::error::HOST_UNREACHABLE:
-			return "No route to host";
+			return _("No route to host");
 		case net6::error::TOO_MANY_PROCESSES:
-			return "Too many processes";
+			return _("Too many processes");
 		case net6::error::SYSTEM_NOT_READY:
-			return "Network subsystem is unavailable";
+			return _("Network subsystem is unavailable");
 		case net6::error::VERSION_NOT_SUPPORTED:
-			return "Winsock.dll version out of range";
+			return _("Winsock.dll version out of range");
 		case net6::error::NOT_INITIALISED:
-			return "Successful WSAStartup not yet performed";
+			return _("Successful WSAStartup not yet performed");
 		case net6::error::DISCONNECTED:
-			return "Graceful shutdown in progress";
+			return _("Graceful shutdown in progress");
 		case net6::error::TYPE_NOT_FOUND:
-			return "Class type not found";
+			return _("Class type not found");
 		case net6::error::HOSTNAME_NOT_FOUND:
-			return "Host not found";
+			return _("Host not found");
 		case net6::error::TEMPORARY_FAILURE:
-			return "Nonauthoritative host not found";
+			return _("Nonauthoritative host not found");
 		case net6::error::NO_DATA_RECORD:
-			return "No data record of requested type";
+			return _("No data record of requested type");
 		case net6::error::INVALID_HANDLE:
-			return "Specified event object handle is invalid";
+			return _("Specified event object handle is invalid");
 		case net6::error::INVALID_PARAMETER:
-			return "One or more parameters are invalid";
+			return _("One or more parameters are invalid");
 		case net6::error::NO_MEMORY:
-			return "No more memory is available";
+			return _("No more memory is available");
 		case net6::error::BROKEN_PIPE:
-			return "Broken pipe";
+			return _("Broken pipe");
 		case net6::error::NO_DEVICE:
-			return "No such device";
+			return _("No such device");
 		case net6::error::UNKNOWN:
-			return "A nonrecoverable error has occured";
+			return _("A nonrecoverable error has occured");
 		}
 	}
 

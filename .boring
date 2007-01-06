@@ -47,6 +47,7 @@ configure$
 stamp-h1$
 (^|/)autom4te\.cache($|/)
 ^inc/config\.hpp$
+^inc/config\.hpp\.in$
 \.tar\.gz$
 ^build$
 \.xcode$
