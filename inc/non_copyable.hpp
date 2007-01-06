@@ -31,7 +31,7 @@ class NET6_EXPORT non_copyable
 {
 public:
 	non_copyable();
-	~non_copyable();
+	virtual ~non_copyable();
 
 private:
 	non_copyable(const non_copyable& other);
