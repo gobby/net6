@@ -89,8 +89,8 @@ public:
 	static ipv4_address create_from_address(uint32_t ip_address,
 	                                        unsigned int port = 0);
 
-	/** Makes a DNS lookup of the host <em>hostname</em> and stores
-	 * its ipv4_address, if any. Otherwise, a net6::error is thrown.
+	/** Performs a DNS lookup of the host <em>hostname</em> and stores
+	 * its ipv4 address, if any. Otherwise, a net6::error is thrown.
 	 */
 	static ipv4_address create_from_hostname(const std::string& hostname,
 	                                         unsigned int port = 0);
@@ -123,7 +123,7 @@ public:
 	 */
 	virtual address* clone() const;
 
-	/** Returns a human-readable string of this ipv4-address (for
+	/** Returns a human-readable string of this ipv4 address (for
 	 * example 127.0.0.1).
 	 */
 	virtual std::string get_name() const;
