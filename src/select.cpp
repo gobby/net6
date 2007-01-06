@@ -17,6 +17,7 @@
  */
 
 #include <ctime>
+#include <limits>
 #include "error.hpp"
 #include "select.hpp"
 
