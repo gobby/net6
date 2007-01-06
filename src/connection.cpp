@@ -117,13 +117,13 @@ const net6::tcp_client_socket& net6::connection_base::get_socket() const
 
 void net6::connection_base::set_enable_keepalives(bool enable)
 {
-	if(keepalive == KEEPALIVE_DISABLED)
+	if(keepalive == KEEPALIVE_DISABLED && enable == true)
 	{
 		keepalive = KEEPALIVE_ENABLED;
 		if(state == UNENCRYPTED || state == ENCRYPTED)
 			start_keepalive_timer();
 	}
-	else
+	else if(enable == false)
 	{
 		keepalive = KEEPALIVE_DISABLED;
 		stop_keepalive_timer();
