@@ -43,6 +43,7 @@ public:
 	 */
 	class peer : public net6::peer
 	{
+		friend class server;
 	public:
 		typedef connection::signal_send_type signal_send_type;
 		typedef connection::signal_recv_type signal_recv_type;
@@ -60,12 +61,6 @@ public:
 		/** Checks if this peer has been logged in successfully.
 		 */
 		bool is_logged_in() const;
-
-		/** Enqueues a packet to send it to this peer. Use
-		 * net6::server::send instead, which is a wrapper around
-		 * this function.
-		 */
-		void send(const packet& pack);
 
 		/** Returns the size of the queue with pending packets of
 		 * the connection.
@@ -96,8 +91,33 @@ public:
 		 */
 		signal_close_type close_event() const;
 	protected:
+		/** Enqueues a packet to send it to this peer. Use
+		 * net6::server::send instead, which is a wrapper around
+		 * this function.
+		 */
+		void send(const packet& pack);
+
 		bool logged_in;
 		connection* conn;
+	};
+
+	/** Accumulator for signal_login: It returns 0 if no slots
+	 * have been connected, so IDs are choosen automaticcaly by default.
+	 */
+	class login_accumulator
+	{
+	public:
+		typedef unsigned int result_type;
+
+		template<typename iterator>
+		result_type operator()(iterator begin, iterator end) const
+		{
+			unsigned int result = 0;
+			for(; begin != end; ++ begin)
+				if( (*begin) != 0)
+					result = *begin;
+			return result;
+		}
 	};
 
 	/** Accumulator for signal_auth_type: It returns TRUE if no slots
@@ -127,7 +147,8 @@ public:
 
 	typedef sigc::signal<bool, peer&, const packet&, std::string&>
 		::accumulated<auth_accumulator> signal_login_auth_type;
-	typedef sigc::signal<void, peer&, const packet&> signal_login_type;
+	typedef sigc::signal<unsigned int, peer&, const packet&>
+		::accumulated<login_accumulator> signal_login_type;
 	typedef sigc::signal<void, peer&, packet&> signal_login_extend_type;
 
 	typedef sigc::signal<void, peer&, const packet&> signal_data_type;
@@ -191,6 +212,9 @@ public:
 	const tcp_server_socket& get_socket() const;
 
 	/** Signal which is emitted when a new connection has been accepted.
+	 * The signal handler may return an ID for the new client. Be sure that
+	 * the ID is not already in use. If the signal handler returns the
+	 * special value 0, net6 chooses automatically a new ID.
 	 */
 	signal_connect_type connect_event() const;
 
@@ -228,16 +252,18 @@ public:
 	 * parameter in the login packet is always the user name the client
 	 * would like to have. Others are set by the client's login_extend
 	 * signal handler. Check in login_auth if they are correct, if you
-	 * define any.
+	 * define any. The signal hanlder may return an ID for the new client.
+	 * Be sure that the given ID is not alreayd in use. If it returns the
+	 * special value 0, net6 chooses automatically a new id.
 	 */
 	signal_login_type login_event() const;
 
 	/** Signal which may be used to append parameters to a client_join
-	 * packet which will be sent to existing user to announce the new join.
+	 * packet which will be sent to existing users to announce the new join.
 	 * The first parameter is the new client's ID number, the second one
 	 * its user name, other parameters may be appended by you. The peer
 	 * given to the signal handler is the peer for which information has
-	 * to be appended, not the one, to which they will be sent.
+	 * to be appended, not the one to which they will be sent.
 	 */
 	signal_login_extend_type login_extend_event() const;
 
@@ -260,7 +286,7 @@ protected:
 	virtual void on_part(peer& client);
 	virtual bool on_login_auth(peer& client, const packet& pack,
 	                           std::string& reason);
-	virtual void on_login(peer& client, const packet& pack);
+	virtual unsigned int on_login(peer& client, const packet& pack);
 	virtual void on_login_extend(peer& client, packet& pack);
 	virtual void on_data(peer& client, const packet& pack);
 

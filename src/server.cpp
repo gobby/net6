@@ -321,9 +321,9 @@ bool net6::server::on_login_auth(peer& client, const packet& pack,
 	return signal_login_auth.emit(client, pack, reason);
 }
 
-void net6::server::on_login(peer& client, const packet& pack)
+unsigned int net6::server::on_login(peer& client, const packet& pack)
 {
-	signal_login.emit(client, pack);
+	return signal_login.emit(client, pack);
 }
 
 void net6::server::on_login_extend(peer& client, packet& pack)
@@ -378,7 +378,15 @@ void net6::server::net_client_login(peer& from, const packet& pack)
 
 		// Login succeeded
 		from.login(name);
-		on_login(from, pack);
+		unsigned int new_id = on_login(from, pack);
+
+		if(new_id != 0)
+		{
+			from.id = new_id;
+
+			if(id_counter < new_id)
+				id_counter = new_id;
+		}
 
 		// Synchronise with other clients
 		packet self_pack("net6_client_join");
