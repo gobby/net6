@@ -190,6 +190,8 @@ packet& packet::operator<<(const data_type& value)
 {
 	// Add parameter with default context
 	add_param(value);
+	// Return self to allow chaining
+	return *this;
 }
 
 }
