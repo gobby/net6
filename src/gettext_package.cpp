@@ -58,6 +58,33 @@ const char* net6::gettext_package::ngettext(const char* msgid,
 
 #else // ENABLE_NLS
 
-// TODO: Stubs and/or require NLS
+/* Without NLS support we compile stubs into the library, to prevent
+ * linker failure because of missing symbols. Packages using
+ * this gettext infrastucture will have their NLS support disabled
+ * silently.
+ */
+
+net6::gettext_package::gettext_package(const std::string& package,
+                                       const std::string& localedir)
+{
+}
+
+const char* net6::gettext_package::gettext(const char* msgid) const
+{
+	return msgid;
+}
+
+const char* net6::gettext_package::ngettext(const char* msgid,
+                                            const char* msgid_plural,
+                                            unsigned long int n) const
+{
+	// The incoming message strings are in English, which only
+	// uses the singular form for one item.
+	if(n != 1)
+		return msgid_plural;
+	else
+		return msgid;
+}
 
 #endif // !ENABLE_NLS
+
