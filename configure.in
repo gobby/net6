@@ -46,7 +46,9 @@ AM_PATH_LIBGNUTLS( 1.0.0,, AC_MSG_ERROR([[
 *** from ftp://ftp.gnutls.org/pub/gnutls/. This dependency is
 *** now mandatory.
 ]]))
-
+addlibs="$addlibs $LIBGNUTLS_LIBS"
+addcflags="$LIBGNUTLS_CFLAGS"
+AC_SUBST(addcflags)
 
 # gettext / i18n
 AM_GNU_GETTEXT([external])

@@ -98,6 +98,10 @@ net6::tcp_client_socket::tcp_client_socket(socket_type c_object):
 {
 }
 
+net6::tcp_client_socket::~tcp_client_socket()
+{
+}
+
 net6::socket::size_type net6::tcp_client_socket::send(const void* buf,
                                                       size_type len) const
 {

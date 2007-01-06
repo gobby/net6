@@ -48,6 +48,8 @@ public:
 		signal_data_type;
 	typedef sigc::signal<void>
 		signal_close_type;
+	typedef sigc::signal<void>
+		signal_encrypted_type;
 	typedef sigc::signal<void, login::error>
 		signal_login_failed_type;
 	typedef sigc::signal<void, packet&>
@@ -79,6 +81,11 @@ public:
 	/** Determinates if the client is connected to a server.
 	 */
 	bool is_connected() const;
+
+	/** Requests encryption from the peer. An encrypted_event is
+	 * emitted as soon as the connection is guranteed to be encrypted.
+	 */
+	void request_encryption();
 
 	/** Send a login request with the specified user name. On success,
 	 * a join_event with user==self is emitted, otherwise a
@@ -122,6 +129,11 @@ public:
 	 */
 	signal_close_type close_event() const;
 
+	/** Signal which is emitted when the connection is guaranteed to
+	 * be encrypted.
+	 */
+	signal_encrypted_type encrypted_event() const;
+
 	/** Signal which is emitted, if a login request failed, for example
 	 * if the wished user name was already in use by another client.
 	 */
@@ -149,10 +161,15 @@ protected:
 	 */
 	virtual void on_close_event();
 
+	/** Signal handler that is called on events related to encryption.
+	 */
+	virtual void on_encrypted_event(connection::encrypted_state state);
+
 	virtual void on_join(const user& user, const packet& pack);
 	virtual void on_part(const user& user, const packet& pack);
 	virtual void on_data(const packet& pack);
 	virtual void on_close();
+	virtual void on_encrypted();
 	virtual void on_login_failed(login::error error);
 	virtual void on_login_extend(packet& pack);
 
@@ -167,6 +184,7 @@ protected:
 	signal_part_type signal_part;
 	signal_data_type signal_data;
 	signal_close_type signal_close;
+	signal_encrypted_type signal_encrypted;
 	signal_login_failed_type signal_login_failed;
 	signal_login_extend_type signal_login_extend;
 
@@ -213,6 +231,17 @@ template<typename selector_type>
 bool basic_client<selector_type>::is_connected() const
 {
 	return conn.get() != NULL;
+}
+
+template<typename selector_type>
+void basic_client<selector_type>::request_encryption()
+{
+	// It is sufficient to request encryption by sending
+	// the corresponding packet to the server. The handler
+	// code in the connection will take care of establishing
+	// the additional security layer.
+	packet pack("net6_encryption");
+	send(pack);
 }
 
 template<typename selector_type>
@@ -295,6 +324,13 @@ basic_client<selector_type>::close_event() const
 }
 
 template<typename selector_type>
+typename basic_client<selector_type>::signal_encrypted_type
+basic_client<selector_type>::encrypted_event() const
+{
+	return signal_encrypted;
+}
+
+template<typename selector_type>
 typename basic_client<selector_type>::signal_login_failed_type
 basic_client<selector_type>::login_failed_event() const
 {
@@ -341,6 +377,32 @@ void basic_client<selector_type>::on_close_event()
 }
 
 template<typename selector_type>
+void basic_client<selector_type>::on_encrypted_event(
+	connection::encrypted_state state)
+{
+	selector_type& selector = basic_object<selector_type>::get_selector();
+
+	switch(state)
+	{
+		case connection::HANDSHAKING_RECV:
+			selector.set(conn->get_socket(), IO_INCOMING);
+			break;
+		case connection::HANDSHAKING_SEND:
+			selector.set(conn->get_socket(), IO_OUTGOING);
+			break;
+		case connection::ENCRYPTED_PENDING:
+			// Flush the send queue, then emit the signal
+			// in the next case, as only one of the two
+			// is emitted.
+			selector.set(conn->get_socket(), IO_OUTGOING);
+		case connection::ENCRYPTED:
+			// Notify the client that encryption is now used
+			on_encrypted();
+			break;
+	}
+}
+
+template<typename selector_type>
 void basic_client<selector_type>::on_join(const user& user, const packet& pack)
 {
 	signal_join.emit(user, pack);
@@ -362,6 +424,12 @@ template<typename selector_type>
 void basic_client<selector_type>::on_close()
 {
 	signal_close.emit();
+}
+
+template<typename selector_type>
+void basic_client<selector_type>::on_encrypted()
+{
+	signal_encrypted.emit();
 }
 
 template<typename selector_type>
@@ -439,6 +507,8 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 		sigc::mem_fun(*this, &basic_client::on_recv_event) );
 	conn->close_event().connect(
 		sigc::mem_fun(*this, &basic_client::on_close_event) );
+	conn->encrypted_event().connect(
+		sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
 }
 
 template<typename selector_type>

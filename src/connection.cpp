@@ -155,7 +155,7 @@ void net6::connection::on_sock_event(io_condition io)
 	{
 		if(io & IO_INCOMING)
 		{
-			if(encrypted_sock->is_handshaking() )
+			if(encrypted_sock && encrypted_sock->is_handshaking() )
 			{
 				handle_handshake();
 				return;
@@ -209,7 +209,7 @@ void net6::connection::on_sock_event(io_condition io)
 
 		if(io & IO_OUTGOING)
 		{
-			if(encrypted_sock->is_handshaking() )
+			if(encrypted_sock && encrypted_sock->is_handshaking() )
 			{
 				handle_handshake();
 				return;
@@ -297,6 +297,7 @@ void net6::connection::on_recv(const net6::packet& pack)
 	{
 		packet reply("net6_encryption_ok");
 		send(reply);
+		return;
 	}
 	else if(pack.get_command() == "net6_encryption_ok")
 	{
@@ -304,6 +305,7 @@ void net6::connection::on_recv(const net6::packet& pack)
 			new tcp_encrypted_socket_client(*remote_sock);
 		remote_sock.reset(encrypted_sock);
 		handle_handshake();
+		return;
 	}
 
 	try

@@ -291,6 +291,8 @@ gnutls_session_t basic_tcp_encrypted_socket<Info>::create_session()
 
 	gnutls_transport_set_ptr(session, reinterpret_cast<gnutls_transport_ptr_t>(
 		cobj() ));
+
+	return session;
 }
 
 template<typename Info>

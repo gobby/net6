@@ -67,6 +67,18 @@ public:
 	void remove(const socket& sock,
 	            io_condition condition);
 
+	/** @brief Sets conditions on a socket.
+	 *
+	 * The function can be used to set conditions the socket is
+	 * watched for. The socket will be added and deleted as
+	 * deemed appropriate.
+	 *
+	 * @param sock The socket to watch for conditions to occur
+	 * @param condition A combination of conditions to watch for
+	 */
+	void set(const socket& sock,
+	         io_condition condition);
+
 	/** Checks if a socket is watched for events
 	 *
 	 * @param sock Socket to check.

@@ -44,6 +44,21 @@ void net6::selector::remove(const socket& sock,
 	if(iter->second == IO_NONE) sock_map.erase(iter);
 }
 
+void net6::selector::set(const socket& sock,
+                         io_condition condition)
+{
+	map_type::iterator iter = sock_map.find(&sock);
+
+	if(condition == IO_NONE && iter == sock_map.end() )
+		return;
+	else if(condition == IO_NONE)
+		sock_map.erase(iter);
+	else if(iter == sock_map.end() )
+		sock_map[&sock] = condition;
+	else
+		iter->second = condition;
+}
+
 net6::io_condition net6::selector::check(const socket& sock,
                                          io_condition condition) const
 {
