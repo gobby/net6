@@ -17,6 +17,7 @@
  */
 
 #include <cassert>
+#include "error.hpp"
 #include "connection.hpp"
 
 net6::connection::connection(const address& addr)
@@ -100,7 +101,7 @@ net6::connection::signal_close_type net6::connection::close_event() const
 	return signal_close;
 }
 
-void net6::connection::on_sock_event(socket& sock, socket::condition io)
+void net6::connection::on_sock_event(socket& sock, socket::condition io) try
 {
 	tcp_client_socket& tcp_sock = static_cast<tcp_client_socket&>(sock);
 	if(io & socket::INCOMING)
@@ -184,4 +185,12 @@ void net6::connection::on_sock_event(socket& sock, socket::condition io)
 	{
 		signal_close.emit();
 	}
+}
+catch(net6::error& e)
+{
+	if(e.get_code() == error::CONNECTION_RESET ||
+	   e.get_code() == error::BROKEN_PIPE)
+		signal_close.emit();
+	else
+		throw e;
 }

@@ -6,7 +6,6 @@ This file lists prioritised items which need to be fixed or developed.
 Serious:
 
 Important:
- * Catch connection resets (might depend on ``Add error codes'' <- DONE!).
 
 Normal:
  * Provide on_*-Methods for signals being emitted to allow derived classes
