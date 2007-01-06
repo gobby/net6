@@ -20,6 +20,7 @@
 #define _NET6_SELECT_HPP_
 
 #include "non_copyable.hpp"
+#include "default_accumulator.hpp"
 #include "socket.hpp"
 
 namespace net6
@@ -34,23 +35,7 @@ namespace net6
 class selector : private non_copyable
 {
 public:
-	/** Accumulator that defaults on false for signal_socket_event.
-	 */
-	class socket_accumulator
-	{
-	public:
-		typedef bool result_type;
-
-		template<typename iterator>
-		result_type operator()(iterator begin, iterator end) const
-		{
-			bool result = false;
-			for(; begin != end; ++ begin)
-				if(result = *begin)
-					break;
-			return result;
-		}
-	};
+	typedef default_accumulator<bool, false> socket_accumulator;
 
 	typedef sigc::signal<bool, socket&, socket::condition>
 		::accumulated<socket_accumulator> signal_socket_event_type;

@@ -22,6 +22,7 @@
 #include <sigc++/signal.h>
 
 #include "non_copyable.hpp"
+#include "default_accumulator.hpp"
 #include "error.hpp"
 #include "peer.hpp"
 #include "address.hpp"
@@ -97,43 +98,8 @@ public:
 		connection* conn;
 	};
 
-	/** Accumulator for signal_login: It returns 0 if no slots
-	 * have been connected, so IDs are choosen automaticcaly by default.
-	 */
-	class login_accumulator
-	{
-	public:
-		typedef unsigned int result_type;
-
-		template<typename iterator>
-		result_type operator()(iterator begin, iterator end) const
-		{
-			unsigned int result = 0;
-			for(; begin != end; ++ begin)
-				if( (*begin) != 0)
-					result = *begin;
-			return result;
-		}
-	};
-
-	/** Accumulator for signal_auth_type: It returns TRUE if no slots
-	 * have been connected (so, connections are always accepted).
-	 */
-	class auth_accumulator
-	{
-	public:
-		typedef bool result_type;
-
-		template<typename iterator>
-		result_type operator()(iterator begin, iterator end) const
-		{
-			bool result = true;
-			for(; begin != end; ++ begin)
-				if(!(result = *begin) )
-					break;
-			return result;
-		}
-	};
+	typedef default_accumulator<unsigned int, 0> login_accumulator;
+	typedef default_accumulator<bool, true> auth_accumulator;
 
 	typedef sigc::signal<void, peer&> signal_connect_type;
 	typedef sigc::signal<void, peer&> signal_disconnect_type;
