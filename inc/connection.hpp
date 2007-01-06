@@ -19,7 +19,6 @@
 #ifndef _NET6_CONNECTION_HPP_
 #define _NET6_CONNECTION_HPP_
 
-#include <list>
 #include <sigc++/signal.h>
 
 #include "non_copyable.hpp"
@@ -35,8 +34,44 @@ namespace net6
 class connection : public sigc::trackable, private non_copyable
 {
 public:
+	/** Internal buffer for incoming or outgoing data.
+	 */
+	class queue : private non_copyable
+	{
+	public:
+		typedef size_t size_type;
+
+		queue();
+		~queue();
+
+		/** Returns the size of the queue.
+		 */
+		size_type get_size() const;
+
+		/** Returns the size of the next packet in the queue.
+		 */
+		size_type packet_size() const;
+
+		/** Returns a pointer to the data that is currently enqueued.
+		 */
+		const char* get_data() const;
+
+		/** Appends new data to the queue.
+		 */
+		void append(const char* new_data, size_type len);
+
+		/** Removes data from the queue.
+		 */
+		void remove(size_type len);
+
+	private:
+		char* data;
+		size_t size;
+		size_t alloc;
+	};
+
 	typedef sigc::signal<void, const packet&> signal_recv_type;
-	typedef sigc::signal<void, const packet&> signal_send_type;
+	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;
 
 	/** Creates a new connection object and establishes a connection to
@@ -59,14 +94,14 @@ public:
 	const tcp_client_socket& get_socket() const;
 
 	/** Queues a packet to send it to the remote host. Note that the
-	 * socket has to be selected for socket::OUT, if packets
+	 * socket has to be selected for socket::OUTGOING, if packets
 	 * have to be sent.
 	 */
 	void send(const packet& pack);
 
 	/** Returns the amount of packets queued for sending.
 	 */
-	unsigned int send_queue_size() const;
+	//unsigned int send_queue_size() const;
 
 	/** Signal which is emitted when a packet has been received. Note that
 	 * the underlaying socket has to be selected for socket::IN to
@@ -74,7 +109,9 @@ public:
 	 */
 	signal_recv_type recv_event() const;
 
-	/** Signal which is emitted when a packet has been sent completly.
+	/** Signal which is emitted when all data to be sent has been sent.
+	 * This is a good place to remove a socket::OUTGOING flag for the
+	 * underlaying socket.
 	 */
 	signal_send_type send_event() const;
 
@@ -86,13 +123,12 @@ public:
 protected:
 	void on_sock_event(socket::condition io);
 
-	void on_send(const net6::packet& pack);
+	void on_send();
 	void on_recv(const net6::packet& pack);
 	void on_close();
 
-	std::list<packet> packet_queue;
-	std::string::size_type offset;
-	std::string recv_data;
+	queue sendqueue;
+	queue recvqueue;
 
 	signal_recv_type signal_recv;
 	signal_send_type signal_send;
@@ -100,7 +136,6 @@ protected:
 
 	tcp_client_socket remote_sock;
 	address* remote_addr;
-	bool part_pack; // Set to TRUE if a packet has been send partially
 };
 	
 }

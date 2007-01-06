@@ -63,11 +63,6 @@ public:
 		 */
 		bool is_logged_in() const;
 
-		/** Returns the size of the queue with pending packets of
-		 * the connection.
-		 */
-		unsigned int send_queue_size() const;
-
 		/** Returns the socket which is used to communicate with
 		 * this peer.
 		 */
@@ -280,7 +275,7 @@ protected:
 	virtual void remove_client(peer* client);
 
 	virtual void on_accept_event(socket::condition io);
-	virtual void on_send_event(const packet& pack, peer& to);
+	virtual void on_send_event(peer& to);
 	virtual void on_recv_event(const packet& pack, peer& from);
 	virtual void on_close_event(peer& from);
 

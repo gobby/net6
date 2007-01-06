@@ -80,8 +80,11 @@ void net6::client::select(unsigned int timeout)
 
 void net6::client::send(const packet& pack)
 {
-	if(conn.send_queue_size() == 0)
+	// Select for outgoing packets if we aren't already
+	if(!sock_sel.check(conn.get_socket(), socket::OUTGOING) )
 		sock_sel.add(conn.get_socket(), socket::OUTGOING);
+
+	// Send packet
 	conn.send(pack);
 }
 
@@ -155,10 +158,11 @@ void net6::client::on_recv_event(const packet& pack)
 		on_data(pack);
 }
 
-void net6::client::on_send_event(const packet& pack)
+void net6::client::on_send_event()
 {
-	if(conn.send_queue_size() == 0)
-		sock_sel.remove(conn.get_socket(), socket::OUTGOING);
+	// Available data has been sent: Remove OUTGOING flag as there is no
+	// more data to send.
+	sock_sel.remove(conn.get_socket(), socket::OUTGOING);
 }
 
 void net6::client::on_close_event()

@@ -51,11 +51,6 @@ void net6::server::peer::send(const packet& pack)
 	conn->send(pack);
 }
 
-unsigned int net6::server::peer::send_queue_size() const
-{
-	return conn->send_queue_size();
-}
-
 const net6::tcp_client_socket& net6::server::peer::get_socket() const
 {
 	return conn->get_socket();
@@ -139,7 +134,8 @@ void net6::server::send(const packet& pack)
 
 void net6::server::send(const packet& pack, peer& to)
 {
-	if(to.send_queue_size() == 0)
+	// Select for outgoing data if we do not already
+	if(!sock_sel.check(to.get_socket(), socket::OUTGOING) )
 		sock_sel.add(to.get_socket(), socket::OUTGOING);
 
 	to.send(pack);
@@ -273,12 +269,10 @@ void net6::server::on_accept_event(socket::condition io)
 	on_connect(*new_client);
 }
 
-void net6::server::on_send_event(const packet& pack, peer& to)
+void net6::server::on_send_event(peer& to)
 {
-	// Do no longer select on socket::OUTGOING if there
-	// are no more packets to write
-	if(to.send_queue_size() == 0)
-		sock_sel.remove(to.get_socket(), socket::OUTGOING);
+	// No more packets to write: Do not select for outgoing data anymore
+	sock_sel.remove(to.get_socket(), socket::OUTGOING);
 }
 
 void net6::server::on_recv_event(const packet& pack, peer& from)

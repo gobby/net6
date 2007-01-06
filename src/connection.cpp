@@ -21,15 +21,60 @@
 #include "error.hpp"
 #include "connection.hpp"
 
+// We use malloc for the dynamic queue data to be available to use realloc
+// if the data exceeds the size of the queue.
+net6::connection::queue::queue()
+ : data(static_cast<char*>(std::malloc(1024)) ), size(0), alloc(1024)
+{
+}
+
+net6::connection::queue::~queue()
+{
+	std::free(data);
+}
+
+net6::connection::queue::size_type net6::connection::queue::get_size() const
+{
+	return size;
+}
+
+net6::connection::queue::size_type net6::connection::queue::packet_size() const
+{
+	for(size_type i = 0; i < size; ++ i)
+		if(data[i] == '\n')
+			return i;
+	return size;
+}
+
+const char* net6::connection::queue::get_data() const
+{
+	return data;
+}
+
+void net6::connection::queue::append(const char* new_data, size_type len)
+{
+	if(size + len > alloc)
+		data = static_cast<char*>(std::realloc(data, alloc *= 2) );
+	memcpy(data + size, new_data, len);
+	size += len;
+}
+
+void net6::connection::queue::remove(size_type len)
+{
+	assert(len <= size);
+	memmove(data, data + len, size - len);
+	size -= len;
+}
+
 net6::connection::connection(const address& addr)
- : offset(0), remote_sock(addr), remote_addr(addr.clone() ), part_pack(false)
+ : remote_sock(addr), remote_addr(addr.clone() )
 {
 	remote_sock.io_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
 }
 
 net6::connection::connection(const tcp_client_socket& sock, const address& addr)
- : offset(0), remote_sock(sock), remote_addr(addr.clone() ), part_pack(false)
+ : remote_sock(sock), remote_addr(addr.clone() )
 {
 	remote_sock.io_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
@@ -52,31 +97,8 @@ const net6::tcp_client_socket& net6::connection::get_socket() const
 
 void net6::connection::send(const packet& pack)
 {
-	std::list<packet>::iterator iter = packet_queue.begin();
-
-	// Do not push the packet to the front of the queue if the first
-	// packet has been sent partially already.
-	if(part_pack) ++ iter;
-	
-	// Insert into list
-	for(; iter != packet_queue.end(); ++ iter)
-	{
-		// Is the new priority higher than the one of this packet?
-		// Insert before in order to be sent before this one.
-		if(pack.get_priority() > iter->get_priority() )
-		{
-			packet_queue.insert(iter, pack);
-			return;
-		}
-	}
-
-	// Not inserted already? Push back.
-	packet_queue.push_back(pack);
-}
-
-unsigned int net6::connection::send_queue_size() const
-{
-	return static_cast<unsigned int>(packet_queue.size() );
+	std::string str = pack.get_raw_string();
+	sendqueue.append(str.c_str(), str.length() );
 }
 
 net6::connection::signal_recv_type net6::connection::recv_event() const
@@ -99,37 +121,40 @@ void net6::connection::on_sock_event(socket::condition io) try
 	if(io & socket::INCOMING)
 	{
 		// Get up to 1024 bytes
-		char buffer[1024 + 1];
+		char buffer[1024];
 		socket::size_type bytes = remote_sock.recv(buffer, 1024);
-		if(bytes <= 0)
+		if(bytes == 0)
 		{
 			on_close();
 		}
 		else
 		{
-			buffer[bytes] = '\0';
-			std::string::size_type pos = recv_data.length();
-			recv_data += buffer;
+			recvqueue.append(buffer, bytes);
 
-			// First store the packet strings in a seperate list to
+			// First store the packet strings in a separate list to
 			// allow signal handlers to delete the connection object
 			std::list<std::string> packet_list;
 
-			// Packets are seperated by new lines
-			while( (pos = recv_data.find('\n', pos)) !=
-			       std::string::npos)
+			// Read as many packets as we successfully read.
+			queue::size_type pos;
+			while( (pos = recvqueue.packet_size()) !=
+			      recvqueue.get_size() )
 			{
-				std::string packet_string;
-				packet_string = recv_data.substr(0, pos + 1);
-				recv_data.erase(0, pos + 1);
-				pos = 0;
-				packet_list.push_back(packet_string);
+				// Push packet string back to the list
+				packet_list.push_back(
+					std::string(
+						recvqueue.get_data(),
+						pos + 1
+					)
+				);
+
+				// Remove the packet from the queue
+				recvqueue.remove(pos + 1);
 			}
 
-			// Build the packets now: We do not depend on recv_data
-			// anymore which may be deleted if a signal handler
-			// deletes the connection object (e.g. as a result of a
-			// login_failed packet or something).
+			// Emit the signal_recv now. Because we do not depend
+			// on recvqueue for reading further data, the singal
+			// handler may destroy the connection object.
 			std::list<std::string>::iterator iter;
 			for(iter = packet_list.begin();
 			    iter != packet_list.end();
@@ -156,32 +181,27 @@ void net6::connection::on_sock_event(socket::condition io) try
 
 	if(io & socket::OUTGOING)
 	{
-		assert(packet_queue.begin() != packet_queue.end() );
+		// Is there something to send?
+		assert(sendqueue.get_size() != 0);
 
-		std::string string = packet_queue.begin()->get_raw_string();
-		const char* data = string.c_str() + offset;
+		// Send data from queue
+		socket::size_type bytes = remote_sock.send(
+			sendqueue.get_data(),
+			sendqueue.get_size()
+		);
 
-		part_pack = true;
-		socket::size_type bytes;
-		bytes = remote_sock.send(data, string.length() - offset);
 		if(bytes <= 0)
 		{
 			on_close();
 		}
 		else
 		{
-			offset += bytes;
-
-			// Wrote whole packet?
-			if(offset == string.length() )
-			{
-				packet send_pack = *packet_queue.begin();
-				packet_queue.erase(packet_queue.begin() );
-				on_send(send_pack);
-
-				offset = 0;
-				part_pack = false;
-			}
+			// Remove the data we successfully sent from the queue
+			sendqueue.remove(bytes);
+			// Emit on_send signal if all available data has been
+			// sent
+			if(sendqueue.get_size() == 0)
+				on_send();
 		}
 	}
 
@@ -199,9 +219,9 @@ catch(net6::error& e)
 		throw e;
 }
 
-void net6::connection::on_send(const net6::packet& pack)
+void net6::connection::on_send()
 {
-	signal_send.emit(pack);
+	signal_send.emit();
 }
 
 void net6::connection::on_recv(const net6::packet& pack)

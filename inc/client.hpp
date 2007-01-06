@@ -136,7 +136,7 @@ public:
 
 protected:
 	virtual void on_recv_event(const packet& pack);
-	virtual void on_send_event(const packet& pack);
+	virtual void on_send_event();
 	virtual void on_close_event();
 
 	virtual void on_join(peer& client, const packet& pack);
