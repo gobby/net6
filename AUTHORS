@@ -1,0 +1,22 @@
+net6
+====
+
+  This library is written by Armin Burgmeier and is licensed
+  under the GNU General Public License (GPL) version 2 or any
+  later version. A copy of the license is included in the
+  distribution.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  Copyright (C) 2005 Armin Burgmeier <armin@0x539.de> / 0x539 dev group
+
+  The 0x539 dev group owns the copyright as a procuration if
+  Armin Burgmeier is not reachable.
+
+Authors:
+
+  Armin Burgmeier <armin@0x539.de>
+

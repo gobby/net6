@@ -1,0 +1,26 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.59)
+AC_INIT([net6], [1.0.0], [armin0x539.de])
+AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE
+AC_CONFIG_SRCDIR([inc/main.hpp])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_LIBTOOL
+AC_CACHE_SAVE
+
+# Checks for libraries.
+PKG_CHECK_MODULES([libnet6], [sigc++-2.0])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT([net6-1.0.pc])
+
