@@ -18,6 +18,7 @@ Trivial:
 Enhancement:
   * Translate failure messages with gettext (#14)
 
+
 19: gethostbyname on win32
 --------------------------
 net6 should use gethostbyname instead of getaddrinfo for the win32 
