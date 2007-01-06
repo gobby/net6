@@ -19,6 +19,8 @@
 #ifndef _NET6_ADDRESS_HPP_
 #define _NET6_ADDRESS_HPP_
 
+#include <stdint.h>
+
 #ifdef WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
