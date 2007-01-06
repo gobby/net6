@@ -43,7 +43,6 @@ template<typename selector_type>
 class basic_server : virtual public basic_object<selector_type>
 {
 public:
-	typedef default_accumulator<unsigned int, 0> login_accumulator;
 	typedef default_accumulator<bool, true> auth_accumulator;
 
 	typedef sigc::signal<void, const user&>
@@ -59,9 +58,8 @@ public:
 	typedef typename
 		sigc::signal<bool, const user&, const packet&, login::error&>::
 		template accumulated<auth_accumulator> signal_login_auth_type;
-	typedef typename
-		sigc::signal<unsigned int, const user&, const packet&>::
-		template accumulated<login_accumulator> signal_login_type;
+	typedef sigc::signal<void, const user&, const packet&>
+		signal_login_type;
 
 	typedef sigc::signal<void, const user&, packet&>
 		signal_login_extend_type;
@@ -193,8 +191,8 @@ protected:
 	virtual bool on_login_auth(const user& user,
 	                           const packet& pack,
 	                           login::error& error);
-	virtual unsigned int on_login(const user& user,
-	                              const packet& pack);
+	virtual void on_login(const user& user,
+	                      const packet& pack);
 	virtual void on_login_extend(const user& user,
 	                             packet& pack);
 	virtual void on_data(const user& user,
@@ -510,10 +508,10 @@ bool basic_server<selector_type>::
 }
 
 template<typename selector_type>
-unsigned int basic_server<selector_type>::
+void basic_server<selector_type>::
 	on_login(const user& user, const packet& pack)
 {
-	return signal_login.emit(user, pack);
+	signal_login.emit(user, pack);
 }
 
 template<typename selector_type>
@@ -567,20 +565,7 @@ void basic_server<selector_type>::net_client_login(user& user, const packet& pac
 
 		// Login succeeded
 		user.login(name);
-		unsigned int new_id = on_login(user, pack);
-
-		// TODO: Check if this ID is already in use
-		if(new_id != 0)
-		{
-			// Re-insert into map because ID has changed
-			basic_object<selector_type>::users.erase(user.get_id());
-			basic_object<selector_type>::users[new_id] = &user;
-
-			user.login(name, new_id);
-			if(id_counter < new_id)
-				id_counter = new_id;
-
-		}
+		on_login(user, pack);
 
 		// Synchronise with other clients
 		packet self_pack("net6_client_join");
