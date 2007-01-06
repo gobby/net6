@@ -21,7 +21,6 @@
 
 #include <sigc++/signal.h>
 
-#include "export.hpp"
 #include "non_copyable.hpp"
 #include "peer.hpp"
 #include "address.hpp"
@@ -36,13 +35,13 @@ namespace net6
 /** High-level TCP dedicated server object.
  */
 	
-class NET6_EXPORT server : public sigc::trackable, private non_copyable
+class server : public sigc::trackable, private non_copyable
 {
 public:
 	/** Participiant in a client/server network. Necessary changes
 	 * to this object are performed by the net6::server object.
 	 */
-	class NET6_EXPORT peer : public net6::peer
+	class peer : public net6::peer
 	{
 	public:
 		typedef connection::signal_recv_type signal_recv_type;
@@ -104,7 +103,7 @@ public:
 	/** Accumulator for signal_auth_type: It returns TRUE if no slots
 	 * have been connected (so, connections are always accepted).
 	 */
-	class NET6_EXPORT auth_accumulator
+	class auth_accumulator
 	{
 	public:
 		typedef bool result_type;

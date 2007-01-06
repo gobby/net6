@@ -21,7 +21,6 @@
 
 #include <sigc++/signal.h>
 
-#include "export.hpp"
 #include "server.hpp"
 
 namespace net6
@@ -30,7 +29,7 @@ namespace net6
 /** High-level TCP host object that is used as a server with a local peer.
  */
 	
-class NET6_EXPORT host : public server
+class host : public server
 {
 public:
 	/** Participiant in a client/server network. Necessary changes

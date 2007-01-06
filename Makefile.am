@@ -21,7 +21,6 @@ pkginclude_HEADERS = \
 	inc/client.hpp \
 	inc/connection.hpp \
 	inc/error.hpp \
-	inc/export.hpp \
 	inc/main.hpp \
 	inc/packet.hpp \
 	inc/peer.hpp \

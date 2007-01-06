@@ -20,7 +20,6 @@
 #define _NET6_PEER_HPP_
 
 #include <string>
-#include "export.hpp"
 #include "non_copyable.hpp"
 
 namespace net6
@@ -29,7 +28,7 @@ namespace net6
 /** Participiant in a Client/Server network
  */
 	
-class NET6_EXPORT peer : private non_copyable
+class peer : private non_copyable
 {
 public:
 	peer(unsigned int unique_id, const std::string& nick);

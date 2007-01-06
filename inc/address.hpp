@@ -32,15 +32,13 @@
 #include <list>
 #include <string>
 
-#include "export.hpp"
-
 namespace net6
 {
 
 /** Abstract base class representing an internet address
  */
 	
-class NET6_EXPORT address
+class address
 {
 public:
 	address();
@@ -77,7 +75,7 @@ protected:
 /** IPv4 internet address
  */
 
-class NET6_EXPORT ipv4_address : public address
+class ipv4_address : public address
 {
 public:
 	static const uint32_t ANY;
@@ -158,7 +156,7 @@ protected:
 /** IPv6 internet address
  */
 
-class NET6_EXPORT ipv6_address : public address
+class ipv6_address : public address
 {
 public:
 	static const uint8_t ANY[16];

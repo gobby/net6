@@ -19,7 +19,6 @@
 #ifndef _NET6_SELECT_HPP_
 #define _NET6_SELECT_HPP_
 
-#include "export.hpp"
 #include "non_copyable.hpp"
 #include "socket.hpp"
 
@@ -32,12 +31,12 @@ namespace net6
  * socket.
  */
 	
-class NET6_EXPORT selector : private non_copyable
+class selector : private non_copyable
 {
 public:
 	/** Accumulator that defaults on false for signal_socket_event.
 	 */
-	class NET6_EXPORT socket_accumulator
+	class socket_accumulator
 	{
 	public:
 		typedef bool result_type;
@@ -109,10 +108,6 @@ protected:
 	std::list<socket> error_list;
 
 	signal_socket_event_type signal_socket_event;
-/*
-	fd_set read_set;
-	fd_set write_set;
-	fd_set error_set;*/
 };
 	
 }

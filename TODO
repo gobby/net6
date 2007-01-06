@@ -15,12 +15,8 @@ Normal:
    destroyed as well and no longer be in the peer list after a reopen()
  * Use a login_extend-like interface for net6::client as well
    (replacing the custom_login API)
- * Pass -DCOMPILING_NET6 and -DBUILDING_DLL to the compiler via autotools
- * Link to ws2_32 and sigc on WIN32, write ws2_32 to the .pc file as link flag
- * Remove export-thingies, libobby works well without :)
 
 Minor:
- * Possibility to build a static libarary (undefine BUILDING_DLL)
  * Fix parameter order inconsistency in signals of net6::server and net6::client
 
 Wishlist:

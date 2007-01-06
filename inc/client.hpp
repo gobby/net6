@@ -21,7 +21,6 @@
 
 #include <sigc++/signal.h>
 
-#include "export.hpp"
 #include "non_copyable.hpp"
 #include "peer.hpp"
 #include "address.hpp"
@@ -36,12 +35,12 @@ namespace net6
 /** Client in a Client/Server based TCP network system.
  */
 	
-class NET6_EXPORT client : public sigc::trackable, private non_copyable
+class client : public sigc::trackable, private non_copyable
 {
 public:
 	/** This class represents a peer in the network.
 	 */
-	class NET6_EXPORT peer : public net6::peer
+	class peer : public net6::peer
 	{
 	public:
 		peer(unsigned int id, const std::string& username);

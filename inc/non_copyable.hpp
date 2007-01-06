@@ -19,15 +19,13 @@
 #ifndef _NET6_NON_COPYABLE_HPP_
 #define _NET6_NON_COPYABLE_HPP_
 
-#include "export.hpp"
-
 namespace net6
 {
 
 /** Common net6 base class for uncopyable classes like net6::connection.
  */
 	
-class NET6_EXPORT non_copyable
+class non_copyable
 {
 public:
 	non_copyable();

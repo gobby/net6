@@ -21,7 +21,6 @@
 
 #include <sigc++/signal.h>
 
-#include "export.hpp"
 #include "address.hpp"
 
 #ifndef ssize_t
@@ -34,7 +33,7 @@ namespace net6
 /** Abstract socket class. Note that sockets are reference counted.
  */
 	
-class NET6_EXPORT socket
+class socket
 {
 	friend class selector;
 public:
@@ -92,7 +91,7 @@ protected:
 	socket(int domain, int type, int protocol);
 	socket(socket_type c_object);
 
-	struct NET6_EXPORT socket_data
+	struct  socket_data
 	{
 		socket_type sock;
 		int refcount;
@@ -108,7 +107,7 @@ protected:
 /** Abstract TCP socket class.
  */
 
-class NET6_EXPORT tcp_socket : public socket
+class tcp_socket : public socket
 {
 public:
 	/** Creates a new reference of <em>other</em>.
@@ -126,7 +125,7 @@ protected:
 /** TCP connection socket.
  */
 
-class NET6_EXPORT tcp_client_socket : public tcp_socket
+class tcp_client_socket : public tcp_socket
 {
 public:
 	/** Creates a new tcp socket and connects to the address addr.
@@ -165,7 +164,7 @@ protected:
 /** TCP server socket
  */
 
-class NET6_EXPORT tcp_server_socket : public tcp_socket
+class tcp_server_socket : public tcp_socket
 {
 public:
 	/** Opens a new TCP server socket bound to <em>bind_addr</em>.
@@ -204,7 +203,7 @@ protected:
 /** UDP socket.
  */
 
-class NET6_EXPORT udp_socket : public socket
+class udp_socket : public socket
 {
 public:
 	/** Creates a new UDP socket bound to <em>bind_addr</em>.

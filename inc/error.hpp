@@ -21,15 +21,13 @@
 
 #include <stdexcept>
 
-#include "export.hpp"
-
 namespace net6
 {
 
 /** Common net6 error reporting class.
  */
 	
-class NET6_EXPORT error : public std::runtime_error
+class error : public std::runtime_error
 {
 public:
 	/** Error domain. Used by the error class to translate system

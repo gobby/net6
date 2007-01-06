@@ -21,7 +21,6 @@
 
 #include <string>
 #include <vector>
-#include "export.hpp"
 
 namespace net6
 {
@@ -31,14 +30,14 @@ namespace net6
  * std::string.
  */
 	
-class NET6_EXPORT packet
+class packet
 {
 public:
 
 	/** Parameter for a packet. It may be of type int, float or std::string.
 	 */
 	
-	class NET6_EXPORT param
+	class param
 	{
 	public:
 		/** Available types that a packet parameter may have
