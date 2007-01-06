@@ -202,9 +202,6 @@ void net6::connection_base::do_io(io_condition io)
 			return;
 		}
 
-		std::string bufstr(buffer, bytes);
-		std::cout << "Received [" << bytes << "]: " << bufstr << std::endl;
-
 		recvqueue.append(buffer, bytes);
 
 		// Store packets first to allow signal handlers to
