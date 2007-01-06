@@ -27,6 +27,7 @@
 #else
 # define WIN32_CAST_FIX(a) (a)
 # define WIN32_CCAST_FIX(a) (a)
+# include <unistd.h>
 #endif
 
 namespace
