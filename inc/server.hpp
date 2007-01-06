@@ -85,18 +85,18 @@ public:
 	/** Creates a new basic_server object.
 	 * @param ipv6 Whether to use IPv6.
 	 */
-	basic_server(bool ipv6 = true);
+	basic_server();
 
 	/** Creates a new basic_server which will be opened on port
 	 * <em>port</em>.
 	 */
-	basic_server(unsigned int port, bool ipv6 = true);
+	basic_server(unsigned int port, bool use_ipv6);
 	virtual ~basic_server();
 
 	/** (re)opens the server socket on port <em>port</em>, if it has
 	 * been shut down before.
 	 */
-	virtual void reopen(unsigned int port);
+	virtual void reopen(unsigned int port, bool use_ipv6);
 
 	/** Shuts down the server socket. New connections will no longer be
 	 * accepted, but already established connections stay open.
@@ -237,22 +237,22 @@ protected:
 	
 private:
 	void shutdown_impl();
-	void reopen_impl(unsigned int port);
+	void reopen_impl(unsigned int port, bool use_ipv6);
 };
 
 typedef basic_server<selector> server;
 
 template<typename selector_type>
-basic_server<selector_type>::basic_server(bool ipv6)
- : use_ipv6(ipv6), id_counter(0)
+basic_server<selector_type>::basic_server()
+ : id_counter(0)
 {
 }
 
 template<typename selector_type>
 basic_server<selector_type>::basic_server(unsigned int port, bool ipv6)
- : use_ipv6(ipv6), id_counter(0)
+ : id_counter(0)
 {
-	reopen_impl(port);
+	reopen_impl(port, ipv6);
 }
 
 template<typename selector_type>
@@ -264,9 +264,9 @@ basic_server<selector_type>::~basic_server()
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::reopen(unsigned int port)
+void basic_server<selector_type>::reopen(unsigned int port, bool use_ipv6)
 {
-	reopen_impl(port);
+	reopen_impl(port, use_ipv6);
 }
 
 template<typename selector_type>
@@ -646,7 +646,7 @@ void basic_server<selector_type>::shutdown_impl()
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::reopen_impl(unsigned int port)
+void basic_server<selector_type>::reopen_impl(unsigned int port, bool use_ipv6)
 {
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
