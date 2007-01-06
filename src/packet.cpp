@@ -44,11 +44,11 @@ net6::packet::packet(connection::queue& queue)
 		throw end_of_queue();
 
 	// Get packet string representation
-	std::string pack_string(queue.get_data(), pack_pos + 1);
+	std::string pack_string(queue.get_data(), pack_pos);
 	queue.remove(pack_pos + 1);
 
 	// Find command
-	std::string::size_type pos = pack_string.find(':', pos);
+	std::string::size_type pos = pack_string.find(':');
 	if(pos == std::string::npos) pos = pack_string.length();
 	command = unescape(pack_string.substr(0, pos) );
 
@@ -57,12 +57,16 @@ net6::packet::packet(connection::queue& queue)
 	while( (pos = pack_string.find(':', pos)) != std::string::npos)
 	{
 		std::string::size_type len = pos - prev;
-		params.push_back(parameter(pack_string.substr(prev, len)) );
+		params.push_back(
+			parameter(unescape(pack_string.substr(prev, len)))
+		);
+
 		prev = ++ pos;
 	}
 
 	// Last one
-	params.push_back(parameter(pack_string.substr(prev)) );
+	if(prev <= pack_string.length() )
+		params.push_back(parameter(unescape(pack_string.substr(prev))));
 }
 
 const std::string& net6::packet::get_command() const
