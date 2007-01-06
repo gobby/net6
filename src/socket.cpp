@@ -89,7 +89,13 @@ namespace
 			static_cast<int>(reinterpret_cast<intptr_t>(ptr)),
 			data,
 			size,
+#if defined(MSG_NOSIGNAL)
+			// Linux
 			MSG_NOSIGNAL
+#else
+			// Plain BSD
+			0
+#endif
 		);
 	}
 #endif
@@ -138,16 +144,35 @@ net6::tcp_socket::tcp_socket(socket_type c_object):
 {
 }
 
+#if defined(SO_NOSIGPIPE)
+namespace {
+	void set_nosigpipe(net6::tcp_socket::socket_type socket)
+	{
+		// Mac OS X
+		int value = 1;
+		if(setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &value,
+				sizeof(int)) == -1)
+			throw net6::error(net6::error::SYSTEM);
+	}
+}
+#endif
+
 net6::tcp_client_socket::tcp_client_socket(const address& addr):
 	tcp_socket(addr)
 {
 	if(::connect(cobj(), addr.cobj(), addr.get_size()) == -1)
 		throw error(net6::error::SYSTEM);
+#if defined(SO_NOSIGPIPE)
+	set_nosigpipe(cobj() );
+#endif
 }
 
 net6::tcp_client_socket::tcp_client_socket(socket_type c_object):
 	tcp_socket(c_object)
 {
+#if defined(SO_NOSIGPIPE)
+	set_nosigpipe(c_object);
+#endif
 }
 
 net6::tcp_client_socket::~tcp_client_socket()
