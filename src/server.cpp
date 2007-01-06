@@ -109,6 +109,7 @@ void net6::server::shutdown()
 	std::list<peer*>::iterator peer_it;
 	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
 		delete *peer_it;
+	peers.clear();
 }
 
 void net6::server::reopen(unsigned int port)
