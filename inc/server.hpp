@@ -462,10 +462,13 @@ void basic_server<selector_type>::on_encrypted_event(user& user)
 {
 	user.set_encrypted();
 
-	// Tell about encrypted connection
-	net6::packet encr_pack("net6_encryption_info");
-	encr_pack << user.get_id();
-	send(encr_pack);
+	if(user.is_logged_in() )
+	{
+		// Tell about encrypted connection
+		net6::packet encr_pack("net6_encryption_info");
+		encr_pack << user.get_id();
+		send(encr_pack);
+	}
 }
 
 template<typename selector_type>
