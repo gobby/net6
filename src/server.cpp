@@ -295,10 +295,8 @@ void net6::server::on_close_event(peer& from)
 	remove_client(&from);
 }
 
-#include <iostream>
 void net6::server::on_connect(peer& client)
 {
-	std::cout << "Connection from " << client.get_address().get_name() << std::endl;
 	signal_connect.emit(client);
 }
 
