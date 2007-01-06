@@ -1,7 +1,11 @@
 net6
 ====
 
-Version 1.3.0:
+Version 1.3.2:
+ * Compilation fixes for MingW and GNUTLS
+ * Updated Autotools and gettext helper files
+
+Version 1.3.1:
  * Encryption support through GNUTLS
  * Interface changes in the selector
  * Allow the use of the net6 protocol with Unix domain sockets
