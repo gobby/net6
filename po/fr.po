@@ -1,7 +1,7 @@
-# net6 l10n German Translation
-# Copyright (C) 2005 0x539 dev group
+# French translation for net6
+# Copyright (c) (c) 2005 Canonical Ltd, and Rosetta Contributors 2005
 # This file is distributed under the same license as the net6 package.
-# Armin Burgmeier <armin@0x539.de>, 2005.
+# Nicolas Velin <nsv@fr.st>, 2005.
 #
 msgid ""
 msgstr ""
@@ -9,208 +9,209 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
 "POT-Creation-Date: 2005-11-06 00:44+0100\n"
 "PO-Revision-Date: 2005-11-06 00:50+0100\n"
-"Last-Translator: Armin Burgmeier <armin@0x539.de>\n"
-"Language-Team: German Translation Team <crew@0x539.de>\n"
+"Last-Translator: Nicolas Velin <nsv@fr.st>\n"
+"Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Rosetta-Version: 0.1\n"
 
 #: src/error.cpp:40
 msgid "Invalid name"
-msgstr "Ungültiger Name"
+msgstr "Nom invalide"
 
 #: src/error.cpp:42
 msgid "Name is already in use"
-msgstr "Name wird bereits verwendet"
+msgstr "Nom déjà utilisé"
 
 #: src/error.cpp:44
 msgid "An unknown login error occured"
-msgstr "Ein unbekannter Fehler ist während des Logins aufgetreten"
+msgstr "Une erreur inconnue d'identification s'est produite"
 
 #: src/error.cpp:320
 msgid "Interrupted function call"
-msgstr "Funktionsaufruf unterbrochen"
+msgstr "Appel de fonction interrompu"
 
 #: src/error.cpp:322
 msgid "Access denied"
-msgstr "Zugriff verweigert"
+msgstr "Accès refusé"
 
 #: src/error.cpp:324
 msgid "Bad address"
-msgstr "Ungültige Adresse"
+msgstr "Adresse invalide"
 
 #: src/error.cpp:326
 msgid "Invalid argument"
-msgstr "Ungültiges Argument"
+msgstr "Argument invalide"
 
 #: src/error.cpp:328
 msgid "Too many open files"
-msgstr "Zu viele offene Dateien"
+msgstr "Trop de fichiers ouverts"
 
 #: src/error.cpp:330
 msgid "Resource temporarily unavailable"
-msgstr "Ressource zur Zeit nicht verfügbar"
+msgstr "Ressource temporairement indisponible"
 
 #: src/error.cpp:332
 msgid "Operation already in progress"
-msgstr "Operation wird bereits ausgeführt"
+msgstr "Opération déjà en cours d'execution"
 
 #: src/error.cpp:334
 msgid "Socket operation on non-socket"
-msgstr "Socketoperation wurde auf ein Objekt angewendet, das kein Socket ist"
+msgstr ""
 
 #: src/error.cpp:336
 msgid "Destination address required"
-msgstr "Zieladdresse wird benötigt"
+msgstr "Adresse de destination requise"
 
 #: src/error.cpp:338
 msgid "Message too long"
-msgstr "Nachricht zu lang"
+msgstr "Message trop long"
 
 #: src/error.cpp:340
 msgid "Protocol wrong type for socket"
-msgstr "Falscher Socket-Typ"
+msgstr "Type de protocole incorrect pour socket"
 
 #: src/error.cpp:342
 msgid "Bad protocol option"
-msgstr "Ungültige Protokol-Option"
+msgstr "Option de protocole incorrecte"
 
 #: src/error.cpp:344
 msgid "Protocol not supported"
-msgstr "Protokoll nicht unterstützt"
+msgstr "Protocole non supporté"
 
 #: src/error.cpp:346
 msgid "Socket type not supported"
-msgstr "Sockettyp nicht unterstützt"
+msgstr "Type de socket non supporté"
 
 #: src/error.cpp:348
 msgid "Operation not supported"
-msgstr "Operation nicht unterstützt"
+msgstr "Opération non supportée"
 
 #: src/error.cpp:350
 msgid "Protocol family not supported"
-msgstr "Protokolltyp nicht unterstützt"
+msgstr "Groupe de protocole non prise en charge"
 
 #: src/error.cpp:352
 msgid "Address family not supported"
-msgstr "Addresstyp nicht unterstützt"
+msgstr "Groupe d'adresses non prises en charge"
 
 #: src/error.cpp:354
 msgid "Address is already in use"
-msgstr "Die Adresse wird bereits verwendet"
+msgstr "Adresse déjà utilisée"
 
 #: src/error.cpp:356
 msgid "Cannot assign requested address"
-msgstr "Kann die gewünschte Adresse nicht zuweisen"
+msgstr "Impossible d'attribuer l'adresse demandée"
 
 #: src/error.cpp:358
 msgid "Network is down"
-msgstr "Netzwerk ist heruntergefahren"
+msgstr "Le réseau est inactif"
 
 #: src/error.cpp:360
 msgid "Network is unreachable"
-msgstr "Netzwerk ist unerreichbar"
+msgstr "Le réseau ne peut être atteint"
 
 #: src/error.cpp:362
 msgid "Network dropped connection on reset"
-msgstr "Das Netzwerk hat die Verbindung nach einem Zurücksetzen abgebrochen"
+msgstr "Le réseau a coupé la connexion au redémarrage"
 
 #: src/error.cpp:364
 msgid "Software caused connection abort"
-msgstr "Die Software hat einen Verbindungsabbruch verursacht"
+msgstr "Une erreur logiciel a causée l'abandon de la connexion"
 
 #: src/error.cpp:366
 msgid "Connection reset by peer"
-msgstr "Verbindungsabbruch durch die Gegenseite"
+msgstr "Connexion réinitialisée à l'autre extrémité"
 
 #: src/error.cpp:368
 msgid "No buffer space available"
-msgstr "Kein Pufferplatz mehr verfügbar"
+msgstr "Pas assez d'espace tampon disponible"
 
 #: src/error.cpp:370
 msgid "Socket is already connected"
-msgstr "Socket ist bereits verbunden"
+msgstr "Socket déjà connecté"
 
 #: src/error.cpp:372
 msgid "Socket is not connected"
-msgstr "Socket ist nicht verbunden"
+msgstr "Le socket n'est pas connecté"
 
 #: src/error.cpp:374
 msgid "Cannot send after socket shutdown"
-msgstr "Nach dem Abschalten eines Sockets kann nichts versendet werden"
+msgstr "Envoi impossible après la fermeture du socket"
 
 #: src/error.cpp:376
 msgid "Connection timed out"
-msgstr "Verbindung unterbrochen"
+msgstr "Délai de connexion dépassé"
 
 #: src/error.cpp:378
 msgid "Connection refused"
-msgstr "Verbindungsaufbau abgelehnt"
+msgstr "Connexion refusée"
 
 #: src/error.cpp:380
 msgid "Host is down"
-msgstr "Zielrechner ist heruntergefahren"
+msgstr "L'hôte est inactif"
 
 #: src/error.cpp:382
 msgid "No route to host"
-msgstr "Keinen Weg zum Zielrechner"
+msgstr "Chemin vers l'hôte introuvable"
 
 #: src/error.cpp:384
 msgid "Too many processes"
-msgstr "Zu viele Prozesse"
+msgstr "Trop de processus"
 
 #: src/error.cpp:386
 msgid "Network subsystem is unavailable"
-msgstr "Netzwerksystem nicht verfügbar"
+msgstr "Le sous-ensemble réseau est indisponible"
 
 #: src/error.cpp:388
 msgid "Winsock.dll version out of range"
-msgstr "Falsche Version von Winsock.dll"
+msgstr "La version de Winsock.dll est en dehors des limites"
 
 #: src/error.cpp:390
 msgid "Successful WSAStartup not yet performed"
-msgstr "Noch kein erfolgreicher WSAStartup-Aufruf erfolgt"
+msgstr "WSAStartup ne s'est pas encore exécuté avec succès"
 
 #: src/error.cpp:392
 msgid "Graceful shutdown in progress"
-msgstr "Abschaltvorgang läuft bereits"
+msgstr "Arrêt gracieux en cours"
 
 #: src/error.cpp:394
 msgid "Class type not found"
-msgstr "Klassentyp nicht gefunden"
+msgstr "Type de classe inconnu"
 
 #: src/error.cpp:396
 msgid "Host not found"
-msgstr "Zielrechner nicht gefunden"
+msgstr "Hôte non trouvé"
 
 #: src/error.cpp:398
 msgid "Nonauthoritative host not found"
-msgstr "Nicht-authoritativer Rechner nicht gefunden"
+msgstr ""
 
 #: src/error.cpp:400
 msgid "No data record of requested type"
-msgstr "Kein Datensatz vom gewünschten Typ"
+msgstr "Pas d'enregistrement pour le type demandé"
 
 #: src/error.cpp:402
 msgid "Specified event object handle is invalid"
-msgstr "Gegebenes Ereignisobjekt-Handle ist ungültig"
+msgstr "Le gestionnaire d'événement spécifié pour l'objet est invalide"
 
 #: src/error.cpp:404
 msgid "One or more parameters are invalid"
-msgstr "Mindestens ein Parameter ist ungültig"
+msgstr "Un ou plusieurs paramètres sont invalides"
 
 #: src/error.cpp:406
 msgid "No more memory is available"
-msgstr "Kein Speicher mehr verfügbar"
+msgstr "Plus de mémoire disponible"
 
 #: src/error.cpp:408
 msgid "Broken pipe"
-msgstr "Verbindung abgebrochen"
+msgstr "Redirection brisée"
 
 #: src/error.cpp:410
 msgid "No such device"
-msgstr "Kein derartiges Gerät"
+msgstr "Périphérique inexistant"
 
 #: src/error.cpp:412
 msgid "A nonrecoverable error has occured"
-msgstr "Ein nicht behebbarer Fehler ist aufgetreten"
+msgstr "Une erreur irréparable s'est produite"
