@@ -88,7 +88,7 @@ public:
 
 	/** Send a packet to the network server.
 	 */
-	void send(const packet& pack);
+	virtual void send(const packet& pack);
 
 	/** Look for a peer with the given ID in the network. If there is no
 	 * such peer, NULL is returned.
