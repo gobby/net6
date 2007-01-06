@@ -304,7 +304,6 @@ namespace
 	net6::error::code domain_to_net6(net6::error::domain error_domain,
 	                                 int error_code)
 	{
-		using net6::error;
 		switch(error_domain)
 		{
 		case net6::error::SYSTEM:
@@ -313,6 +312,11 @@ namespace
 			return gai_to_net6(error_code);
 		case net6::error::GETHOSTBYNAME:
 			return ghbn_to_net6(error_code);
+		default:
+			throw std::logic_error(
+				"domain_to_net6:\n"
+				"Unknown error domain"
+			);
 		}
 	}
 
@@ -417,6 +421,11 @@ namespace
 			return _("No such device");
 		case net6::error::UNKNOWN:
 			return _("A nonrecoverable error has occured");
+		default:
+			throw std::logic_error(
+				"net6_strerror:\n"
+				"Unknown error code"
+			);
 		}
 	}
 
