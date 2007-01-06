@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libnet6.la
 #     ^     :     ^    :       ^
 #     |     :   minor  :       |
 # interface :  changes : compatibility
-libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1.1
+libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1.2
 
 libnet6_la_LIBADD = $(libnet6_LIBS)
 
