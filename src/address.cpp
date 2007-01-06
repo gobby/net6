@@ -18,6 +18,7 @@
 
 #ifndef WIN32
 #include <netdb.h>
+#include <arpa/inet.h>
 #endif
 
 #include <sstream>
@@ -231,13 +232,11 @@ net6::address* net6::ipv4_address::clone() const
 
 std::string net6::ipv4_address::get_name() const
 {
-	uint32_t ip = htonl(cobj()->sin_addr.s_addr);
-	std::stringstream ip_stream;
-	ip_stream << ( (ip >> 24) & 0xff) << '.'
-	          << ( (ip >> 16) & 0xff) << '.'
-	          << ( (ip >>  8) & 0xff) << '.'
-	          << ( (ip      ) & 0xff);
-	return ip_stream.str();
+	const size_t len = INET_ADDRSTRLEN;
+	char buf[len];
+
+	inet_ntop(AF_INET, &((sockaddr_in*)addr)->sin_addr, buf, len);
+	return buf;
 }
 
 socklen_t net6::ipv4_address::get_size() const
@@ -467,20 +466,11 @@ net6::address* net6::ipv6_address::clone() const
 
 std::string net6::ipv6_address::get_name() const
 {
-	typedef uint8_t char16[16];
-	const char16& ip = cobj()->sin6_addr.s6_addr;
+	const size_t len = INET6_ADDRSTRLEN;
+	char buf[len];
 
-	std::stringstream ip_stream;
-	ip_stream << std::hex
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+ 0)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+ 2)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+ 4)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+ 6)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+ 8)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+10)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+12)) ) << ':'
-	          << ntohs((*reinterpret_cast<const uint16_t*>(ip+14)) );
-	return ip_stream.str();
+	inet_ntop(AF_INET6, &((sockaddr_in6*)addr)->sin6_addr, buf, len);
+	return buf;
 }
 
 socklen_t net6::ipv6_address::get_size() const

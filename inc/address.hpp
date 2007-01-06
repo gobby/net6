@@ -56,8 +56,7 @@ public:
 	int get_family() const;
 
 	/** Returns a human-readable string of this address
-	 * (for example 127.0.0.1, or ::1). Currently, IPv6 address
-	 * compression (::1 instead of 0:0:0:0:0:0:0:1) is not supported.
+	 * (for example 127.0.0.1, or ::1).
 	 */
 	virtual std::string get_name() const = 0;
 
@@ -217,8 +216,6 @@ public:
 	virtual address* clone() const;
 
 	/** Returns a human-readable string of the IPv6 address (like ::1).
-	 * Currently, IPv6 address compression (::1 instead of 0:0:0:0:0:0:0:1)
-	 * is not supported.
 	 */
 	virtual std::string get_name() const;
 
