@@ -143,12 +143,12 @@ public:
 	/** Shuts down the server socket. New connections will no longer be
 	 * accepted, but already established connections stay open.
 	 */
-	void shutdown();
+	virtual void shutdown();
 
 	/** (re)opens the server socket on port <em>port</em>, if it has
 	 * been shut down before.
 	 */
-	void reopen(unsigned int port);
+	virtual void reopen(unsigned int port);
 
 	/** Removes the connection to the given peer.
 	 */
@@ -226,7 +226,7 @@ public:
 	signal_data_type data_event() const;
 
 protected:
-	void remove_client(peer* client);
+	virtual void remove_client(peer* client);
 
 	virtual void on_server_read(socket& sock, socket::condition io);
 

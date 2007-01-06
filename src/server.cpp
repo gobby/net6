@@ -94,11 +94,7 @@ net6::server::server(unsigned int port, bool ipv6)
 
 net6::server::~server()
 {
-	delete serv_sock;
-	
-	std::list<peer*>::iterator peer_it;
-	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
-		delete *peer_it;
+	shutdown();
 }
 
 void net6::server::shutdown()
@@ -106,6 +102,10 @@ void net6::server::shutdown()
 	sock_sel.remove(*serv_sock, socket::INCOMING);
 	delete serv_sock;
 	serv_sock = NULL;
+
+	std::list<peer*>::iterator peer_it;
+	for(peer_it = peers.begin(); peer_it != peers.end(); ++ peer_it)
+		delete *peer_it;
 }
 
 void net6::server::reopen(unsigned int port)
