@@ -28,191 +28,190 @@ msgstr "Nom déjà utilisé"
 msgid "An unknown login error occured"
 msgstr "Une erreur inconnue d'identification s'est produite"
 
-#: src/error.cpp:318
+#: src/error.cpp:327
 msgid "Interrupted function call"
 msgstr "Appel de fonction interrompu"
 
-#: src/error.cpp:320
+#: src/error.cpp:329
 msgid "Access denied"
 msgstr "Accès refusé"
 
-#: src/error.cpp:322
+#: src/error.cpp:331
 msgid "Bad address"
 msgstr "Adresse incorrecte"
 
-#: src/error.cpp:324
+#: src/error.cpp:333
 msgid "Invalid argument"
 msgstr "Argument non valide"
 
-#: src/error.cpp:326
+#: src/error.cpp:335
 msgid "Too many open files"
 msgstr "Trop de fichiers ouverts"
 
-#: src/error.cpp:328
+#: src/error.cpp:337
 msgid "Resource temporarily unavailable"
 msgstr "Ressource temporairement indisponible"
 
-#: src/error.cpp:330
+#: src/error.cpp:339
 msgid "Operation already in progress"
 msgstr "Opération déjà en cours d'execution"
 
-#: src/error.cpp:332
+#: src/error.cpp:341
 msgid "Socket operation on non-socket"
 msgstr "Opération de socket sur un non-socket"
 
-#: src/error.cpp:334
+#: src/error.cpp:343
 msgid "Destination address required"
 msgstr "Adresse de destination requise"
 
-#: src/error.cpp:336
+#: src/error.cpp:345
 msgid "Message too long"
 msgstr "Message trop long"
 
-#: src/error.cpp:338
+#: src/error.cpp:347
 msgid "Protocol wrong type for socket"
 msgstr "Type de protocole incorrect pour socket"
 
-#: src/error.cpp:340
+#: src/error.cpp:349
 msgid "Bad protocol option"
 msgstr "Option de protocole incorrecte"
 
-#: src/error.cpp:342
-#, fuzzy
+#: src/error.cpp:351
 msgid "Protocol not supported"
 msgstr "Protocole non pris en charge"
 
-#: src/error.cpp:344
+#: src/error.cpp:353
 msgid "Socket type not supported"
 msgstr "Type de socket non pris en charge"
 
-#: src/error.cpp:346
+#: src/error.cpp:355
 msgid "Operation not supported"
 msgstr "Opération non prise en charge"
 
-#: src/error.cpp:348
+#: src/error.cpp:357
 msgid "Protocol family not supported"
 msgstr "Groupe de protocole non pris en charge"
 
-#: src/error.cpp:350
+#: src/error.cpp:359
 msgid "Address family not supported"
 msgstr "Groupe d'adresses non pris en charge"
 
-#: src/error.cpp:352
+#: src/error.cpp:361
 msgid "Address is already in use"
 msgstr "Addresse déjà utilisée"
 
-#: src/error.cpp:354
+#: src/error.cpp:363
 msgid "Cannot assign requested address"
 msgstr "Impossible d'attribuer l'adresse demandée"
 
-#: src/error.cpp:356
+#: src/error.cpp:365
 msgid "Network is down"
 msgstr "Le réseau est inactif"
 
-#: src/error.cpp:358
+#: src/error.cpp:367
 msgid "Network is unreachable"
 msgstr "Le réseau est introuvable"
 
-#: src/error.cpp:360
+#: src/error.cpp:369
 msgid "Network dropped connection on reset"
 msgstr "Le réseau a coupé la connexion au redémarrage"
 
-#: src/error.cpp:362
+#: src/error.cpp:371
 msgid "Software caused connection abort"
 msgstr "Une erreur logiciel a causé l'abandon de la connection"
 
-#: src/error.cpp:364
+#: src/error.cpp:373
 msgid "Connection reset by peer"
 msgstr "Connexion réinitialisée par l'hôte distant"
 
-#: src/error.cpp:366
+#: src/error.cpp:375
 msgid "No buffer space available"
 msgstr "Espace tampon insuffisant"
 
-#: src/error.cpp:368
+#: src/error.cpp:377
 msgid "Socket is already connected"
 msgstr "Socket déjà connecté"
 
-#: src/error.cpp:370
+#: src/error.cpp:379
 msgid "Socket is not connected"
 msgstr "Le socket n'est pas connecté"
 
-#: src/error.cpp:372
+#: src/error.cpp:381
 msgid "Cannot send after socket shutdown"
 msgstr "Envoi impossible après la fermeture du socket"
 
-#: src/error.cpp:374
+#: src/error.cpp:383
 msgid "Connection timed out"
 msgstr "Délai de connexion dépassé"
 
-#: src/error.cpp:376
+#: src/error.cpp:385
 msgid "Connection refused"
 msgstr "Connexion refusée"
 
-#: src/error.cpp:378
+#: src/error.cpp:387
 msgid "Host is down"
 msgstr "L'hôte est inactif"
 
-#: src/error.cpp:380
+#: src/error.cpp:389
 msgid "No route to host"
 msgstr "Chemin vers l'hôte introuvable"
 
-#: src/error.cpp:382
+#: src/error.cpp:391
 msgid "Too many processes"
 msgstr "Trop de processus"
 
-#: src/error.cpp:384
+#: src/error.cpp:393
 msgid "Network subsystem is unavailable"
 msgstr ""
 
-#: src/error.cpp:386
+#: src/error.cpp:395
 msgid "Winsock.dll version out of range"
 msgstr "La version de Winsock.dll est dépassée"
 
-#: src/error.cpp:388
+#: src/error.cpp:397
 msgid "Successful WSAStartup not yet performed"
 msgstr "WSAStartup ne s'est pas encore exécuté avec succès"
 
-#: src/error.cpp:390
+#: src/error.cpp:399
 msgid "Graceful shutdown in progress"
 msgstr "Arrêt régulier en cours"
 
-#: src/error.cpp:392
+#: src/error.cpp:401
 msgid "Class type not found"
 msgstr ""
 
-#: src/error.cpp:394
+#: src/error.cpp:403
 msgid "Host not found"
 msgstr ""
 
-#: src/error.cpp:396
+#: src/error.cpp:405
 msgid "Nonauthoritative host not found"
 msgstr ""
 
-#: src/error.cpp:398
+#: src/error.cpp:407
 msgid "No data record of requested type"
 msgstr ""
 
-#: src/error.cpp:400
+#: src/error.cpp:409
 msgid "Specified event object handle is invalid"
 msgstr ""
 
-#: src/error.cpp:402
+#: src/error.cpp:411
 msgid "One or more parameters are invalid"
 msgstr ""
 
-#: src/error.cpp:404
+#: src/error.cpp:413
 msgid "No more memory is available"
 msgstr ""
 
-#: src/error.cpp:406
+#: src/error.cpp:415
 msgid "Broken pipe"
 msgstr ""
 
-#: src/error.cpp:408
+#: src/error.cpp:417
 msgid "No such device"
 msgstr ""
 
-#: src/error.cpp:410
+#: src/error.cpp:419
 msgid "A nonrecoverable error has occured"
 msgstr ""
