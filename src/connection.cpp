@@ -123,112 +123,115 @@ net6::connection::signal_close_type net6::connection::close_event() const
 	return signal_close;
 }
 
-void net6::connection::on_sock_event(socket::condition io) try
+void net6::connection::on_sock_event(socket::condition io)
 {
-	if(io & socket::INCOMING)
+	try
 	{
-		// Get up to 1024 bytes
-		char buffer[1024];
-		socket::size_type bytes = remote_sock.recv(buffer, 1024);
-		if(bytes == 0)
+		if(io & socket::INCOMING)
 		{
-			on_close();
-		}
-		else
-		{
-			recvqueue.append(buffer, bytes);
-
-			// First store the packet strings in a separate list to
-			// allow signal handlers to delete the connection object
-			std::list<std::string> packet_list;
-
-			// Read as many packets as we successfully read.
-			queue::size_type pos;
-			while( (pos = recvqueue.packet_size()) !=
-			      recvqueue.get_size() )
+			// Get up to 1024 bytes
+			char buffer[1024];
+			socket::size_type bytes = remote_sock.recv(buffer, 1024);
+			if(bytes == 0)
 			{
-				// Push packet string back to the list
-				packet_list.push_back(
-					std::string(
-						recvqueue.get_data(),
-						pos + 1
-					)
-				);
-
-				// Remove the packet from the queue
-				recvqueue.remove(pos + 1);
+				on_close();
 			}
-
-			// Emit the signal_recv now. Because we do not depend
-			// on recvqueue for reading further data, the singal
-			// handler may destroy the connection object.
-			std::list<std::string>::iterator iter;
-			for(iter = packet_list.begin();
-			    iter != packet_list.end();
-			    ++ iter)
+			else
 			{
-				try
+				recvqueue.append(buffer, bytes);
+
+				// First store the packet strings in a separate list to
+				// allow signal handlers to delete the connection object
+				std::list<std::string> packet_list;
+
+				// Read as many packets as we successfully read.
+				queue::size_type pos;
+				while( (pos = recvqueue.packet_size()) !=
+							recvqueue.get_size() )
 				{
-					packet pack;
-					pack.set_raw_string(*iter);
-					on_recv(pack);
+					// Push packet string back to the list
+					packet_list.push_back(
+						std::string(
+							recvqueue.get_data(),
+							pos + 1
+						)
+					);
+
+					// Remove the packet from the queue
+					recvqueue.remove(pos + 1);
 				}
-				catch(net6::basic_parameter::bad_format& e)
+
+				// Emit the signal_recv now. Because we do not depend
+				// on recvqueue for reading further data, the singal
+				// handler may destroy the connection object.
+				std::list<std::string>::iterator iter;
+				for(iter = packet_list.begin();
+						iter != packet_list.end();
+						++ iter)
 				{
-					std::cerr << "net6-Warning: Protocol "
-					          << "mismatch! Received bad "
-					          << "parameter format from "
-					          << remote_addr->get_name()
-					          << ": " << e.what()
-					          << std::endl;
+					try
+					{
+						packet pack;
+						pack.set_raw_string(*iter);
+						on_recv(pack);
+					}
+					catch(net6::basic_parameter::bad_format& e)
+					{
+						std::cerr << "net6-Warning: Protocol "
+											<< "mismatch! Received bad "
+											<< "parameter format from "
+											<< remote_addr->get_name()
+											<< ": " << e.what()
+											<< std::endl;
+					}
 				}
 			}
 		}
-	}
 
-	if(io & socket::OUTGOING)
-	{
-		// Is there something to send?
-		if(sendqueue.get_size() == 0)
+		if(io & socket::OUTGOING)
 		{
-			throw std::logic_error(
-				"net6::connection::on_sock_event"
-			);
-		}
-
-		// Send data from queue
-		socket::size_type bytes = remote_sock.send(
-			sendqueue.get_data(),
-			sendqueue.get_size()
-		);
-
-		if(bytes <= 0)
-		{
-			on_close();
-		}
-		else
-		{
-			// Remove the data we successfully sent from the queue
-			sendqueue.remove(bytes);
-			// Emit on_send signal if all available data has been
-			// sent
+			// Is there something to send?
 			if(sendqueue.get_size() == 0)
-				on_send();
+			{
+				throw std::logic_error(
+					"net6::connection::on_sock_event"
+				);
+			}
+
+			// Send data from queue
+			socket::size_type bytes = remote_sock.send(
+				sendqueue.get_data(),
+				sendqueue.get_size()
+			);
+
+			if(bytes <= 0)
+			{
+				on_close();
+			}
+			else
+			{
+				// Remove the data we successfully sent from the queue
+				sendqueue.remove(bytes);
+				// Emit on_send signal if all available data has been
+				// sent
+				if(sendqueue.get_size() == 0)
+					on_send();
+			}
+		}
+
+		if(io & socket::IOERROR)
+		{
+			on_close();
 		}
 	}
-
-	if(io & socket::IOERROR)
+	catch(net6::error& e)
 	{
-		on_close();
+		if(e.get_code() == error::CONNECTION_RESET ||
+			e.get_code() == error::BROKEN_PIPE)
+			on_close();
+		else
+			throw e;
 	}
-}
-catch(net6::error& e)
-{
-	if(e.get_code() == error::CONNECTION_RESET ||
-	   e.get_code() == error::BROKEN_PIPE)
-		on_close();
-	else
-		throw e;
 }
 
 void net6::connection::on_send()
