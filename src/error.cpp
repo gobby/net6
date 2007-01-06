@@ -249,9 +249,11 @@ namespace
 		case EAI_ADDRFAMILY: // TODO: Do we want HOST_NOT_FOUND here?
 			return net6::error::ADDRESS_UNAVAILABLE;
 #endif
+#if EAI_NODATA != EAI_NONAME
 #ifdef EAI_NODATA
 		case EAI_NODATA:
 			return net6::error::NO_DATA_RECORD;
+#endif
 #endif
 		case EAI_MEMORY:
 			return net6::error::NO_MEMORY;
