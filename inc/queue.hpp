@@ -56,6 +56,10 @@ public:
 	 */
 	void append(const char* new_data, size_type len);
 
+	/** Prepends data to the queue.
+	 */
+	void prepend(const char* new_data, size_type len);
+
 	/** Removes data from the queue.
 	 */
 	void remove(size_type len);

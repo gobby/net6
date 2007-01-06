@@ -316,8 +316,22 @@ void net6::connection_base::do_recv(const packet& pack)
 		net_encryption_ok(pack);
 	else if(pack.get_command() == "net6_encryption_failed")
 		net_encryption_failed(pack);
+	else if(pack.get_command() == "net6_encryption_begin")
+		net_encryption_begin(pack);
 	else
 		signal_recv.emit(pack);
+}
+
+void net6::connection_base::begin_handshake(tcp_encrypted_socket_base* sock)
+{
+	set_select(IO_NONE);
+
+	encrypted_sock = sock;
+	remote_sock.reset(encrypted_sock);
+	setup_signal();
+
+	state = ENCRYPTION_HANDSHAKING;
+	do_handshake();
 }
 
 void net6::connection_base::do_handshake()
@@ -375,31 +389,11 @@ void net6::connection_base::do_handshake()
 
 void net6::connection_base::on_send()
 {
-	if(state == ENCRYPTION_INITIATED_SERVER ||
-	   state == ENCRYPTION_INITIATED_CLIENT)
+	if(state == ENCRYPTION_INITIATED_SERVER)
 	{
 		// All remaining data has been sent, we may now initiate the
 		// TLS handshake
-		set_select(IO_NONE);
-
-		if(state == ENCRYPTION_INITIATED_SERVER)
-		{
-			encrypted_sock = new tcp_encrypted_socket_server(
-				*remote_sock
-			);
-		}
-		else
-		{
-			encrypted_sock = new tcp_encrypted_socket_client(
-				*remote_sock
-			);
-		}
-
-		remote_sock.reset(encrypted_sock);
-		setup_signal();
-
-		state = ENCRYPTION_HANDSHAKING;
-		do_handshake();
+		begin_handshake(new tcp_encrypted_socket_server(*remote_sock));
 	}
 	else
 	{
@@ -460,18 +454,32 @@ void net6::connection_base::net_encryption_ok(const packet& pack)
 		);
 	}
 
-	set_select(IO_NONE);
-
 	if(state == ENCRYPTION_REQUESTED_CLIENT)
-		encrypted_sock = new tcp_encrypted_socket_client(*remote_sock);
+	{
+		begin_handshake(new tcp_encrypted_socket_client(*remote_sock));
+	}
 	else
-		encrypted_sock = new tcp_encrypted_socket_server(*remote_sock);
+	{
+		// When we are a server we need to explicitely tell the client
+		// when to begin with the TLS handshake. Otherwise the client
+		// would send the Client HELLO directly after the
+		// net6_encryption_ok. The connection would then read that
+		// data into the recvqueue and GnuTLS would wait indefinitely
+		// for its client HELLO.
 
-	remote_sock.reset(encrypted_sock);
-	setup_signal(); // TODO: Make one method that merges this with on_send
+		// We need to prepend this packet because since the queue
+		// may already have been filled with other user data.
 
-	state = ENCRYPTION_HANDSHAKING;
-	do_handshake();
+		// Note that this is still a hack since we cannot "prequeue"
+		// a packet, just enqueue it.
+		sendqueue.prepend("net6_encryption_begin\n", 22);
+
+		io_condition flags = get_select();
+		if( (flags & IO_OUTGOING) == 0)
+			set_select(flags | IO_OUTGOING);
+
+		state = ENCRYPTION_INITIATED_SERVER;
+	}
 }
 
 void net6::connection_base::net_encryption_failed(const packet& pack)
@@ -493,6 +501,19 @@ void net6::connection_base::net_encryption_failed(const packet& pack)
 	set_select(flags);
 
 	signal_encryption_failed.emit();
+}
+
+void net6::connection_base::net_encryption_begin(const packet& pack)
+{
+	if(state != ENCRYPTION_INITIATED_CLIENT)
+	{
+		throw bad_value(
+			"Got encryption_begin without having initiated an "
+			"encryption as client."
+		);
+	}
+
+	begin_handshake(new tcp_encrypted_socket_client(*remote_sock));
 }
 
 void net6::connection_base::setup_signal()

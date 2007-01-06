@@ -71,6 +71,23 @@ void net6::queue::append(const char* new_data, size_type len)
 	size += len;
 }
 
+void net6::queue::prepend(const char* new_data, size_type len)
+{
+	if(size + len > alloc)
+	{
+		alloc = size + len;
+		data = static_cast<char*>(std::realloc(data, alloc *= 2) );
+	}
+
+	std::memmove(data + len, data, size);
+	std::memcpy(data, new_data, len);
+
+	size += len;
+
+	if(block_p != INVALID_POS)
+		block_p += len;
+}
+
 void net6::queue::remove(size_type len)
 {
 	if(len > get_size())

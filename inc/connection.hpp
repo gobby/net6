@@ -135,12 +135,14 @@ private:
 	void on_sock_event(io_condition io);
 	void do_io(io_condition io);
 
+	void begin_handshake(tcp_encrypted_socket_base* sock);
 	void do_recv(const packet& pack);
 	void do_handshake();
 
 	void net_encryption(const packet& pack);
 	void net_encryption_ok(const packet& pack);
 	void net_encryption_failed(const packet& pack);
+	void net_encryption_begin(const packet& pack);
 };
 
 /** @brief Connection to another host.
