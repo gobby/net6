@@ -359,35 +359,45 @@ namespace
 			return "A nonrecoverable error has occured";
 		}
 	}
+
+	int last_error(net6::error::domain error_domain)
+	{
+		switch(error_domain)
+		{
+		case net6::error::SYSTEM:
+#ifdef WIN32
+			return WSAGetLastError();
+#else
+			return errno;
+#endif
+		default:
+			return -1;
+		}
+	}
 }
 
 net6::error::error(domain error_domain, int error_code)
- : std::runtime_error(
-	net6_strerror(domain_to_net6(error_domain, error_code))
-   )
+ : std::runtime_error(net6_strerror(domain_to_net6(error_domain, error_code)) ),
+   errcode(domain_to_net6(error_domain, error_code) )
 {
 }
 
 net6::error::error(domain error_domain)
  : std::runtime_error(
-	net6_strerror(domain_to_net6(
-		error_domain,
-		(error_domain == SYSTEM ?
-#ifdef WIN32
-			WSAGetLastError()
-#else
-			errno
-#endif
-		:
-			- 1
-		)
-	))
-   )
+	net6_strerror(domain_to_net6(error_domain, last_error(error_domain)) )
+   ), 
+   errcode(domain_to_net6(error_domain, last_error(error_domain)))
 {
 }
 		
 
 net6::error::error(code error_code)
- : std::runtime_error(net6_strerror(error_code) )
+ : std::runtime_error(net6_strerror(error_code) ), errcode(error_code)
 {
 }
+
+net6::error::code net6::error::get_code() const
+{
+	return errcode;
+}
+

@@ -105,6 +105,13 @@ public:
 	/** Generate error by net6 error code.
 	 */
 	error(code error_code);
+
+	/** Returns the net6 error code of this error.
+	 */
+	code get_code() const;
+
+private:
+	code errcode;
 };
 
 }
