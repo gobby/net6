@@ -53,6 +53,13 @@ public:
 		KEEPALIVE_WAITING
 	};
 
+	class fatal: public std::runtime_error
+	{
+	public:
+		fatal(const std::string& error_message):
+			std::runtime_error(error_message) {}
+	};
+
 	typedef sigc::signal<void, const packet&> signal_recv_type;
 	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;

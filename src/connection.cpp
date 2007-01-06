@@ -241,18 +241,24 @@ void net6::connection_base::on_sock_event(io_condition io)
 		if(e.get_code() == error::WOULD_BLOCK)
 			return;
 #endif
-		if(e.get_code() == error::CONNECTION_RESET ||
+		// We should not throw any error here because it would fall
+		// through to the selector. If something went wrong, then
+		// we have to handle it here.
+		/*if(e.get_code() == error::CONNECTION_RESET ||
 		   e.get_code() == error::BROKEN_PIPE ||
 		   e.get_code() == error::PULL_ERROR ||
 		   e.get_code() == error::PUSH_ERROR ||
-		   e.get_code() == error::UNEXPECTED_PACKET_LENGTH) // TLS...
+		   e.get_code() == error::UNEXPECTED_PACKET ||
+		   e.get_code() == error::UNEXPECTED_HANDSHAKE ||
+		   e.get_code() == error::UNEXPECTED_PACKET_LENGTH ||
+		   e.get_code() == error::UNKNOWN)*/
 		{
 			on_close();
 		}
-		else
+		/*else
 		{
 			throw e;
-		}
+		}*/
 	}
 }
 
