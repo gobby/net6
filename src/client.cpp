@@ -64,16 +64,8 @@ void net6::client::login(const std::string& username)
 {
 	packet login_pack("net6_client_login");
 	login_pack << username;
+	on_login_extend(login_pack);
 	send(login_pack);
-}
-
-void net6::client::custom_login(const packet& pack)
-{
-	assert(pack.get_command() == "net6_client_login");
-	assert(pack.get_param_count() >= 1);
-	assert(pack.get_param(0).get_type() == packet::param::STRING);
-
-	send(pack);
 }
 
 void net6::client::select()
@@ -146,6 +138,11 @@ net6::client::signal_login_failed_type net6::client::login_failed_event() const
 	return signal_login_failed;
 }
 
+net6::client::signal_login_extend_type net6::client::login_extend_event() const
+{
+	return signal_login_extend;
+}
+
 void net6::client::on_recv_event(const packet& pack)
 {
 	if(pack.get_command() == "net6_login_failed")
@@ -192,6 +189,11 @@ void net6::client::on_close()
 void net6::client::on_login_failed(const std::string& reason)
 {
 	signal_login_failed.emit(reason);
+}
+
+void net6::client::on_login_extend(packet& pack)
+{
+	signal_login_extend.emit(pack);
 }
 
 void net6::client::net_login_failed(const packet& pack)

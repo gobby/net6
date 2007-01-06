@@ -54,6 +54,7 @@ public:
 	typedef sigc::signal<void, const packet&> signal_data_type;
 	typedef sigc::signal<void> signal_close_type;
 	typedef sigc::signal<void, const std::string&> signal_login_failed_type;
+	typedef sigc::signal<void, packet&> signal_login_extend_type;
 
 //	client(const std::string& hostname, unsigned int port,
 //	       bool ipv6 = true);
@@ -69,11 +70,6 @@ public:
 	 * login_failed_event.
 	 */
 	void login(const std::string& username);
-
-	/** Sends a customized login packet. It should have the command
-	 * <em>net6_client_login</em> and the username as first parameter.
-	 */
-	void custom_login(const packet& pack);
 
 	/** Wait infinitely for incoming network events. Those events are
 	 * handled by the client object.
@@ -130,6 +126,13 @@ public:
 	 */
 	signal_login_failed_type login_failed_event() const;
 
+	/** Signal which is emitted when a login packet will be sent (most
+	 * likely by a call to client::login). It allow the user to append
+	 * some more parameters to the login packet which may be evaluated by
+	 * the server object in its login_auth and login signals.
+	 */
+	signal_login_extend_type login_extend_event() const;
+
 protected:
 	virtual void on_recv_event(const packet& pack);
 	virtual void on_send_event(const packet& pack);
@@ -140,6 +143,7 @@ protected:
 	virtual void on_data(const packet& pack);
 	virtual void on_close();
 	virtual void on_login_failed(const std::string& reason);
+	virtual void on_login_extend(packet& pack);
 
 	virtual void net_login_failed(const packet& pack);
 	virtual void net_client_join(const packet& pack);
@@ -155,6 +159,7 @@ protected:
 	signal_data_type signal_data;
 	signal_close_type signal_close;
 	signal_login_failed_type signal_login_failed;
+	signal_login_extend_type signal_login_extend;
 };
 
 }

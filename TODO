@@ -8,11 +8,8 @@ Serious:
 Important:
 
 Normal:
- * Use a login_extend-like interface for net6::client as well
-   (replacing the custom_login API)
 
 Minor:
- * Fix parameter order inconsistency in signals of net6::server and net6::client
 
 Wishlist:
  * Translate failure messages with gettext.
