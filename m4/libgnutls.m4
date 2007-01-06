@@ -35,9 +35,9 @@ AC_ARG_WITH(libgnutls-prefix,
     libgnutls_config_version=`$LIBGNUTLS_CONFIG $libgnutls_config_args --version`
 
 
-      ac_save_CFLAGS="$CFLAGS"
+      ac_save_CXXFLAGS="$CXXFLAGS"
       ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $LIBGNUTLS_CFLAGS"
+      CXXFLAGS="$CXXFLAGS $LIBGNUTLS_CFLAGS"
       LIBS="$LIBS $LIBGNUTLS_LIBS"
 dnl
 dnl Now check if the installed libgnutls is sufficiently new. Also sanity
@@ -99,7 +99,7 @@ main ()
   return 1;
 }
 ],, no_libgnutls=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CFLAGS="$ac_save_CFLAGS"
+       CXXFLAGS="$ac_save_CXXFLAGS"
        LIBS="$ac_save_LIBS"
   fi
 
@@ -122,7 +122,7 @@ main ()
         :
        else
           echo "*** Could not run libgnutls test program, checking why..."
-          CFLAGS="$CFLAGS $LIBGNUTLS_CFLAGS"
+          CXXFLAGS="$CXXFLAGS $LIBGNUTLS_CFLAGS"
           LIBS="$LIBS $LIBGNUTLS_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
@@ -144,7 +144,7 @@ main ()
           echo "*** exact error that occured. This usually means LIBGNUTLS was incorrectly installed"
           echo "*** or that you have moved LIBGNUTLS since it was installed. In the latter case, you"
           echo "*** may want to edit the libgnutls-config script: $LIBGNUTLS_CONFIG" ])
-          CFLAGS="$ac_save_CFLAGS"
+          CXXFLAGS="$ac_save_CXXFLAGS"
           LIBS="$ac_save_LIBS"
        fi
      fi
