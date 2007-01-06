@@ -1,292 +1,292 @@
-# net6 l10n German Translation
-# Copyright (C) 2005 0x539 dev group
+# Dutch translation for net6
+# Copyright (c) (c) 2006 Canonical Ltd, and Rosetta Contributors 2006
 # This file is distributed under the same license as the net6 package.
-# Armin Burgmeier <armin@0x539.de>, 2005.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2006.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: net6 1.3.0\n"
+"Project-Id-Version: net6\n"
 "Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
 "POT-Creation-Date: 2006-03-25 10:48+0100\n"
-"PO-Revision-Date: 2006-06-02 17:58+0000\n"
-"Last-Translator: Philipp Kern <pkern@debian.org>\n"
-"Language-Team: German Translation Team <crew@0x539.de>\n"
+"PO-Revision-Date: 2006-06-29 17:10+0000\n"
+"Last-Translator: Rik van achterberg <rik@vanachterberg.com>\n"
+"Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/error.cpp:42
 msgid "Invalid name"
-msgstr "Ungültiger Name"
+msgstr "Ongeldige naam"
 
 #: src/error.cpp:44
 msgid "Name is already in use"
-msgstr "Name wird bereits verwendet"
+msgstr "Deze naam is al in gebruik"
 
 #: src/error.cpp:46
 msgid "An unknown login error occured"
-msgstr "Ein unbekannter Fehler ist während des Logins aufgetreten"
+msgstr "Onbekende inlogfout"
 
 #: src/error.cpp:394
 msgid "Interrupted function call"
-msgstr "Funktionsaufruf unterbrochen"
+msgstr "Onderbroken functie-aanroep"
 
 #: src/error.cpp:396
 msgid "Access denied"
-msgstr "Zugriff verweigert"
+msgstr "Toegang geweigerd"
 
 #: src/error.cpp:398
 msgid "Bad address"
-msgstr "Ungültige Adresse"
+msgstr "Onjuist adres"
 
 #: src/error.cpp:400
 msgid "Invalid argument"
-msgstr "Ungültiges Argument"
+msgstr "Ongeldig argument"
 
 #: src/error.cpp:402
 msgid "Too many open files"
-msgstr "Zu viele offene Dateien"
+msgstr "Te veel geopende bestanden"
 
 #: src/error.cpp:404
 msgid "Resource temporarily unavailable"
-msgstr "Ressource zur Zeit nicht verfügbar"
+msgstr "Bron tijdelijk niet beschikbaar"
 
 #: src/error.cpp:406
 msgid "Operation already in progress"
-msgstr "Operation wird bereits ausgeführt"
+msgstr "Actie wordt al uitgevoerd"
 
 #: src/error.cpp:408
 msgid "Socket operation on non-socket"
-msgstr "Socketoperation wurde auf ein Objekt angewendet, das kein Socket ist"
+msgstr "Socket-actie op niet-socket"
 
 #: src/error.cpp:410
 msgid "Destination address required"
-msgstr "Zieladdresse wird benötigt"
+msgstr "Bestemmingsadres benodigd"
 
 #: src/error.cpp:412
 msgid "Message too long"
-msgstr "Nachricht zu lang"
+msgstr "Bericht te lang"
 
 #: src/error.cpp:414
 msgid "Protocol wrong type for socket"
-msgstr "Falscher Socket-Typ"
+msgstr "Protocol verkeerd type voor socket"
 
 #: src/error.cpp:416
 msgid "Bad protocol option"
-msgstr "Ungültige Protokol-Option"
+msgstr "Verkeerde protcoloptie"
 
 #: src/error.cpp:418
 msgid "Protocol not supported"
-msgstr "Protokoll nicht unterstützt"
+msgstr "Protocol wordt niet ondersteund"
 
 #: src/error.cpp:420
 msgid "Socket type not supported"
-msgstr "Sockettyp nicht unterstützt"
+msgstr "Sockettype wordt niet ondersteund"
 
 #: src/error.cpp:422
 msgid "Operation not supported"
-msgstr "Operation nicht unterstützt"
+msgstr "Actie wordt niet ondersteund"
 
 #: src/error.cpp:424
 msgid "Protocol family not supported"
-msgstr "Protokolltyp nicht unterstützt"
+msgstr "Protocolfamilie wordt niet ondersteund"
 
 #: src/error.cpp:426
 msgid "Address family not supported"
-msgstr "Addresstyp nicht unterstützt"
+msgstr "Adresfamilie wordt niet ondersteund"
 
 #: src/error.cpp:428
 msgid "Address is already in use"
-msgstr "Die Adresse wird bereits verwendet"
+msgstr "Adres is al in gebruik"
 
 #: src/error.cpp:430
 msgid "Cannot assign requested address"
-msgstr "Kann die gewünschte Adresse nicht zuweisen"
+msgstr "Kan aangevraagde adres niet toewijzen"
 
 #: src/error.cpp:432
 msgid "Network is down"
-msgstr "Netzwerk ist heruntergefahren"
+msgstr "Netwerk is verbroken"
 
 #: src/error.cpp:434
 msgid "Network is unreachable"
-msgstr "Netzwerk ist unerreichbar"
+msgstr "Netwerk is onbereikbaar"
 
 #: src/error.cpp:436
 msgid "Network dropped connection on reset"
-msgstr "Das Netzwerk hat die Verbindung nach einem Zurücksetzen abgebrochen"
+msgstr "Netwerk dropte verbinding bij reset"
 
 #: src/error.cpp:438
 msgid "Software caused connection abort"
-msgstr "Die Software hat einen Verbindungsabbruch verursacht"
+msgstr "Software zorgde voor afbraak van verbinding"
 
 #: src/error.cpp:440
 msgid "Connection reset by peer"
-msgstr "Verbindungsabbruch durch die Gegenseite"
+msgstr "Verbinding verbroken door peer"
 
 #: src/error.cpp:442
 msgid "No buffer space available"
-msgstr "Kein Pufferplatz mehr verfügbar"
+msgstr "Geen bufferruimte beschikbaar"
 
 #: src/error.cpp:444
 msgid "Socket is already connected"
-msgstr "Socket ist bereits verbunden"
+msgstr "Socket is al verbonden"
 
 #: src/error.cpp:446
 msgid "Socket is not connected"
-msgstr "Socket ist nicht verbunden"
+msgstr "Socket is niet verbonden"
 
 #: src/error.cpp:448
 msgid "Cannot send after socket shutdown"
-msgstr "Nach dem Abschalten eines Sockets kann nichts versendet werden"
+msgstr "Kan niet sturen na socketafsluiting"
 
 #: src/error.cpp:450
 msgid "Connection timed out"
-msgstr "Verbindung unterbrochen"
+msgstr "Tijdslimiet voor verbinding overschreden"
 
 #: src/error.cpp:452
 msgid "Connection refused"
-msgstr "Verbindungsaufbau abgelehnt"
+msgstr "Verbinding geweigerd"
 
 #: src/error.cpp:454
 msgid "Host is down"
-msgstr "Zielrechner ist heruntergefahren"
+msgstr "Host is onbereikbaar"
 
 #: src/error.cpp:456
 msgid "No route to host"
-msgstr "Keinen Weg zum Zielrechner"
+msgstr "Geen route naar host"
 
 #: src/error.cpp:458
 msgid "Too many processes"
-msgstr "Zu viele Prozesse"
+msgstr "Te veel processen"
 
 #: src/error.cpp:460
 msgid "Network subsystem is unavailable"
-msgstr "Netzwerksystem nicht verfügbar"
+msgstr "Netwerksubsysteem is niet beschikbaar"
 
 #: src/error.cpp:462
 msgid "Winsock.dll version out of range"
-msgstr "Falsche Version von Winsock.dll"
+msgstr "Winsock.dll versie uit bereik"
 
 #: src/error.cpp:464
 msgid "Successful WSAStartup not yet performed"
-msgstr "Noch kein erfolgreicher WSAStartup-Aufruf erfolgt"
+msgstr "Nog geen succesvolle WSAStartup uitgevoerd"
 
 #: src/error.cpp:466
 msgid "Graceful shutdown in progress"
-msgstr "Abschaltvorgang läuft bereits"
+msgstr "Nette afsluiting in voortgang"
 
 #: src/error.cpp:468
 msgid "Class type not found"
-msgstr "Klassentyp nicht gefunden"
+msgstr "Classetype niet gevonden"
 
 #: src/error.cpp:470
 msgid "Host not found"
-msgstr "Zielrechner nicht gefunden"
+msgstr "Host niet gevonden"
 
 #: src/error.cpp:472
 msgid "Nonauthoritative host not found"
-msgstr "Nicht-authoritativer Rechner nicht gefunden"
+msgstr "Niet-authoratieve host niet gevonden"
 
 #: src/error.cpp:474
 msgid "No data record of requested type"
-msgstr "Kein Datensatz vom gewünschten Typ"
+msgstr "Geen datarecord van aangevraagd type"
 
 #: src/error.cpp:476
 msgid "Specified event object handle is invalid"
-msgstr "Gegebenes Ereignisobjekt-Handle ist ungültig"
+msgstr "Gespecificeerde event-object-handle is onjuist"
 
 #: src/error.cpp:478
 msgid "One or more parameters are invalid"
-msgstr "Mindestens ein Parameter ist ungültig"
+msgstr "Eén of meer parameters zijn onjuist"
 
 #: src/error.cpp:480
 msgid "No more memory is available"
-msgstr "Kein Speicher mehr verfügbar"
+msgstr "Geen geheugen meer beschikbaar"
 
 #: src/error.cpp:482
 msgid "Broken pipe"
-msgstr "Verbindung abgebrochen"
+msgstr "Gebroken pijp"
 
 #: src/error.cpp:484
 msgid "No such device"
-msgstr "Kein derartiges Gerät"
+msgstr "Apparaat kan niet gevonden worden"
 
 #: src/error.cpp:486
 msgid "Decryption has failed"
-msgstr "Entschlüsselung fehlgeschlagen"
+msgstr "Ontcijfering mislukt"
 
 #: src/error.cpp:488
 msgid ""
 "The Diffie Hellman prime sent by the server is not acceptable (not long "
 "enough)"
 msgstr ""
-"Die Diffie Hellman-Primzahl, die vom Server empfangen wurde, ist nicht lang "
-"genug"
+"De Diffie Hellman prime die door de server werd verzonden is niet "
+"aanvaardbaar (niet lang genoeg)"
 
 #: src/error.cpp:491
 msgid "Encryption has failed"
-msgstr "Verschlüsselung fehlgeschlagen"
+msgstr "Versleuteling mislukt"
 
 #: src/error.cpp:493
 msgid "TLS Application data were received, while expecting handshake data"
-msgstr "TLS-Daten wurden empfangen, obwohl ein Handshake erwartet wurde"
+msgstr "TLS Applicatiedata is ontvangen, maar er werd handshakedata verwacht."
 
 #: src/error.cpp:496
 msgid "Insufficient credentials for that request"
-msgstr "Ungenügende Verschlüsselungsparameter für diese Anfrage"
+msgstr "Te weinig identificatie voor de aanvraag"
 
 #: src/error.cpp:498
 msgid "The request is invalid"
-msgstr "Die Anfrage ist ungültig"
+msgstr "De aanvraag is onjuist"
 
 #: src/error.cpp:500
 msgid "Key usage violation in certificate has been detected"
-msgstr ""
+msgstr "Sleutelgebruik overtreding in certificaat is gedetecteerd"
 
 #: src/error.cpp:503
 msgid "The Message Authentication Code verification failed"
-msgstr "Die Verifizierung der Nachrichtenprüfsumme schlug fehl"
+msgstr "Verificatie van de bericht-authenticatiecode is mislukt"
 
 #: src/error.cpp:506
 msgid "The peer did not send any certificate"
-msgstr "Der Verbindungspartner konnte kein Zertifikat senden"
+msgstr "De peer stuurde geen certificaat"
 
 #: src/error.cpp:508
 msgid "No temporary DH parameters were found"
-msgstr "Es wurden keine temporäre DH-Parameter gefunden"
+msgstr "Geen tijdelijke DH-parameters gevonden"
 
 #: src/error.cpp:510
 msgid "No temporary RSA parameters were found"
-msgstr "Es wurden keine temporäre RSA-Parameter gefunden"
+msgstr "Geen tijdelijke RSA-parameters gevonden"
 
 #: src/error.cpp:512
 msgid "Error in the pull function"
-msgstr "Fehler in der GNUTLS-Empfangsfunktion"
+msgstr "Fout in de pull-functie"
 
 #: src/error.cpp:514
 msgid "Error in the push function"
-msgstr "Fehler in der GNUTLS-Sendefunktion"
+msgstr "Fout in de push-functie"
 
 #: src/error.cpp:516
 msgid "Failed to acquire random data"
-msgstr "Konnte keine Zufallsdaten erlangen"
+msgstr "Verwerven van willekeurige data mislukt"
 
 #: src/error.cpp:518
 msgid "Rehandshake was requested by the peer"
-msgstr "Ein erneuter Handshake wurde vom Verbindungspartner angefordert"
+msgstr "Rehandshake aangevraagd door peer"
 
 #: src/error.cpp:520
 msgid "An unexpected TLS handshake packet was received"
-msgstr "Ein unerwarteter TLS-Handshake wurde empfangen"
+msgstr "Onverwacht TLS-handshakepacket ontvangen"
 
 #: src/error.cpp:523
 msgid "An unexpected TLS packet was received"
-msgstr "Ein unerwartetes TLS-Paket wurde empfangen"
+msgstr "Onverwacht TLS-packet ontvangen"
 
 #: src/error.cpp:525
 msgid "A TLS packet with unexpected length was received."
-msgstr "Ein TLS-Paket mit einer unerwarteten Länge wurde empfangen"
+msgstr "TLS-packet met onverwachte lengte ontvangen"
 
 #: src/error.cpp:528
 msgid "A nonrecoverable error has occured"
-msgstr "Ein nicht behebbarer Fehler ist aufgetreten"
+msgstr "Er kwam een onherstelbare fout voor"
