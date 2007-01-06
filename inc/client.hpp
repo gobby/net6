@@ -37,7 +37,7 @@ namespace net6
 /** Client in a Client/Server based TCP network.
  */
 template<typename selector_type>
-class basic_client : virtual public basic_local<selector_type>
+class basic_client: virtual public basic_local<selector_type>
 {
 public:
 	typedef sigc::signal<void, const user&, const packet&>
@@ -178,14 +178,14 @@ private:
 typedef basic_client<selector> client;
 
 template<typename selector_type>
-basic_client<selector_type>::basic_client()
- : basic_local<selector_type>(), self(NULL)
+basic_client<selector_type>::basic_client():
+	basic_local<selector_type>(), self(NULL)
 {
 }
 
 template<typename selector_type>
-basic_client<selector_type>::basic_client(const net6::address& addr)
- : basic_local<selector_type>(), self(NULL)
+basic_client<selector_type>::basic_client(const net6::address& addr):
+	basic_local<selector_type>(), self(NULL)
 {
 	connect_impl(addr);
 }
@@ -230,8 +230,8 @@ void basic_client<selector_type>::send(const packet& pack)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Add OUTGOING flag it to the selector if it isn't already set
-	if(!selector.check(conn->get_socket(), socket::OUTGOING) )
-		selector.add(conn->get_socket(), socket::OUTGOING);
+	if(selector.check(conn->get_socket(), IO_OUTGOING) == IO_NONE)
+		selector.add(conn->get_socket(), IO_OUTGOING);
 
 	// Add packet to send queue
 	conn->send(pack);
@@ -328,7 +328,7 @@ void basic_client<selector_type>::on_send_event()
 
 	// Remove OUTGOING flag from selector as there is no more
 	// data to send
-	selector.remove(conn->get_socket(), socket::OUTGOING);
+	selector.remove(conn->get_socket(), IO_OUTGOING);
 }
 
 template<typename selector_type>
@@ -391,9 +391,8 @@ template<typename selector_type>
 void basic_client<selector_type>::net_client_join(const packet& pack)
 {
 	// Received client_join packet
-	int id = pack.get_param(0).parameter::as<int>();
-	const std::string& name =
-		pack.get_param(1).parameter::as<std::string>();
+	unsigned int id = pack.get_param(0).parameter::as<int>();
+	std::string name = pack.get_param(1).parameter::as<std::string>();
 
 	user* new_client = new user(id, NULL);
 	basic_object<selector_type>::user_add(new_client);
@@ -430,7 +429,7 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 	// Add socket to selector
 	basic_object<selector_type>::get_selector().add(
 		conn->get_socket(),
-		socket::INCOMING | socket::IOERROR
+		IO_INCOMING | IO_ERROR
 	);
 
 	// Install signal handlers

@@ -176,7 +176,7 @@ public:
 protected:
 	virtual void remove_client(const user* client);
 
-	virtual void on_accept_event(socket::condition io);
+	virtual void on_accept_event(io_condition io);
 	virtual void on_send_event(user& to);
 	virtual void on_recv_event(const packet& pack,
 	                           user& from);
@@ -284,8 +284,8 @@ void basic_server<selector_type>::send(const packet& pack, const user& to)
 	const tcp_client_socket& user_socket = to.get_connection().get_socket();
 
 	// Set OUTGOING flag if it isn't already
-	if(!selector.check(user_socket, socket::OUTGOING) )
-		selector.add(user_socket, socket::OUTGOING);
+	if(selector.check(user_socket, IO_OUTGOING) == IO_NONE)
+		selector.add(user_socket, IO_OUTGOING);
 
 	// Enqueue packet
 	to.send(pack);
@@ -370,9 +370,9 @@ void basic_server<selector_type>::remove_client(const user* user)
 		user->get_connection().get_socket();
 
 	// Remove dead client from selector
-	selector.remove(user_socket, socket::INCOMING | socket::IOERROR);
-	if(selector.check(user_socket, socket::OUTGOING) )
-		selector.remove(user_socket, socket::OUTGOING);
+	selector.remove(user_socket, IO_INCOMING | IO_ERROR);
+	if(selector.check(user_socket, IO_OUTGOING) == IO_OUTGOING)
+		selector.remove(user_socket, IO_OUTGOING);
 
 	// Store ID of client to remove
 	unsigned int user_id = user->get_id();
@@ -390,14 +390,18 @@ void basic_server<selector_type>::remove_client(const user* user)
 }
 
 template<typename selector_type>
-void basic_server<selector_type>::on_accept_event(socket::condition io)
+void basic_server<selector_type>::on_accept_event(io_condition io)
 {
 	// Accept new client connection
 	user* client;
 	if(use_ipv6)
 	{
 		ipv6_address addr;
-		tcp_client_socket new_sock = serv_sock->accept(addr);
+
+		std::auto_ptr<tcp_client_socket> new_sock(
+			serv_sock->accept(addr)
+		);
+
 		client = new user(
 			++ id_counter,
 			new connection(new_sock, addr)
@@ -406,7 +410,11 @@ void basic_server<selector_type>::on_accept_event(socket::condition io)
 	else
 	{
 		ipv4_address addr;
-		tcp_client_socket new_sock = serv_sock->accept(addr);
+
+		std::auto_ptr<tcp_client_socket> new_sock(
+			serv_sock->accept(addr)
+		);
+
 		client = new user(
 			++ id_counter,
 			new connection(new_sock, addr)
@@ -421,7 +429,7 @@ void basic_server<selector_type>::on_accept_event(socket::condition io)
 
 	// Add to selector to receive data from this client
 	connection& conn = client->get_connection();
-	selector.add(conn.get_socket(), socket::INCOMING | socket::IOERROR);
+	selector.add(conn.get_socket(), IO_INCOMING | IO_ERROR);
 
 	// Connect signal handlers
 	conn.send_event().connect(
@@ -455,7 +463,7 @@ void basic_server<selector_type>::on_send_event(user& to)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Remove OUTGOING from selector as no more data has to be sent
-	selector.remove(to.get_connection().get_socket(), socket::OUTGOING);
+	selector.remove(to.get_connection().get_socket(), IO_OUTGOING);
 }
 
 template<typename selector_type>
@@ -598,7 +606,7 @@ void basic_server<selector_type>::shutdown_impl()
 {
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
-	selector.remove(*serv_sock, socket::INCOMING);
+	selector.remove(*serv_sock, IO_INCOMING);
 	serv_sock.reset(NULL);
 }
 
@@ -620,7 +628,7 @@ void basic_server<selector_type>::reopen_impl(unsigned int port)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Add incoming flag to selector to accept client connections
-	selector.add(*serv_sock, socket::INCOMING);
+	selector.add(*serv_sock, IO_INCOMING);
 	serv_sock->io_event().connect(
 		sigc::mem_fun(*this, &basic_server::on_accept_event) );
 }

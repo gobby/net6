@@ -16,6 +16,7 @@ endif
 INCLUDES = $(libnet6_CFLAGS) -Iinc
 
 pkginclude_HEADERS = \
+	inc/enum_ops.hpp \
 	inc/non_copyable.hpp \
 	inc/gettext_package.hpp \
 	inc/common.hpp \

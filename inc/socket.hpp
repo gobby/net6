@@ -19,8 +19,11 @@
 #ifndef _NET6_SOCKET_HPP_
 #define _NET6_SOCKET_HPP_
 
+#include <memory>
 #include <sigc++/signal.h>
 
+#include "enum_ops.hpp"
+#include "non_copyable.hpp"
 #include "address.hpp"
 
 #ifndef ssize_t
@@ -30,20 +33,22 @@
 namespace net6
 {
 
-/** Abstract socket class. Note that sockets are reference counted.
- */
-	
-class socket
+enum io_condition
 {
-	friend class selector;
-public:
-	enum condition {
-		INCOMING = 0x01,
-		OUTGOING = 0x02,
-		IOERROR = 0x04
-	};
+	IO_NONE     = 0x00,
+	IO_INCOMING = 0x01,
+	IO_OUTGOING = 0x02,
+	IO_ERROR    = 0x04
+};
 
-	typedef sigc::signal<void, condition> signal_io_type;
+NET6_DEFINE_ENUM_OPS(io_condition)
+
+/** Abstract socket class.
+ */
+class socket: private non_copyable
+{
+public:
+	typedef sigc::signal<void, io_condition> signal_io_type;
 
 #ifdef WIN32
 	typedef SOCKET socket_type;
@@ -52,66 +57,31 @@ public:
 #endif
 	typedef size_t size_type;
 
-	/** Create a new reference on a socket
+	/** @brief Closes the socket.
 	 */
-	socket(const socket& other);
 	~socket();
-
-	socket& operator=(const socket& other);
-
-	/** Checks if this socket object references the same object as
-	 * <em>other</em>.
-	 */
-	bool operator==(const socket& other) const
-		{ return data == other.data; }
-
-	/** Checks if this socket object references another object as
-	 * <em>other</em>.
-	 */
-	bool operator!=(const socket& other) const
-		{ return data != other.data; }
 
 	/** Signal which will be emitted if somehting occures with the socket.
 	 */
-	signal_io_type io_event() const { return data->signal_io; }
+	signal_io_type io_event() const { return signal_io; }
 
 	/** Provides access to the underlaying C socket object.
 	 */
-	socket_type cobj() { return data->sock; }
-	const socket_type cobj() const { return data->sock; }
+	socket_type cobj() { return sock; }
+	const socket_type cobj() const { return sock; }
 protected:
 	socket(int domain, int type, int protocol);
 	socket(socket_type c_object);
 
-	struct  socket_data
-	{
-		socket_type sock;
-		int refcount;
-
-		signal_io_type signal_io;
-	};
-
-	socket_data* data;
-
-	/** May be overwritten to do things before/after the signal_io is
-	 * emitted.
-	 */
-	virtual void on_io(condition cond);
+private:
+	socket_type sock;
+	signal_io_type signal_io;
 };
 
 /** Abstract TCP socket class.
  */
-
-class tcp_socket : public socket
+class tcp_socket: public socket
 {
-public:
-	/** Creates a new reference of <em>other</em>.
-	 */
-	tcp_socket(const tcp_socket& other);
-	~tcp_socket();
-
-	tcp_socket& operator=(const tcp_socket& other);
-
 protected:
 	tcp_socket(const address& addr);
 	tcp_socket(socket_type c_object);
@@ -120,7 +90,7 @@ protected:
 /** TCP connection socket.
  */
 
-class tcp_client_socket : public tcp_socket
+class tcp_client_socket: public tcp_socket
 {
 public:
 	/** Creates a new tcp socket and connects to the address addr.
@@ -132,34 +102,25 @@ public:
 	 */
 	tcp_client_socket(socket_type c_object);
 
-	/** Creates a new reference of <em>other</em>.
-	 */
-	tcp_client_socket(const tcp_client_socket& other);
-	~tcp_client_socket();
-
-	/** Assigns a new reference of <em>other</em> to this socket object.
-	 */
-	tcp_client_socket& operator=(const tcp_client_socket& other);
-
 	/** Sends an amount of data through the socket. Note that the call
 	 * may block if you did not select on a socket::OUT event.
 	 * @return The amount of data sent.
 	 */
-	size_type send(const void* buf, size_type len) const;
+	size_type send(const void* buf,
+	               size_type len) const;
 
 	/** Receives an amount of data from the socket. Note that the call
 	 * may block if no data is available.
 	 * @return The amount of data read.
 	 */
-	size_type recv(void* buf, size_type len) const;
-
-protected:
+	size_type recv(void* buf,
+	               size_type len) const;
 };
 
 /** TCP server socket
  */
 
-class tcp_server_socket : public tcp_socket
+class tcp_server_socket: public tcp_socket
 {
 public:
 	/** Opens a new TCP server socket bound to <em>bind_addr</em>.
@@ -171,34 +132,22 @@ public:
 	 */
 	tcp_server_socket(socket_type c_object);
 
-	/** Creates a new reference of <em>other</em>.
-	 */
-	tcp_server_socket(const tcp_server_socket& other);
-	~tcp_server_socket();
-
-	/** Assigns a new reference of <em>other</em> to this socket.
-	 */
-	tcp_server_socket& operator=(const tcp_server_socket& other);
-
 	/** Accepts a connection from this server socket. Note that the call
 	 * blocks until a connection comes available. Selecting on socket::IN
 	 * indicates a connection waiting for acception.
 	 * @return A tcp_client_socket to communicate with the remote host.
 	 */
-	tcp_client_socket accept() const;
+	std::auto_ptr<tcp_client_socket> accept() const;
 
 	/** Accepts a new connection and stores the address of the remote host
 	 * in <em>from</em>.
 	 */
-	tcp_client_socket accept(address& from) const;
-
-protected:
+	std::auto_ptr<tcp_client_socket> accept(address& from) const;
 };
 
 /** UDP socket.
  */
-
-class udp_socket : public socket
+class udp_socket: public socket
 {
 public:
 	/** Creates a new UDP socket bound to <em>bind_addr</em>.
@@ -208,15 +157,6 @@ public:
 	/** Wraps a C UDP socket object.
 	 */
 	udp_socket(socket_type c_object);
-
-	/** Creates an new reference from <em>other</em>.
-	 */
-	udp_socket(const udp_socket& other);
-	~udp_socket();
-
-	/** Assigns a new reference of <em>other</em> to this UDP socket object.
-	 */
-	udp_socket& operator=(const udp_socket& other);
 
 	/** Sets the target of this UDP socket. This target is the address to
 	 * which datagrams are sent by default and the only address from which
@@ -231,70 +171,34 @@ public:
 	/** Sends an amount of data to the target of the UDP socket.
 	 * @return The amount of data actually sent.
 	 */
-	size_type send(const void* buf, size_type len) const;
+	size_type send(const void* buf,
+	               size_type len) const;
 
 	/** Sends an amount of data to a specified address.
 	 * @return The amount of data actually sent.
 	 */
-	size_type send(const void* bud, size_type len, const address& to) const;
+	size_type send(const void* bud,
+	               size_type len,
+	               const address& to) const;
 
 	/** Receives some data from the socket. Note that the call may block
 	 * until data becomes available.
 	 * @return The amount of data actually read.
 	 */
-	size_type recv(void* buf, size_type len) const;
+	size_type recv(void* buf,
+	               size_type len) const;
 
 	/** Receives some data from the socket and stores the source
 	 * address into <em>from</em>. Note that the call may block until
 	 * data becomes available for reading.
 	 * @return The amount of data actually read.
 	 */
-	size_type recv(void* buf, size_type len, address& from) const;
-protected:
+	size_type recv(void* buf,
+	               size_type len,
+	               address& from) const;
 };
 
-inline socket::condition operator&(socket::condition rhs, socket::condition lhs)
-{
-	return static_cast<socket::condition>(
-		static_cast<int>(rhs) & static_cast<int>(lhs)
-	);
-}
+} // namespace net6
 
-inline socket::condition operator|(socket::condition rhs, socket::condition lhs)
-{
-	return static_cast<socket::condition>(
-		static_cast<int>(rhs) | static_cast<int>(lhs)
-	); 
-}
-
-inline socket::condition operator^(socket::condition rhs, socket::condition lhs)
-{
-	return static_cast<socket::condition>(
-		static_cast<int>(rhs) ^ static_cast<int>(lhs)
-	); 
-}
-
-inline socket::condition& operator&=(socket::condition& rhs, socket::condition lhs)
-{
-	return rhs = (rhs & lhs);
-}
-
-inline socket::condition& operator|=(socket::condition& rhs, socket::condition lhs)
-{
-	return rhs = (rhs | lhs);
-}
-
-inline socket::condition& operator^=(socket::condition& rhs, socket::condition lhs)
-{
-	return rhs = (rhs ^ lhs);
-}
-
-inline socket::condition operator~(socket::condition rhs)
-{
-	return static_cast<socket::condition>(~static_cast<int>(rhs) );
-}
-
-}
-
-#endif
+#endif // _NET6_SOCKET_HPP_
 

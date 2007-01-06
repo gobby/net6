@@ -74,23 +74,20 @@ void net6::connection::queue::remove(size_type len)
 	size -= len;
 }
 
-net6::connection::connection(const address& addr)
- : remote_sock(addr), remote_addr(addr.clone() )
+net6::connection::connection(const address& addr):
+	remote_sock(new tcp_client_socket(addr) ),
+	remote_addr(addr.clone() )
 {
-	remote_sock.io_event().connect(
+	remote_sock->io_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
 }
 
-net6::connection::connection(const tcp_client_socket& sock, const address& addr)
- : remote_sock(sock), remote_addr(addr.clone() )
+net6::connection::connection(std::auto_ptr<tcp_client_socket> sock,
+                             const address& addr):
+	remote_sock(sock), remote_addr(addr.clone() )
 {
-	remote_sock.io_event().connect(
+	remote_sock->io_event().connect(
 		sigc::mem_fun(*this, &connection::on_sock_event) );
-}
-
-net6::connection::~connection()
-{
-	delete remote_addr;
 }
 
 const net6::address& net6::connection::get_remote_address() const
@@ -100,7 +97,7 @@ const net6::address& net6::connection::get_remote_address() const
 
 const net6::tcp_client_socket& net6::connection::get_socket() const
 {
-	return remote_sock;
+	return *remote_sock;
 }
 
 void net6::connection::send(const packet& pack)
@@ -123,16 +120,16 @@ net6::connection::signal_close_type net6::connection::close_event() const
 	return signal_close;
 }
 
-void net6::connection::on_sock_event(socket::condition io)
+void net6::connection::on_sock_event(io_condition io)
 {
 	try
 	{
-		if(io & socket::INCOMING)
+		if(io & IO_INCOMING)
 		{
 			// Get up to 1024 bytes
 			char buffer[1024];
 			socket::size_type bytes =
-				remote_sock.recv(buffer, 1024);
+				remote_sock->recv(buffer, 1024);
 
 			if(bytes == 0)
 			{
@@ -163,7 +160,7 @@ void net6::connection::on_sock_event(socket::condition io)
 
 				// Emit the signal_recv now. Because we do not
 				// depend on recvqueue for reading further
-				// data, the singal handler may destroy the
+				// data, the signal handler may destroy the
 				// connection object.
 				std::list<packet>::iterator iter;
 				for(iter = packet_list.begin();
@@ -175,7 +172,7 @@ void net6::connection::on_sock_event(socket::condition io)
 			}
 		}
 
-		if(io & socket::OUTGOING)
+		if(io & IO_OUTGOING)
 		{
 			// Is there something to send?
 			if(sendqueue.get_size() == 0)
@@ -186,7 +183,7 @@ void net6::connection::on_sock_event(socket::condition io)
 			}
 
 			// Send data from queue
-			socket::size_type bytes = remote_sock.send(
+			socket::size_type bytes = remote_sock->send(
 				sendqueue.get_data(),
 				sendqueue.get_size()
 			);
@@ -208,7 +205,7 @@ void net6::connection::on_sock_event(socket::condition io)
 			}
 		}
 
-		if(io & socket::IOERROR)
+		if(io & IO_ERROR)
 		{
 			on_close();
 		}
@@ -216,10 +213,14 @@ void net6::connection::on_sock_event(socket::condition io)
 	catch(net6::error& e)
 	{
 		if(e.get_code() == error::CONNECTION_RESET ||
-			e.get_code() == error::BROKEN_PIPE)
+		   e.get_code() == error::BROKEN_PIPE)
+		{
 			on_close();
+		}
 		else
+		{
 			throw e;
+		}
 	}
 }
 

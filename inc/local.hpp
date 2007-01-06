@@ -30,7 +30,7 @@ namespace net6
  * participating in the session, such as basic_client or basic_host.
  */
 template<typename selector_type>
-class basic_local : virtual public basic_object<selector_type>
+class basic_local: virtual public basic_object<selector_type>
 {
 public:
 	/** Default constructor.
@@ -51,8 +51,8 @@ protected:
 typedef basic_local<selector> local;
 
 template<typename selector_type>
-basic_local<selector_type>::basic_local()
- : basic_object<selector_type>()
+basic_local<selector_type>::basic_local():
+	basic_object<selector_type>()
 {
 }
 

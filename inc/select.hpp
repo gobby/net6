@@ -19,6 +19,7 @@
 #ifndef _NET6_SELECT_HPP_
 #define _NET6_SELECT_HPP_
 
+#include <map>
 #include "non_copyable.hpp"
 #include "default_accumulator.hpp"
 #include "socket.hpp"
@@ -28,76 +29,90 @@ namespace net6
 
 /** The selector may be used to wait until something occurs with a socket:
  * Either if data comes available for reading, or kernel buffer gets
- * available for writing (without blocking), or an error occures on the
+ * available for writing (without blocking), or an error occurs on a
  * socket.
  */
-	
-class selector : private non_copyable
+class selector
 {
 public:
 	typedef default_accumulator<bool, false> socket_accumulator;
 
-	typedef sigc::signal<bool, socket&, socket::condition>
+	typedef sigc::signal<bool, const socket&, io_condition>
 		::accumulated<socket_accumulator> signal_socket_event_type;
 
-	selector();
-	~selector();
+	// Virtual destructor makes the compiler happy
+	virtual ~selector() {}
 
-	/** Adds a socket to the selector.
+	/** @brief Adds a socket to the selector.
+	 *
+	 * The function may also be used to add conditions the socket
+	 * is watched for.
+	 *
 	 * @param sock The socket to watch for conditions to occur.
 	 * @param condition Conditions the socket is watched for.
 	 */
-	void add(const socket& sock, socket::condition condition);
+	void add(const socket& sock,
+	         io_condition);
 
-	/** Removes a socket from the selector.
+	/** @brief Removes a socket from the selector.
+	 *
+	 * The function may also be used to remove conditions the socket
+	 * is watched for. If all conditions are given, the socket is
+	 * completely removed.
+	 *
 	 * @param sock The socket to remove.
 	 * @param condition A combination of conditions which are no
 	 *        longer watched for.
 	 */
-	void remove(const socket& sock, socket::condition condition);
+	void remove(const socket& sock,
+	            io_condition condition);
 
 	/** Checks if a socket is watched for events
+	 *
 	 * @param sock Socket to check.
-	 * @param condition Condition to check the socket for.
+	 * @param condition Conditions to check the socket for.
+	 *
+	 * @return The condition the socket is currently watched for.
 	 */
-	bool check(const socket& sock, socket::condition condition) const;
+	io_condition check(const socket& sock,
+	                   io_condition condition) const;
 
 	/** Selects infinitely until an event occurs on one or more
 	 * selected sockets. Connect to the socket's signals to handle
 	 * those events.
 	 */
-	void select();
+	void select() const;
 
 	/** Selects until an event occurs on ore or more selectes sockets, or
 	 * the timeout exceeds. Connect to the socket's signals to handle
 	 * those events.
 	 * @param timeout Timeout in milliseconds. May be 0 to perform
-	 *        a quick poll.
+	 * a quick poll.
 	 */
-	void select(unsigned long timeout);
+	void select(unsigned long timeout) const;
 
 	/** Signal which is emitted every time an event occurs on a socket.
 	 * The signal handler may return true to indicate that he has handled
 	 * this event. The event handler for the socket will not be
 	 * emitted then. Usually you should use the socket signals to handle
 	 * socket events. Use this hook only if you want to prevent the
-	 * selector to emit the socket's signals. Use with care!
+	 * selector from emitting the socket's signals. Use with care!
 	 */
 	signal_socket_event_type socket_event() const;
 
 protected:
-	void select_impl(timeval* tv);
+	typedef std::map<const socket*, io_condition> map_type;
 
-	std::list<socket> read_list;
-	std::list<socket> write_list;
-	std::list<socket> error_list;
+	void select_impl(timeval* tv) const;
 
+	map_type sock_map;
 	signal_socket_event_type signal_socket_event;
 
 	/** May be overwritten to do things before/after the socket_event
 	 * signal is emitted.
 	 */
-	virtual bool on_socket_event(socket& sock, socket::condition cond);
+	virtual bool on_socket_event(const socket& sock,
+	                             io_condition cond);
 };
 	
 }

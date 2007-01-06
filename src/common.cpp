@@ -16,6 +16,8 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <stdexcept>
+
 #include "config.hpp"
 #include "common.hpp"
 #include "gettext_package.hpp"
@@ -36,6 +38,16 @@ void net6::init_gettext(gettext_package& package)
 
 const char* net6::_(const char* msgid)
 {
+	if(local_package == NULL)
+	{
+		throw std::logic_error(
+			"FreeIsle::net6::_:\n"
+			"init_gettext() has not yet been called. Most "
+			"certainly this means that you have\n"
+			"not created a net6::main object."
+		);
+	}
+
 #ifdef ENABLE_NLS
 	return local_package->gettext(msgid);
 #else

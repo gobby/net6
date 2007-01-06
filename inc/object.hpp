@@ -32,7 +32,7 @@ namespace net6
 /** basic_object is the common base class of basic_local and basic_server
  */
 template<typename selector_type>
-class basic_object : public sigc::trackable, private non_copyable
+class basic_object: public sigc::trackable, private non_copyable
 {
 public:
 	typedef selector_type selector;

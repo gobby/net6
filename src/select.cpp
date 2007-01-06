@@ -18,91 +18,47 @@
 
 #include "error.hpp"
 #include "select.hpp"
-#include <algorithm>
 
-net6::selector::selector()
+void net6::selector::add(const socket& sock,
+                         io_condition condition)
 {
-/*	FD_ZERO(&read_set);
-	FD_ZERO(&write_set);
-	FD_ZERO(&error_set);*/
-}
+	map_type::iterator iter = sock_map.find(&sock);
 
-net6::selector::~selector()
-{
-}
-
-void net6::selector::add(const socket& sock, socket::condition condition)
-{
-	if(condition & socket::INCOMING)
+	if(iter != sock_map.end() )
 	{
-//		FD_SET(sock.cobj(), &read_set);
-		read_list.push_back(sock);
+		iter->second |= condition;
 	}
-
-	if(condition & socket::OUTGOING)
+	else
 	{
-//		FD_SET(sock.cobj(), &write_set);
-		write_list.push_back(sock);
-	}
-
-	if(condition & socket::IOERROR)
-	{
-//		FD_SET(sock.cobj(), &error_set);
-		error_list.push_back(sock);
+		sock_map[&sock] = condition;
 	}
 }
 
-void net6::selector::remove(const socket& sock, socket::condition condition)
+void net6::selector::remove(const socket& sock,
+                            io_condition condition)
 {
-	if(condition & socket::INCOMING)
-	{
-//		FD_CLR(sock.cobj(), &read_set);
-		read_list.erase(std::remove(read_list.begin(), read_list.end(),
-		                sock), read_list.end() );
-	}
+	map_type::iterator iter = sock_map.find(&sock);
+	if(iter == sock_map.end() ) return;
 
-	if(condition & socket::OUTGOING)
-	{
-//		FD_CLR(sock.cobj(), &write_set);
-		write_list.erase(std::remove(write_list.begin(),
-		                 write_list.end(), sock), write_list.end() );
-	}
-
-	if(condition & socket::IOERROR)
-	{
-//		FD_CLR(sock.cobj(), &error_set);
-		error_list.erase(std::remove(error_list.begin(),
-		                 error_list.end(), sock), error_list.end() );
-	}
+	iter->second &= ~condition;
+	if(iter->second == IO_NONE) sock_map.erase(iter);
 }
 
-bool
-net6::selector::check(const socket& sock, socket::condition condition) const
+net6::io_condition net6::selector::check(const socket& sock,
+                                         io_condition condition) const
 {
-	if(condition & socket::INCOMING)
-		if(std::find(read_list.begin(), read_list.end(), sock) !=
-		   read_list.end() )
-			return true;
-
-	if(condition & socket::OUTGOING)
-		if(std::find(write_list.begin(), write_list.end(), sock) !=
-		   write_list.end() )
-			return true;
-
-	if(condition & socket::IOERROR)
-		if(std::find(error_list.begin(), error_list.end(), sock) !=
-		   error_list.end() )
-			return true;
-
-	return false;
+	io_condition ref_cond = IO_NONE;
+	map_type::const_iterator iter = sock_map.find(&sock);
+	if(iter != sock_map.end() ) ref_cond = iter->second;
+	return condition & ref_cond;
 }
 
-void net6::selector::select()
+void net6::selector::select() const
 {
 	select_impl(NULL);
 }
 
-void net6::selector::select(unsigned long timeout)
+void net6::selector::select(unsigned long timeout) const
 {
 	timeval tv;
 	tv.tv_sec = timeout / 1000;
@@ -115,90 +71,71 @@ net6::selector::signal_socket_event_type net6::selector::socket_event() const
 	return signal_socket_event;
 }
 
-void net6::selector::select_impl(timeval* tv)
+void net6::selector::select_impl(timeval* tv) const
 {
 	// Determinate the highest file descriptor number for select()
 	socket::socket_type max_fd = 0;
 	fd_set readfs, writefs, errorfs;
-	std::list<socket>::iterator i;
 
 	FD_ZERO(&readfs);
 	FD_ZERO(&writefs);
 	FD_ZERO(&errorfs);
 
-	for(i = read_list.begin(); i != read_list.end(); ++ i)
+	for(map_type::const_iterator iter = sock_map.begin();
+	    iter != sock_map.end();
+	    ++ iter)
 	{
-		if(i->cobj() > max_fd)
-			max_fd = i->cobj();
-		FD_SET(i->cobj(), &readfs);
-	}
-	
-	for(i = write_list.begin(); i != write_list.end(); ++ i)
-	{
-		if(i->cobj() > max_fd)
-			max_fd = i->cobj();
-		FD_SET(i->cobj(), &writefs);
-	}
-	
-	for(i = error_list.begin(); i != error_list.end(); ++ i)
-	{
-		if(i->cobj() > max_fd)
-			max_fd = i->cobj();
-		FD_SET(i->cobj(), &errorfs);
+		max_fd = std::max(iter->first->cobj(), max_fd);
+
+		if(iter->second & IO_INCOMING)
+			FD_SET(iter->first->cobj(), &readfs);
+
+		if(iter->second & IO_OUTGOING)
+			FD_SET(iter->first->cobj(), &writefs);
+
+		if(iter->second & IO_ERROR)
+			FD_SET(iter->first->cobj(), &errorfs);
 	}
 
-	int retval = ::select(max_fd + 1, &readfs, &writefs,
-	                      &errorfs, tv);
-
-	if(retval == -1)
+	if(::select(max_fd + 1, &readfs, &writefs, &errorfs, tv) == -1)
 		throw error(net6::error::SYSTEM);
 
-	// Check for selected sockets
-	std::list<socket> read_event, write_event, error_event;
-	for(i = read_list.begin(); i != read_list.end(); ++ i)
-		if(FD_ISSET(i->cobj(), &readfs) )
-			read_event.push_back(*i);
+	// We pack all affected sockets into another map that is used during
+	// execution of the event handlers. This allows that event handlers may
+	// modify the selector's map (by performing calls to add() or remove())
+	// without invalidating iterators of the select() routine here.
 
-	for(i = write_list.begin(); i != write_list.end(); ++ i)
-		if(FD_ISSET(i->cobj(), &writefs) )
-			write_event.push_back(*i);
+	map_type temp_map;
+	for(map_type::const_iterator iter = sock_map.begin();
+	    iter != sock_map.end();
+	    ++ iter)
+	{
+		io_condition conds = IO_NONE;
 
-	for(i = error_list.begin(); i != error_list.end(); ++ i)
-		if(FD_ISSET(i->cobj(), &errorfs) )
-			error_event.push_back(*i);
+		if(FD_ISSET(iter->first->cobj(), &readfs) )
+			conds |= IO_INCOMING;
+		if(FD_ISSET(iter->first->cobj(), &writefs) )
+			conds |= IO_OUTGOING;
+		if(FD_ISSET(iter->first->cobj(), &errorfs) )
+			conds |= IO_ERROR;
 
-	// Reset fd_sets
-/*	FD_ZERO(&read_set);
-	FD_ZERO(&write_set);
-	FD_ZERO(&error_set);
+		if(conds != IO_NONE)
+			temp_map[iter->first] = conds;
+	}
 
-	for(i = read_list.begin(); i != read_list.end(); ++ i)
-		FD_SET(i->cobj(), &read_set);
-	for(i = write_list.begin(); i != write_list.end(); ++ i)
-		FD_SET(i->cobj(), &write_set);
-	for(i = error_list.begin(); i != error_list.end(); ++ i)
-		FD_SET(i->cobj(), &error_set);*/
+	for(map_type::const_iterator iter = temp_map.begin();
+	    iter != temp_map.end();
+	    ++ iter)
+	{
+		// Socket has been removed from the selector by the execution
+		// of a previous signal handler.
+		if(sock_map.find(iter->first) == sock_map.end() ) continue;
 
-	// Emit signals in a seperate list to allow the signal
-	// handlers to modify the select list
-	std::list<socket>::iterator a;
-	for(a = read_event.begin(); a != read_event.end(); ++ a)
-		if(a->data->refcount > 1)
-			if(!on_socket_event(*a, socket::INCOMING) )
-				a->on_io(socket::INCOMING);
-
-	for(a = write_event.begin(); a != write_event.end(); ++ a)
-		if(a->data->refcount > 1)
-			if(!on_socket_event(*a, socket::OUTGOING) )
-				a->on_io(socket::OUTGOING);
-
-	for(a = error_event.begin(); a != error_event.end(); ++ a)
-		if(a->data->refcount > 1)
-			if(!on_socket_event(*a, socket::IOERROR) )
-				a->on_io(socket::IOERROR);
+		iter->first->io_event().emit(iter->second);
+	}
 }
 
-bool net6::selector::on_socket_event(socket& sock, socket::condition cond)
+bool net6::selector::on_socket_event(const socket& sock, io_condition cond)
 {
 	return signal_socket_event.emit(sock, cond);
 }

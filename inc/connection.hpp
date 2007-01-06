@@ -19,6 +19,7 @@
 #ifndef _NET6_CONNECTION_HPP_
 #define _NET6_CONNECTION_HPP_
 
+#include <memory>
 #include <sigc++/signal.h>
 
 #include "non_copyable.hpp"
@@ -32,12 +33,12 @@ class packet;
 /** Connection to another host.
  */
 
-class connection : public sigc::trackable, private non_copyable
+class connection: public sigc::trackable, private non_copyable
 {
 public:
 	/** Internal buffer for incoming or outgoing data.
 	 */
-	class queue : private non_copyable
+	class queue: private non_copyable
 	{
 	public:
 		typedef size_t size_type;
@@ -75,16 +76,18 @@ public:
 	typedef sigc::signal<void> signal_send_type;
 	typedef sigc::signal<void> signal_close_type;
 
-	/** Creates a new connection object and establishes a connection to
-	 * <em>addr</em>.
+	/** @brief Creates a new connection object and establishes a
+	 * connection to <em>addr</em>.
 	 */
 	connection(const address& addr);
 
-	/** Wraps a socket a to a connection object. The remote host has the
-	 * address <em>addr</em>.
+	/** @brief Wraps a socket into to a connection object.
+	 *
+	 * The ownership of the socket is transferred to the connection.
+	 * The remote host has the address <em>addr</em>.
 	 */
-	connection(const tcp_client_socket& sock, const address& addr);
-	~connection();
+	connection(std::auto_ptr<tcp_client_socket> sock,
+	           const address& addr);
 
 	/** Returns the remote internet address.
 	 */
@@ -99,10 +102,6 @@ public:
 	 * have to be sent.
 	 */
 	void send(const packet& pack);
-
-	/** Returns the amount of packets queued for sending.
-	 */
-	//unsigned int send_queue_size() const;
 
 	/** Signal which is emitted when a packet has been received. Note that
 	 * the underlaying socket has to be selected for socket::IN to
@@ -122,7 +121,7 @@ public:
 	signal_close_type close_event() const;
 
 protected:
-	void on_sock_event(socket::condition io);
+	void on_sock_event(io_condition io);
 
 	void on_send();
 	void on_recv(const net6::packet& pack);
@@ -135,8 +134,8 @@ protected:
 	signal_send_type signal_send;
 	signal_close_type signal_close;
 
-	tcp_client_socket remote_sock;
-	address* remote_addr;
+	std::auto_ptr<tcp_client_socket> remote_sock;
+	std::auto_ptr<address> remote_addr;
 };
 	
 }
