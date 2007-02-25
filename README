@@ -10,4 +10,5 @@ the Windows and Unix-like platforms.
 Dependencies
 ------------
  * sigc++-2.0
+ * gnutls
 

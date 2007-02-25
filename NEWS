@@ -1,6 +1,12 @@
 net6
 ====
 
+Version 1.3.3:
+ * Errors encountered on the connections do no longer propagate
+   to the selector of the application
+ * Sockets could be opened without IPv6, enabling the application
+   to retry the socket connection when IPv6 is unavailable
+
 Version 1.3.2:
  * Compilation fixes for MingW and GNUTLS
  * Updated Autotools and gettext helper files
