@@ -94,10 +94,12 @@ public:
 	basic_server(unsigned int port, bool ipv6 = true);
 	virtual ~basic_server();
 
+	void reopen(unsigned int port) { reopen(port, use_ipv6); }
+
 	/** (re)opens the server socket on port <em>port</em>, if it has
 	 * been shut down before.
 	 */
-	virtual void reopen(unsigned int port, bool ipv6 = get_ipv6_default());
+	virtual void reopen(unsigned int port, bool ipv6);
 
 	/** Shuts down the server socket. New connections will no longer be
 	 * accepted, but already established connections stay open.
@@ -239,14 +241,6 @@ protected:
 private:
 	void shutdown_impl();
 	void reopen_impl(unsigned int port, bool use_ipv6);
-
-	// This is required for the default parameter in reopen. C++ does not
-	// allow to use a member variable as default initializer, but it
-	// seems to allow member function calls. Plase do not ask me why...
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	bool get_ipv6_default() const { return use_ipv6; }
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 };
 
 typedef basic_server<selector> server;

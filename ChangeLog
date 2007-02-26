@@ -1,3 +1,10 @@
+2007-02-25  Armin Burgmeier  <armin@0x539.de>
+
+	* inc/server.hpp: Added overload instead of default argument for ipv6
+	parameter in reopen(). Older gcc versions seem no to support member
+	variables as default arguments. I don't even know whether that's
+	allowed by the C++ standard or not.
+
 2007-02-25  Philipp Kern <phil@0x539.de>
 
 	* NEWS, configure.in: Version bump to 1.3.3
