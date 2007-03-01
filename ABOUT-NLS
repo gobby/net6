@@ -1,8 +1,0 @@
-Native Language Support
-=======================
-
-This package support native language support through GNU gettext. You need
-to install the latter first before localisations could be used. The
-configuration procedures will detect the presence of the library automatically
-and install the available translations into the system.
-
