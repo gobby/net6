@@ -518,7 +518,12 @@ void basic_client<selector_type>::connect_impl(const address& addr)
 	conn->encrypted_event().connect(
 		sigc::mem_fun(*this, &basic_client::on_encrypted_event) );
 
-	conn->connect(addr);
+	try {
+		conn->connect(addr);
+	} catch(net6::error& e) {
+		conn.reset(NULL);
+		throw e;
+	}
 }
 
 template<typename selector_type>
