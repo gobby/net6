@@ -245,7 +245,7 @@ net6::ipv4_address::list(const std::string& hostname, unsigned int port)
 
 net6::ipv4_address& net6::ipv4_address::operator=(const ipv4_address& other)
 {
-	if(this != &other) return *this;
+	if(this == &other) return *this;
 
 	sockaddr_in* my_addr = reinterpret_cast<sockaddr_in*>(addr);
 	sockaddr_in* other_addr = reinterpret_cast<sockaddr_in*>(other.addr);
@@ -473,7 +473,7 @@ net6::ipv6_address::list(const std::string& hostname, unsigned int port,
 
 net6::ipv6_address& net6::ipv6_address::operator=(const ipv6_address& other)
 {
-	if(this != &other) return *this;
+	if(this == &other) return *this;
 
 	sockaddr_in6* my_addr = reinterpret_cast<sockaddr_in6*>(addr);
 	sockaddr_in6* other_addr = reinterpret_cast<sockaddr_in6*>(other.addr);
