@@ -390,16 +390,16 @@ void basic_server<selector_type>::remove_client(const user* user)
 	on_disconnect(*user);
 
 	// Store ID of client to remove
-	unsigned int user_id = user->get_id();
+	unsigned int user_id = user->is_logged_in() ? user->get_id() : 0;
 	// Remove user to prevent server from sending the packet to the
 	// user we are currently removing
 	basic_object<selector_type>::user_remove(user);
 
 	// Build packet for other clients
-	if(user->is_logged_in() )
+	if(user_id)
 	{
 		packet pack("net6_client_part");
-		pack << user->get_id();
+		pack << user_id;
 		send(pack);
 	}
 }

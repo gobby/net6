@@ -1,3 +1,7 @@
+2007-05-21 Benjamin Herr <ben@0x539.de>
+
+	* inc/server.hpp: fixed user object access after deallocation
+
 2007-04-15  Philipp Kern <phil@0x539.de>
 
 	* NEWS, configure.ac: bump version to 1.3.4, try to document
