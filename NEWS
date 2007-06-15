@@ -1,6 +1,9 @@
 net6
 ====
 
+Version 1.3.5:
+ * Bug fix release, fixing a deference of an already freed pointer
+
 Version 1.3.4:
  * Compilation fixes
  * Bug fixes, one of them had the potential to crash the application
