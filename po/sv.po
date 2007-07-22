@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: net6 1.2.0\n"
 "Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
-"POT-Creation-Date: 2006-03-25 10:48+0100\n"
-"PO-Revision-Date: 2006-04-03 13:44+0000\n"
+"POT-Creation-Date: 2007-07-20 20:37+0200\n"
+"PO-Revision-Date: 2007-07-20 20:50+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,276 +16,275 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Rosetta-Version: 0.1\n"
 
-#: src/error.cpp:42
+#: ../src/error.cpp:42
 msgid "Invalid name"
 msgstr "Ogiltigt namn"
 
-#: src/error.cpp:44
+#: ../src/error.cpp:44
 msgid "Name is already in use"
 msgstr "Namnet används redan"
 
-#: src/error.cpp:46
+#: ../src/error.cpp:46
 msgid "An unknown login error occured"
-msgstr "Ett okänt loginfel inträffade"
+msgstr "Ett okänt inloggningsfel inträffade"
 
-#: src/error.cpp:394
+#: ../src/error.cpp:394
 msgid "Interrupted function call"
 msgstr "Avbrutet funktionsanrop"
 
-#: src/error.cpp:396
+#: ../src/error.cpp:396
 msgid "Access denied"
 msgstr "Åtkomst nekad"
 
-#: src/error.cpp:398
+#: ../src/error.cpp:398
 msgid "Bad address"
-msgstr "Felaktig address"
+msgstr "Felaktig adress"
 
-#: src/error.cpp:400
+#: ../src/error.cpp:400
 msgid "Invalid argument"
 msgstr "Ogiltigt argument"
 
-#: src/error.cpp:402
+#: ../src/error.cpp:402
 msgid "Too many open files"
 msgstr "För många öppna filer"
 
-#: src/error.cpp:404
+#: ../src/error.cpp:404
 msgid "Resource temporarily unavailable"
 msgstr "Resurs temporärt otillgänglig"
 
-#: src/error.cpp:406
+#: ../src/error.cpp:406
 msgid "Operation already in progress"
-msgstr "Operation redan igång"
+msgstr "Operationen redan igång"
 
-#: src/error.cpp:408
+#: ../src/error.cpp:408
 msgid "Socket operation on non-socket"
-msgstr "Socketoperation på icke-socket"
+msgstr "Uttagsoperation på icke-uttag"
 
-#: src/error.cpp:410
+#: ../src/error.cpp:410
 msgid "Destination address required"
-msgstr "Destinationsaddress krävs"
+msgstr "Destinationsadress krävs"
 
-#: src/error.cpp:412
+#: ../src/error.cpp:412
 msgid "Message too long"
 msgstr "Meddelandet för långt"
 
-#: src/error.cpp:414
+#: ../src/error.cpp:414
 msgid "Protocol wrong type for socket"
-msgstr "Protokollet är fel typ för socket"
+msgstr "Protokollet är fel typ för uttag"
 
-#: src/error.cpp:416
+#: ../src/error.cpp:416
 msgid "Bad protocol option"
-msgstr "Fel protokollinställning"
+msgstr "Fel protokollflagga"
 
-#: src/error.cpp:418
+#: ../src/error.cpp:418
 msgid "Protocol not supported"
 msgstr "Protokollet stöds inte"
 
-#: src/error.cpp:420
+#: ../src/error.cpp:420
 msgid "Socket type not supported"
-msgstr "Sockettypen stöds inte"
+msgstr "Uttagstypen stöds inte"
 
-#: src/error.cpp:422
+#: ../src/error.cpp:422
 msgid "Operation not supported"
 msgstr "Operationen stöds inte"
 
-#: src/error.cpp:424
+#: ../src/error.cpp:424
 msgid "Protocol family not supported"
 msgstr "Protokollfamiljen stöds inte"
 
-#: src/error.cpp:426
+#: ../src/error.cpp:426
 msgid "Address family not supported"
-msgstr "Addressfamiljen stöds inte"
+msgstr "Adressfamiljen stöds inte"
 
-#: src/error.cpp:428
+#: ../src/error.cpp:428
 msgid "Address is already in use"
-msgstr "Addressen används redan"
+msgstr "Adressen används redan"
 
-#: src/error.cpp:430
+#: ../src/error.cpp:430
 msgid "Cannot assign requested address"
-msgstr "Kan inte tilldela önskad address"
+msgstr "Kan inte tilldela begärd adress"
 
-#: src/error.cpp:432
+#: ../src/error.cpp:432
 msgid "Network is down"
 msgstr "Nätverket är nere"
 
-#: src/error.cpp:434
+#: ../src/error.cpp:434
 msgid "Network is unreachable"
-msgstr "Nätverket är inte tillgängligt"
+msgstr "Nätverket är inte nåbart"
 
-#: src/error.cpp:436
+#: ../src/error.cpp:436
 msgid "Network dropped connection on reset"
-msgstr "Nätverket tappade anslutningen vid återställning"
+msgstr "Nätverket tappade anslutningen vid nollställning"
 
-#: src/error.cpp:438
+#: ../src/error.cpp:438
 msgid "Software caused connection abort"
-msgstr "Mjukvaran orsakade att anslutningen bröts"
+msgstr "Programvaran orsakade att anslutningen bröts"
 
-#: src/error.cpp:440
+#: ../src/error.cpp:440
 msgid "Connection reset by peer"
 msgstr "Anslutningen nollställdes av motparten"
 
-#: src/error.cpp:442
+#: ../src/error.cpp:442
 msgid "No buffer space available"
 msgstr "Inget buffertutrymme tillgängligt"
 
-#: src/error.cpp:444
+#: ../src/error.cpp:444
 msgid "Socket is already connected"
-msgstr "Socket är redan ansluten"
+msgstr "Uttaget är redan anslutet"
 
-#: src/error.cpp:446
+#: ../src/error.cpp:446
 msgid "Socket is not connected"
-msgstr "Socket är inte ansluten"
+msgstr "Uttaget är inte anslutet"
 
-#: src/error.cpp:448
+#: ../src/error.cpp:448
 msgid "Cannot send after socket shutdown"
-msgstr "Kan inte skicka efter nedstängning av socket"
+msgstr "Kan inte skicka efter nedstängning av uttag"
 
-#: src/error.cpp:450
+#: ../src/error.cpp:450
 msgid "Connection timed out"
 msgstr "Anslutningen överskred tidsgräns"
 
-#: src/error.cpp:452
+#: ../src/error.cpp:452
 msgid "Connection refused"
-msgstr "Anslutningen nekad"
+msgstr "Anslutningen nekades"
 
-#: src/error.cpp:454
+#: ../src/error.cpp:454
 msgid "Host is down"
 msgstr "Värdsystemet är nere"
 
-#: src/error.cpp:456
+#: ../src/error.cpp:456
 msgid "No route to host"
-msgstr "Ingen rutt till värden"
+msgstr "Ingen väg till värden"
 
-#: src/error.cpp:458
+#: ../src/error.cpp:458
 msgid "Too many processes"
 msgstr "För många processer"
 
-#: src/error.cpp:460
+#: ../src/error.cpp:460
 msgid "Network subsystem is unavailable"
 msgstr "Nätverksundersystemet är otillgängligt"
 
-#: src/error.cpp:462
+#: ../src/error.cpp:462
 msgid "Winsock.dll version out of range"
-msgstr "Winsock.dll version utanför gränsen"
+msgstr "Winsock.dll version utanför intervallet"
 
-#: src/error.cpp:464
+#: ../src/error.cpp:464
 msgid "Successful WSAStartup not yet performed"
 msgstr "Korrekt WSAStartup ännu inte genomförd"
 
-#: src/error.cpp:466
+#: ../src/error.cpp:466
 msgid "Graceful shutdown in progress"
-msgstr "Snäll nedstängning genomförs"
+msgstr "Snäll nedstängning pågår"
 
-#: src/error.cpp:468
+#: ../src/error.cpp:468
 msgid "Class type not found"
-msgstr "Klasstyp inte funnen"
+msgstr "Klasstypen hittades inte"
 
-#: src/error.cpp:470
+#: ../src/error.cpp:470
 msgid "Host not found"
-msgstr "Värdsystem hittades inte"
+msgstr "Värdsystemet hittades inte"
 
-#: src/error.cpp:472
+#: ../src/error.cpp:472
 msgid "Nonauthoritative host not found"
-msgstr "Icke-aktoritär värd inte funnen"
+msgstr "Icke-aktoritär värd hittades inte"
 
-#: src/error.cpp:474
+#: ../src/error.cpp:474
 msgid "No data record of requested type"
-msgstr "Ingen datapost för önskad typ"
+msgstr "Ingen datapost för begärd typ"
 
-#: src/error.cpp:476
+#: ../src/error.cpp:476
 msgid "Specified event object handle is invalid"
 msgstr "Angivet händelseobjektnamn är ogiltigt"
 
-#: src/error.cpp:478
+#: ../src/error.cpp:478
 msgid "One or more parameters are invalid"
 msgstr "En eller flera parametrar är ogiltiga"
 
-#: src/error.cpp:480
+#: ../src/error.cpp:480
 msgid "No more memory is available"
 msgstr "Inget mer minne är tillgängligt"
 
-#: src/error.cpp:482
+#: ../src/error.cpp:482
 msgid "Broken pipe"
 msgstr "Brutet rör"
 
-#: src/error.cpp:484
+#: ../src/error.cpp:484
 msgid "No such device"
 msgstr "Ingen sådan enhet"
 
-#: src/error.cpp:486
+#: ../src/error.cpp:486
 msgid "Decryption has failed"
-msgstr ""
+msgstr "Dekrypteringen misslyckades"
 
-#: src/error.cpp:488
-msgid ""
-"The Diffie Hellman prime sent by the server is not acceptable (not long "
-"enough)"
-msgstr ""
+#: ../src/error.cpp:488
+msgid "The Diffie Hellman prime sent by the server is not acceptable (not long enough)"
+msgstr "Diffie Hellman prime som skickades av servern är inte acceptabel (inte tillräckligt lång)"
 
-#: src/error.cpp:491
+#: ../src/error.cpp:491
 msgid "Encryption has failed"
-msgstr ""
+msgstr "Krypteringen misslyckades"
 
-#: src/error.cpp:493
+#: ../src/error.cpp:493
 msgid "TLS Application data were received, while expecting handshake data"
-msgstr ""
+msgstr "TLS-programdata togs emot, men förväntade handskakningsdata"
 
-#: src/error.cpp:496
+#: ../src/error.cpp:496
 msgid "Insufficient credentials for that request"
-msgstr ""
+msgstr "Otillräcklig behörighet för den begäran"
 
-#: src/error.cpp:498
+#: ../src/error.cpp:498
 msgid "The request is invalid"
-msgstr ""
+msgstr "Begäran är ogiltig"
 
-#: src/error.cpp:500
+#: ../src/error.cpp:500
 msgid "Key usage violation in certificate has been detected"
-msgstr ""
+msgstr "Överträdelse i certifikatets nyckelanvändning upptäcktes"
 
-#: src/error.cpp:503
+#: ../src/error.cpp:503
 msgid "The Message Authentication Code verification failed"
-msgstr ""
+msgstr "Verifiering av Message Authentication Code misslyckades"
 
-#: src/error.cpp:506
+#: ../src/error.cpp:506
 msgid "The peer did not send any certificate"
-msgstr ""
+msgstr "Motparten skickade inget certifikat"
 
-#: src/error.cpp:508
+#: ../src/error.cpp:508
 msgid "No temporary DH parameters were found"
-msgstr ""
+msgstr "Inga temporära DH-parametrar hittades"
 
-#: src/error.cpp:510
+#: ../src/error.cpp:510
 msgid "No temporary RSA parameters were found"
-msgstr ""
+msgstr "Inga temporära RSA-parametrar hittades"
 
-#: src/error.cpp:512
+#: ../src/error.cpp:512
 msgid "Error in the pull function"
-msgstr ""
+msgstr "Fel i pull-funktionen"
 
-#: src/error.cpp:514
+#: ../src/error.cpp:514
 msgid "Error in the push function"
-msgstr ""
+msgstr "Fel i push-funktionen"
 
-#: src/error.cpp:516
+#: ../src/error.cpp:516
 msgid "Failed to acquire random data"
-msgstr ""
+msgstr "Misslyckades med att hämta in slumpmässig data"
 
-#: src/error.cpp:518
+#: ../src/error.cpp:518
 msgid "Rehandshake was requested by the peer"
-msgstr ""
+msgstr "Återhandskakning begärdes av motparten"
 
-#: src/error.cpp:520
+#: ../src/error.cpp:520
 msgid "An unexpected TLS handshake packet was received"
-msgstr ""
+msgstr "Ett oväntat TLS-handskakningspaket togs emot"
 
-#: src/error.cpp:523
+#: ../src/error.cpp:523
 msgid "An unexpected TLS packet was received"
-msgstr ""
+msgstr "Ett oväntat TLS-paket togs emot"
 
-#: src/error.cpp:525
+#: ../src/error.cpp:525
 msgid "A TLS packet with unexpected length was received."
-msgstr ""
+msgstr "Ett TLS-paket med oväntad längd togs emot."
 
-#: src/error.cpp:528
+#: ../src/error.cpp:528
 msgid "A nonrecoverable error has occured"
 msgstr "Ett icke-återställbart fel har inträffat"
+
