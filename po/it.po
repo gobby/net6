@@ -1,16 +1,16 @@
-# Spanish translation for net6
-# Copyright (c) (c) 2006 Canonical Ltd, and Rosetta Contributors 2006
+# Italian translation for net6
+# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
 # This file is distributed under the same license as the net6 package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2006.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: net6\n"
 "Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
 "POT-Creation-Date: 2007-12-01 14:45+0100\n"
-"PO-Revision-Date: 2006-08-15 17:08+0000\n"
-"Last-Translator: Rolando Espinoza <darkrho@gmail.com>\n"
-"Language-Team: Spanish <es@li.org>\n"
+"PO-Revision-Date: 2007-11-30 18:26+0000\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>\n"
+"Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,279 +19,277 @@ msgstr ""
 
 #: src/error.cpp:42
 msgid "Invalid name"
-msgstr "Nombre inválido"
+msgstr "Nome non valido"
 
 #: src/error.cpp:44
 msgid "Name is already in use"
-msgstr "Ese nombre ya esta en uso"
+msgstr "Il nome è già in uso"
 
 #: src/error.cpp:46
 msgid "An unknown login error occured"
-msgstr "Error de inicio de sesión desconocida"
+msgstr "Si è verificato un errore di accesso sconosciuto"
 
 #: src/error.cpp:394
 msgid "Interrupted function call"
-msgstr "Llamada a la función interrumpida"
+msgstr "Chiamata di funzione interrotta"
 
 #: src/error.cpp:396
 msgid "Access denied"
-msgstr "Accesso denegado"
+msgstr "Accesso negato"
 
 #: src/error.cpp:398
 msgid "Bad address"
-msgstr "Dirección incorrecta"
+msgstr "Indirizzo errato"
 
 #: src/error.cpp:400
 msgid "Invalid argument"
-msgstr "Argumentos inválidos"
+msgstr "Argomento non valido"
 
 #: src/error.cpp:402
 msgid "Too many open files"
-msgstr "Muchos archivos abiertos"
+msgstr "Troppi file aperti"
 
 #: src/error.cpp:404
 msgid "Resource temporarily unavailable"
-msgstr "Recurso temporalmente no disponible"
+msgstr "Risorsa temporaneamente non disponibile"
 
 #: src/error.cpp:406
 msgid "Operation already in progress"
-msgstr "La operación ya esta en progreso"
+msgstr "Operazione già in corso"
 
 #: src/error.cpp:408
 msgid "Socket operation on non-socket"
-msgstr "Operación de Socket en un socket inválido"
+msgstr "Operazione per socket su non-socket"
 
 #: src/error.cpp:410
 msgid "Destination address required"
-msgstr "Dirección de destino requerida"
+msgstr "Richiesto indirizzo di destinazione"
 
 #: src/error.cpp:412
 msgid "Message too long"
-msgstr "Mensaje muy largo"
+msgstr "Messaggio troppo lungo"
 
 #: src/error.cpp:414
 msgid "Protocol wrong type for socket"
-msgstr "Tipo de protocolo inválido para el socket"
+msgstr "Tipo errato di protocollo per il socket"
 
 #: src/error.cpp:416
 msgid "Bad protocol option"
-msgstr "Opción inválida de protocolo"
+msgstr "Opzione protocollo errata"
 
 #: src/error.cpp:418
 msgid "Protocol not supported"
-msgstr "Protocolo no soportado"
+msgstr "Protocollo non supportato"
 
 #: src/error.cpp:420
 msgid "Socket type not supported"
-msgstr "Tipo de socket no soportado"
+msgstr "Tipo di socket non supportato"
 
 #: src/error.cpp:422
 msgid "Operation not supported"
-msgstr "Operación no soportada"
+msgstr "Operazione non supportata"
 
 #: src/error.cpp:424
 msgid "Protocol family not supported"
-msgstr "Familia de protocolos no soportados"
+msgstr "Famiglia di protocolli non supportata"
 
 #: src/error.cpp:426
 msgid "Address family not supported"
-msgstr "Familia de direcciones no soportada"
+msgstr "Famiglia di indirizzi non supportata"
 
 #: src/error.cpp:428
 msgid "Address is already in use"
-msgstr "La dirección ya esta en uso"
+msgstr "Indirizzo già in uso"
 
 #: src/error.cpp:430
 msgid "Cannot assign requested address"
-msgstr ""
-":   \t \t\r\n"
-"No se puede asignar la dirección solicitada"
+msgstr "Impossibile assegnare l'indirizzo richiesto"
 
 #: src/error.cpp:432
 msgid "Network is down"
-msgstr "Sin conexión de red"
+msgstr "La rete non è disponibile"
 
 #: src/error.cpp:434
 msgid "Network is unreachable"
-msgstr "Red inalcanzable"
+msgstr "La rete non è raggiungibile"
 
 #: src/error.cpp:436
 msgid "Network dropped connection on reset"
-msgstr "La red rechazó la conexión al reiniciar"
+msgstr "Connessione interrotta da una reinizializzazione"
 
 #: src/error.cpp:438
 msgid "Software caused connection abort"
-msgstr "Conexión cancelada por software"
+msgstr "Connessione interrotta per un problema software"
 
 #: src/error.cpp:440
 msgid "Connection reset by peer"
-msgstr "Conexión reiniciada por el par"
+msgstr "Connessione interrotta dal corrispondente"
 
 #: src/error.cpp:442
 msgid "No buffer space available"
-msgstr "o hay espacio de buffer disponible"
+msgstr "Nessuno spazio di buffer disponibile"
 
 #: src/error.cpp:444
 msgid "Socket is already connected"
-msgstr "Socket ya tienen conexión"
+msgstr "Socket già connesso"
 
 #: src/error.cpp:446
 msgid "Socket is not connected"
-msgstr "Socket sin conexión"
+msgstr "Socket non connesso"
 
 #: src/error.cpp:448
 msgid "Cannot send after socket shutdown"
-msgstr "No puedo enviar despues de cerrar el socket"
+msgstr "Impossibile inviare dopo l'arresto del socket"
 
 #: src/error.cpp:450
 msgid "Connection timed out"
-msgstr "Tiempo de conexión expirado"
+msgstr "Connessione scaduta"
 
 #: src/error.cpp:452
 msgid "Connection refused"
-msgstr "Conexión rechazada"
+msgstr "Connessione rifiutata"
 
 #: src/error.cpp:454
 msgid "Host is down"
-msgstr "Máquina remota no disponible"
+msgstr "L'host è disattivato"
 
 #: src/error.cpp:456
 msgid "No route to host"
-msgstr "Sin ruta a la máquina"
+msgstr "Nessun instradamento per l'host"
 
 #: src/error.cpp:458
 msgid "Too many processes"
-msgstr "Muchos procesos"
+msgstr "Troppi processi"
 
 #: src/error.cpp:460
 msgid "Network subsystem is unavailable"
-msgstr "Subsistema de red no disponible"
+msgstr "Il sottosistema di rete non è disponibile"
 
 #: src/error.cpp:462
 msgid "Winsock.dll version out of range"
-msgstr "Verisón de Winsock.dll fuera de rango"
+msgstr "Versione di winsock.dll fuori misura"
 
 #: src/error.cpp:464
 msgid "Successful WSAStartup not yet performed"
-msgstr "WSAStartup exitoso todavía no realizado"
+msgstr "WSAStartup non è stato ancora eseguito con successo"
 
 #: src/error.cpp:466
 msgid "Graceful shutdown in progress"
-msgstr "Apagado en progreso"
+msgstr "Procedura di graceful shutdown in corso"
 
 #: src/error.cpp:468
 msgid "Class type not found"
-msgstr "Tipo de clase no encontrada"
+msgstr "Tipo di classe non trovata"
 
 #: src/error.cpp:470
 msgid "Host not found"
-msgstr "Máquina no encontrada"
+msgstr "Host non trovato"
 
 #: src/error.cpp:472
 msgid "Nonauthoritative host not found"
-msgstr "Máquina no-autoritaria no encontrada"
+msgstr "Host non-authoritative non trovato"
 
 #: src/error.cpp:474
 msgid "No data record of requested type"
-msgstr "Sin datos registrados del tipo requerido"
+msgstr "Nessun record di dati del tipo richiesto"
 
 #: src/error.cpp:476
 msgid "Specified event object handle is invalid"
-msgstr "Manejador de evento del objecto especificado inválido"
+msgstr "Gestione dell'oggetto dell'evento specificato non valida"
 
 #: src/error.cpp:478
 msgid "One or more parameters are invalid"
-msgstr "Uno o más parametros inválidos"
+msgstr "Uno o più parametri non sono validi"
 
 #: src/error.cpp:480
 msgid "No more memory is available"
-msgstr "No hay más memoria disponible"
+msgstr "Non è disponibile altra memoria"
 
 #: src/error.cpp:482
 msgid "Broken pipe"
-msgstr "Tubería rota"
+msgstr "Pipe rotta"
 
 #: src/error.cpp:484
 msgid "No such device"
-msgstr "No se encuentra el dispositivo"
+msgstr "Device inesistente"
 
 #: src/error.cpp:486
 msgid "Decryption has failed"
-msgstr "Descodificacíon fallida"
+msgstr "Decifratura fallita"
 
 #: src/error.cpp:488
 msgid ""
 "The Diffie Hellman prime sent by the server is not acceptable (not long "
 "enough)"
 msgstr ""
-"El primo Diffie Hellman envíado por el servidor no es aceptable (no es lo "
-"suficiente grande)"
+"Il numero primo Diffie Hellman trasmesso dal server non è accettabile (non "
+"abbastanza lungo)"
 
 #: src/error.cpp:491
 msgid "Encryption has failed"
-msgstr "Encriptación fallida"
+msgstr "Cifratura fallita"
 
 #: src/error.cpp:493
 msgid "TLS Application data were received, while expecting handshake data"
-msgstr ""
-"Datos de aplicación TLS recibida, mientras se esperada el handshake de datos"
+msgstr "Dati TLS Application ricevuti, in attesa dei dati di handshake"
 
 #: src/error.cpp:496
 msgid "Insufficient credentials for that request"
-msgstr "Credenciales insuficientes para la petición"
+msgstr "Credenziali non sufficienti per quella richiesta"
 
 #: src/error.cpp:498
 msgid "The request is invalid"
-msgstr "La consulta es inválida"
+msgstr "La richiesta non è valida"
 
 #: src/error.cpp:500
 msgid "Key usage violation in certificate has been detected"
-msgstr "Uso incorrecto de llave en el certificado ha sido detectada"
+msgstr ""
+"È stata riscontrata una violazione di utilizzo della chiave nel certificato"
 
 #: src/error.cpp:503
 msgid "The Message Authentication Code verification failed"
-msgstr "La verificación del Mensaje del Código de Autentificación falló"
+msgstr "La verifica del codice per l'autenticazione del messaggio è fallita"
 
 #: src/error.cpp:506
 msgid "The peer did not send any certificate"
-msgstr "El equipo remoto no envió ningún certificado"
+msgstr "Nessun certificato trasmesso dal corrispondente"
 
 #: src/error.cpp:508
 msgid "No temporary DH parameters were found"
-msgstr "Parametros DH no temporales han sido encontrados"
+msgstr "Non sono stati trovati parametri DH temporanei"
 
 #: src/error.cpp:510
 msgid "No temporary RSA parameters were found"
-msgstr "Parametros RSA no temporales han sido encontrados"
+msgstr "Non sono stati trovati parametri RSA temporanei"
 
 #: src/error.cpp:512
 msgid "Error in the pull function"
-msgstr "Error en la función 'pull'"
+msgstr "Errore nella funzione pull"
 
 #: src/error.cpp:514
 msgid "Error in the push function"
-msgstr "Error en la función 'push'"
+msgstr "Errore nella funzione push"
 
 #: src/error.cpp:516
 msgid "Failed to acquire random data"
-msgstr "Fallo al adquirir datos aleatorios"
+msgstr "Acquisizione dati casuali fallita"
 
 #: src/error.cpp:518
 msgid "Rehandshake was requested by the peer"
-msgstr ""
+msgstr "Un nuovo handshake è stato richiesto dal corrispondente"
 
 #: src/error.cpp:520
 msgid "An unexpected TLS handshake packet was received"
-msgstr ""
+msgstr "È stato ricevuto un pacchetto handshake TLS non atteso"
 
 #: src/error.cpp:523
 msgid "An unexpected TLS packet was received"
-msgstr "Se recibió un paquete TLS inesperado"
+msgstr "È stato ricevuto un pacchetto TLS imprevisto"
 
 #: src/error.cpp:525
 msgid "A TLS packet with unexpected length was received."
-msgstr "Se recibió un paquete TLS con longitud inesperada"
+msgstr "È stato ricevuto un pacchetto TLS di lunghezza imprevista."
 
 #: src/error.cpp:528
 msgid "A nonrecoverable error has occured"
-msgstr "Ocurrió un error crítico"
+msgstr "Si è verificato un errore irreversibile"

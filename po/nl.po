@@ -6,14 +6,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: net6\n"
-"Report-Msgid-Bugs-To: http://darcs.0x539.de/trac/obby/\n"
-"POT-Creation-Date: 2006-03-25 10:48+0100\n"
+"Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
+"POT-Creation-Date: 2007-12-01 14:45+0100\n"
 "PO-Revision-Date: 2006-06-29 17:10+0000\n"
 "Last-Translator: Rik van achterberg <rik@vanachterberg.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2007-12-01 13:16+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: src/error.cpp:42
 msgid "Invalid name"
