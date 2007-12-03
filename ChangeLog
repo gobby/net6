@@ -1,3 +1,7 @@
+2007-12-03  Philipp Kern <phil@0x539.de>
+
+	* configure.ac: bump version to 1.3.6
+
 2007-12-01  Philipp Kern <phil@0x539.de>
 
 	* New Italian translation, thanks to Sergio Zanchetta.
