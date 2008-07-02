@@ -15,7 +15,7 @@ libnet6_la_LIBADD += -lws2_32 -lintl
 libnet6_la_LDFLAGS += -no-undefined
 endif
 
-INCLUDES = $(libnet6_CFLAGS) $(LIBGNUTLS_CFLAGS) -Iinc
+INCLUDES = $(libnet6_CFLAGS) $(LIBGNUTLS_CFLAGS) -I$(srcdir)/inc
 
 pkginclude_HEADERS = \
 	inc/enum_ops.hpp \
