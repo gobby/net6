@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: net6\n"
 "Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
-"POT-Creation-Date: 2006-03-25 10:48+0100\n"
+"POT-Creation-Date: 2007-12-01 14:45+0100\n"
 "PO-Revision-Date: 2006-06-29 17:10+0000\n"
 "Last-Translator: Rik.v.a. <rik@vanachterberg.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -231,8 +231,7 @@ msgstr "Versleuteling mislukt"
 
 #: src/error.cpp:493
 msgid "TLS Application data were received, while expecting handshake data"
-msgstr ""
-"TLS Applicatiedata is ontvangen, maar er werd handshakedata verwacht."
+msgstr "TLS Applicatiedata is ontvangen, maar er werd handshakedata verwacht."
 
 #: src/error.cpp:496
 msgid "Insufficient credentials for that request"
