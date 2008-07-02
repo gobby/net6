@@ -1,4 +1,4 @@
-2009-07-02  Philipp Kern  <phil@0x539.de>
+2008-07-02  Philipp Kern  <phil@0x539.de>
 
 	* Makefile.am: fix the file to work with `make distcheck'
 
