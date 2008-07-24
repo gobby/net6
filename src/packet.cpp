@@ -111,50 +111,98 @@ void net6::packet::enqueue(queue& queue) const
 
 std::string net6::packet::escape(const std::string& string)
 {
-	std::string escaped_string = string;
+	std::string escaped_string;
+
+	std::string::size_type escaped_size = string.size();
+
 	std::string::size_type pos = 0;
-	while( (pos = escaped_string.find_first_of("\\\n:", pos)) !=
+	while( (pos = string.find_first_of("\\\n:", pos)) !=
 				std::string::npos)
 	{
-		switch(escaped_string[pos])
+		++escaped_size;
+		++pos;
+	}
+
+	escaped_string.resize(escaped_size);
+
+	std::string::iterator p = escaped_string.begin();
+	for(std::string::const_iterator iter = string.begin();
+	     iter != string.end();
+	     ++iter)
+	{
+		char c = *iter;
+		switch(c)
 		{
 		case '\\':
-			escaped_string.replace(pos, 1, "\\b");
+			*(p++) = '\\';
+			*(p++) = 'b';
 			break;
 		case '\n':
-			escaped_string.replace(pos, 1, "\\n");
+			*(p++) = '\\';
+			*(p++) = 'n';
 			break;
 		case ':':
-			escaped_string.replace(pos, 1, "\\d");
+			*(p++) = '\\';
+			*(p++) = 'd';
+			break;
+		default:
+			*(p++) = c;
 			break;
 		}
-		pos += 2;
 	}
 	return escaped_string;
 }
 
 std::string net6::packet::unescape(const std::string& string)
 {
-	std::string unescaped_string = string;
+	std::string unescaped_string;
+
+	std::string::size_type unescaped_size = string.size();
 	std::string::size_type pos = 0;
-	while( (pos = unescaped_string.find('\\', pos)) != std::string::npos )
+	while( (pos = string.find('\\', pos)) != std::string::npos )
 	{
-		if(pos < unescaped_string.length() - 1)
+		if(pos < string.length() - 1)
 		{
-			switch(unescaped_string[pos + 1])
+			switch(string[pos + 1])
 			{
 			case 'b':
-				unescaped_string.replace(pos, 2, "\\");
-				break;
 			case 'n':
-				unescaped_string.replace(pos, 2, "\n");
-				break;
 			case 'd':
-				unescaped_string.replace(pos, 2, ":");
-				break;
+				--unescaped_size;
 			}
 		}
-		++ pos;
+		++pos;
+	}
+
+	unescaped_string.resize(unescaped_size);
+
+	std::string::iterator p = unescaped_string.begin();
+	for(std::string::const_iterator iter = string.begin();
+	     iter != string.end();
+	     ++iter)
+	{
+		char c = *iter;
+		if(c != '\\')
+		{
+			*(p++) = c;
+			continue;
+		}
+		
+		if (++iter == string.end()) break;
+		
+		c = *iter;
+		switch(c)
+		{
+		case 'b':
+			*(p++) = '\\';
+			break;
+		case 'n':
+			*(p++) = '\n';
+			break;
+		case 'd':
+			*(p++) = ':';
+			break;
+		}
 	}
 	return unescaped_string;
 }

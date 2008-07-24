@@ -1,3 +1,8 @@
+2008-07-24  Benjamin Herr  <ben@0x539.de>
+
+	* src/packet.cpp: Preallocate and only copy the string once when
+	escaping or unescaping it.
+
 2008-07-02  Philipp Kern  <phil@0x539.de>
 
 	* Makefile.am: fix the file to work with `make distcheck'
