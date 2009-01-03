@@ -1,6 +1,10 @@
 net6
 ====
 
+Version 1.3.9:
+ * Try to open both IPv6 and IPv4 listening sockets in case IPv6 sockets
+   do not accept IPv4 connections.
+
 Version 1.3.8:
  * Optimise the escaping of big packets (thanks to Benjamin Herr)
 
