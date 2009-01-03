@@ -654,7 +654,29 @@ void basic_server<selector_type>::reopen_impl(unsigned int port, bool ipv6)
 	selector_type& selector = basic_object<selector_type>::get_selector();
 
 	// Open IPv4 socket on local port
-	if(!ipv6)
+	if(ipv6)
+	{
+		ipv6_address bind_addr(port);
+		serv6_sock.reset(new tcp_server_socket(bind_addr) );
+
+		selector.set(*serv6_sock,
+			selector.get(*serv6_sock) | IO_INCOMING
+		);
+
+		serv6_sock->io_event().connect(
+			sigc::bind<0>(
+				sigc::mem_fun(
+					*this,
+					&basic_server::on_accept_event
+				),
+				sigc::ref(*serv6_sock)
+			)
+		);
+	}
+
+	// This might fail if bindv6only
+	// (/proc/sys/net/ipv6/bindv6only) is 0
+	try
 	{
 		ipv4_address bind_addr(port);
 		serv_sock.reset(new tcp_server_socket(bind_addr) );
@@ -673,24 +695,9 @@ void basic_server<selector_type>::reopen_impl(unsigned int port, bool ipv6)
 			)
 		);
 	}
-	else
+	catch(const net6::error& ex)
 	{
-		ipv6_address bind_addr(port);
-		serv6_sock.reset(new tcp_server_socket(bind_addr) );
-
-		selector.set(*serv6_sock,
-			selector.get(*serv6_sock) | IO_INCOMING
-		);
-
-		serv6_sock->io_event().connect(
-			sigc::bind<0>(
-				sigc::mem_fun(
-					*this,
-					&basic_server::on_accept_event
-				),
-				sigc::ref(*serv6_sock)
-			)
-		);
+		if(!ipv6) throw ex;
 	}
 }
 

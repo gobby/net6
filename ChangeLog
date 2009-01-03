@@ -1,3 +1,9 @@
+2009-01-03  Armin Burgmeier  <armin@0x539.de>
+
+	* inc/server.hpp: Try to open both IPv6 and IPv4 listening sockets.
+	This is required in case bindtov6only is 1 to also accept IPv4
+	connections in IPv6 mode.
+
 2008-07-24  Benjamin Herr  <ben@0x539.de>
 
 	* src/packet.cpp: Preallocate and only copy the string once when
