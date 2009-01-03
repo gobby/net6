@@ -1,3 +1,7 @@
+2008-07-24  Philipp Kern  <phil@0x539.de>
+
+	* NEWS, configure.ac: bump version to 1.3.8 and document the changes
+
 2008-07-24  Benjamin Herr  <ben@0x539.de>
 
 	* src/packet.cpp: Preallocate and only copy the string once when
