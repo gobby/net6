@@ -1,3 +1,8 @@
+2009-05-22  Armin Burgmeier  <armin@0x539.de>
+
+	* configure.ac: Locate gnutls via pkg-config, not libgnutls-config
+	which newer versions no longer have.
+
 2009-01-03  Philipp Kern  <phil@0x539.de>
 
 	* configure.ac:

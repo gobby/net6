@@ -72,18 +72,7 @@ AC_SUBST(addlibs)
 AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
 
 # Checks for libraries.
-PKG_CHECK_MODULES([libnet6], [sigc++-2.0])
-
-AM_PATH_LIBGNUTLS( 1.0.0,, AC_MSG_ERROR([[
-***
-*** libgnutls was not found. You may want to get it by using the
-*** package manager of your distribution or by compiling the source
-*** from ftp://ftp.gnutls.org/pub/gnutls/. This dependency is
-*** now mandatory.
-]]))
-addlibs="$addlibs $LIBGNUTLS_LIBS"
-addcflags="$LIBGNUTLS_CFLAGS"
-AC_SUBST(addcflags)
+PKG_CHECK_MODULES([libnet6], [sigc++-2.0, gnutls])
 
 # gettext / i18n
 AM_GNU_GETTEXT([external])
