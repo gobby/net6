@@ -281,7 +281,7 @@ void basic_server<selector_type>::shutdown()
 template<typename selector_type>
 bool basic_server<selector_type>::is_open() const
 {
-	return serv_sock.get() != NULL;
+	return serv_sock.get() != NULL || serv6_sock.get() != NULL;
 }
 
 template<typename selector_type>
