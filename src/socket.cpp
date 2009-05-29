@@ -59,6 +59,17 @@ namespace
 #endif
 	}
 
+	void set_reuseaddr(net6::tcp_socket::socket_type socket)
+	{
+#ifndef WIN32
+		// Allow fast restarts of servers by enabling SO_REUSEADDR
+		int value = 1;
+		if(setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &value,
+				sizeof(int)) == -1)
+			throw net6::error(net6::error::SYSTEM);
+#endif
+	}
+
 #ifndef WIN32
 	const int INVALID_SOCKET = -1;
 #endif
@@ -165,6 +176,7 @@ net6::socket::size_type net6::tcp_client_socket::recv(void* buf,
 net6::tcp_server_socket::tcp_server_socket(const address& bind_addr):
 	tcp_socket(bind_addr)
 {
+	set_reuseaddr(cobj() );
 	if(bind(cobj(), bind_addr.cobj(), bind_addr.get_size()) == -1)
 		throw error(net6::error::SYSTEM);
 	if(listen(cobj(), 0) == -1)

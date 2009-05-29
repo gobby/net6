@@ -1,5 +1,9 @@
 2009-05-29  Philipp Kern  <phil@0x539.de>
 
+	* src/socket.cpp: set SO_REUSEADDR on server sockets
+
+2009-05-29  Philipp Kern  <phil@0x539.de>
+
 	* inc/server.hpp: fix is_open to include serv6_sock
 
 2009-05-22  Armin Burgmeier  <armin@0x539.de>
