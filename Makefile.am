@@ -8,14 +8,14 @@ lib_LTLIBRARIES = libnet6.la
 # interface :  changes : compatibility
 libnet6_la_LDFLAGS = -version-info 0:0:0 -release 1.3
 
-libnet6_la_LIBADD = $(libnet6_LIBS) $(LIBGNUTLS_LIBS)
+libnet6_la_LIBADD = $(libnet6_LIBS)
 
 if WIN32
 libnet6_la_LIBADD += -lws2_32 -lintl
 libnet6_la_LDFLAGS += -no-undefined
 endif
 
-INCLUDES = $(libnet6_CFLAGS) $(LIBGNUTLS_CFLAGS) -I$(srcdir)/inc
+INCLUDES = $(libnet6_CFLAGS) -I$(srcdir)/inc
 
 pkginclude_HEADERS = \
 	inc/enum_ops.hpp \
