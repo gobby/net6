@@ -1,4 +1,4 @@
-2009-05-31  Pritt Laes  <plaes@plaes.org>
+2009-05-31  Priit Laes  <plaes@plaes.org>
 
 	* Makefile.am: Don't use LIBGNUTLS_LIBS and LIBGNUTLS_CFLAGS anymore,
 	as these variables are no longer set anyway.
