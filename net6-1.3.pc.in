@@ -8,5 +8,5 @@ Description: Library providing network access using IPv4/IPv6
 Requires: sigc++-2.0
 Version: @VERSION@
 Libs: -L${libdir} -lnet6 @addlibs@
-Cflags: -I${includedir} @addcflags@
+Cflags: -I${includedir}
 
