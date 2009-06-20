@@ -1,3 +1,7 @@
+2009-06-20  Armin Burgmeier  <armin@0x539.de>
+
+	* configure.ac: Removed superfluous comma.
+
 2009-06-01  Priit Laes  <plaes@plaes.org>
 
 	* net6.pc.in: Removed @addcflags@ from cflags, as this variable does

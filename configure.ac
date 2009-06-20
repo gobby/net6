@@ -72,7 +72,7 @@ AC_SUBST(addlibs)
 AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
 
 # Checks for libraries.
-PKG_CHECK_MODULES([libnet6], [sigc++-2.0, gnutls])
+PKG_CHECK_MODULES([libnet6], [sigc++-2.0 gnutls])
 
 # gettext / i18n
 AM_GNU_GETTEXT([external])
