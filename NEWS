@@ -1,6 +1,18 @@
 net6
 ====
 
+Version 1.3.10:
+ * Ensure compatibility with GnuTLS >= 2.7.x by relying on pkg-config.
+ * Set SO_REUSEADDR on server sockets to ensure fast server restarts.
+ * Updated translations: Spanish, Italian, French, Portuguese
+ * New translations:
+   - Hebrew
+   - Brazilian Portuguese
+   - Russian
+   - Simplified Chinese
+   - Norwegian Bokmal (partial)
+   - Slovak (partial)
+
 Version 1.3.9:
  * Try to open both IPv6 and IPv4 listening sockets in case IPv6 sockets
    do not accept IPv4 connections.
