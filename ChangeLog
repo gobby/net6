@@ -1,3 +1,8 @@
+2009-08-24  Philipp Kern  <phil@0x539.de>
+
+        * po/{es,fr,it,pt}.po: Update existing transitions from Ubuntu
+          Jaunty's translation branch.
+
 2009-06-20  Armin Burgmeier  <armin@0x539.de>
 
 	* configure.ac: Removed superfluous comma.

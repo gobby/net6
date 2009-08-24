@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: net6\n"
 "Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
 "POT-Creation-Date: 2007-12-01 14:45+0100\n"
-"PO-Revision-Date: 2006-08-15 17:08+0000\n"
-"Last-Translator: Rolando Espinoza <darkrho@gmail.com>\n"
+"PO-Revision-Date: 2008-10-07 06:35+0000\n"
+"Last-Translator: Paco Molinero <paco@byasl.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2007-12-01 13:16+0000\n"
+"X-Launchpad-Export-Date: 2009-08-24 12:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: src/error.cpp:42
@@ -278,11 +278,11 @@ msgstr "Fallo al adquirir datos aleatorios"
 
 #: src/error.cpp:518
 msgid "Rehandshake was requested by the peer"
-msgstr ""
+msgstr "Rehandshakefue requerido por el compañero"
 
 #: src/error.cpp:520
 msgid "An unexpected TLS handshake packet was received"
-msgstr ""
+msgstr "Se recibió un paquete de bienvenida TLS inesperado"
 
 #: src/error.cpp:523
 msgid "An unexpected TLS packet was received"

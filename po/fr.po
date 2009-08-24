@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: net6 1.2.0\n"
 "Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
 "POT-Creation-Date: 2007-12-01 14:45+0100\n"
-"PO-Revision-Date: 2006-04-03 13:45+0000\n"
-"Last-Translator: Nicolas Velin <nicolas@velin.fr>\n"
+"PO-Revision-Date: 2009-04-13 23:28+0000\n"
+"Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-07-02 07:40+0000\n"
+"X-Launchpad-Export-Date: 2009-08-24 12:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Rosetta-Version: 0.1\n"
 
@@ -164,7 +164,7 @@ msgstr "Trop de processus"
 
 #: src/error.cpp:460
 msgid "Network subsystem is unavailable"
-msgstr ""
+msgstr "Le sous-ensemble réseau est indisponible"
 
 #: src/error.cpp:462
 msgid "Winsock.dll version out of range"
@@ -180,11 +180,11 @@ msgstr "Arrêt régulier en cours"
 
 #: src/error.cpp:468
 msgid "Class type not found"
-msgstr ""
+msgstr "Type de classe introuvable"
 
 #: src/error.cpp:470
 msgid "Host not found"
-msgstr ""
+msgstr "Hôte introuvable"
 
 #: src/error.cpp:472
 msgid "Nonauthoritative host not found"
@@ -192,31 +192,31 @@ msgstr ""
 
 #: src/error.cpp:474
 msgid "No data record of requested type"
-msgstr ""
+msgstr "Pas d'enregistrement pour le type demandé"
 
 #: src/error.cpp:476
 msgid "Specified event object handle is invalid"
-msgstr ""
+msgstr "Le gestionnaire d'événement spécifié pour l'objet est invalide"
 
 #: src/error.cpp:478
 msgid "One or more parameters are invalid"
-msgstr ""
+msgstr "Un ou plusieurs paramètres sont invalides"
 
 #: src/error.cpp:480
 msgid "No more memory is available"
-msgstr ""
+msgstr "Plus de mémoire disponible"
 
 #: src/error.cpp:482
 msgid "Broken pipe"
-msgstr ""
+msgstr "Relais brisé (pipe)"
 
 #: src/error.cpp:484
 msgid "No such device"
-msgstr ""
+msgstr "Aucun périphérique de ce type"
 
 #: src/error.cpp:486
 msgid "Decryption has failed"
-msgstr ""
+msgstr "Le déchiffrement a échoué"
 
 #: src/error.cpp:488
 msgid ""
@@ -226,23 +226,25 @@ msgstr ""
 
 #: src/error.cpp:491
 msgid "Encryption has failed"
-msgstr ""
+msgstr "Le chiffrement a échoué"
 
 #: src/error.cpp:493
 msgid "TLS Application data were received, while expecting handshake data"
 msgstr ""
+"Des données applicatives TLS ont été reçues alors que des données de "
+"négociation étaient attendues."
 
 #: src/error.cpp:496
 msgid "Insufficient credentials for that request"
-msgstr ""
+msgstr "Droits insuffisants pour cette requête"
 
 #: src/error.cpp:498
 msgid "The request is invalid"
-msgstr ""
+msgstr "La requête n'est pas valide"
 
 #: src/error.cpp:500
 msgid "Key usage violation in certificate has been detected"
-msgstr ""
+msgstr "Une violation d'utilisation de clé dans le certificat a été détecté"
 
 #: src/error.cpp:503
 msgid "The Message Authentication Code verification failed"
@@ -250,44 +252,44 @@ msgstr ""
 
 #: src/error.cpp:506
 msgid "The peer did not send any certificate"
-msgstr ""
+msgstr "Le pair n'a pas envoyé de certificat"
 
 #: src/error.cpp:508
 msgid "No temporary DH parameters were found"
-msgstr ""
+msgstr "Aucun paramètre DH temporaire n'a été trouvé"
 
 #: src/error.cpp:510
 msgid "No temporary RSA parameters were found"
-msgstr ""
+msgstr "Aucun paramètre RSA temporaire n'a été trouvé"
 
 #: src/error.cpp:512
 msgid "Error in the pull function"
-msgstr ""
+msgstr "Erreur dans la fonction de pull"
 
 #: src/error.cpp:514
 msgid "Error in the push function"
-msgstr ""
+msgstr "Erreur dans la fonction de push"
 
 #: src/error.cpp:516
 msgid "Failed to acquire random data"
-msgstr ""
+msgstr "Impossible d'acquérir des données aléatoires"
 
 #: src/error.cpp:518
 msgid "Rehandshake was requested by the peer"
-msgstr ""
+msgstr "Une nouvelle poignée de main a été demandé par le pair"
 
 #: src/error.cpp:520
 msgid "An unexpected TLS handshake packet was received"
-msgstr ""
+msgstr "Un paquet de négociation TLS inattendu a été reçu"
 
 #: src/error.cpp:523
 msgid "An unexpected TLS packet was received"
-msgstr ""
+msgstr "Un paquet TLS inattendu a été reçu"
 
 #: src/error.cpp:525
 msgid "A TLS packet with unexpected length was received."
-msgstr ""
+msgstr "Un paquet TLS d'une longueur inattendue a été reçu."
 
 #: src/error.cpp:528
 msgid "A nonrecoverable error has occured"
-msgstr ""
+msgstr "Une erreur irréparable s'est produite"
