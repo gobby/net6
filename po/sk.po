@@ -1,0 +1,292 @@
+# Slovak translation for net6
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the net6 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: net6\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2007-12-01 14:45+0100\n"
+"PO-Revision-Date: 2008-04-21 03:51+0000\n"
+"Last-Translator: salwator <Unknown>\n"
+"Language-Team: Slovak <sk@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2009-08-24 12:28+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: src/error.cpp:42
+msgid "Invalid name"
+msgstr "Chybný názov"
+
+#: src/error.cpp:44
+msgid "Name is already in use"
+msgstr "Meno je už používané"
+
+#: src/error.cpp:46
+msgid "An unknown login error occured"
+msgstr "Objavila sa neznáma chyba počas prihlasovania"
+
+#: src/error.cpp:394
+msgid "Interrupted function call"
+msgstr "Prerušené volanie funkcie"
+
+#: src/error.cpp:396
+msgid "Access denied"
+msgstr "Prístup odmietnutý"
+
+#: src/error.cpp:398
+msgid "Bad address"
+msgstr "Neplatná adresa"
+
+#: src/error.cpp:400
+msgid "Invalid argument"
+msgstr "Neplatný argument"
+
+#: src/error.cpp:402
+msgid "Too many open files"
+msgstr "Príliš veľa otvorených súborov"
+
+#: src/error.cpp:404
+msgid "Resource temporarily unavailable"
+msgstr "Zdroje sú dočasne nedostupné"
+
+#: src/error.cpp:406
+msgid "Operation already in progress"
+msgstr "Operácia už prebieha"
+
+#: src/error.cpp:408
+msgid "Socket operation on non-socket"
+msgstr ""
+
+#: src/error.cpp:410
+msgid "Destination address required"
+msgstr "Požadovaná adresa cieľu"
+
+#: src/error.cpp:412
+msgid "Message too long"
+msgstr "Správa príliš dlhá"
+
+#: src/error.cpp:414
+msgid "Protocol wrong type for socket"
+msgstr ""
+
+#: src/error.cpp:416
+msgid "Bad protocol option"
+msgstr "Zlé nastavenie protokolu"
+
+#: src/error.cpp:418
+msgid "Protocol not supported"
+msgstr "Nepodporovaný protokol"
+
+#: src/error.cpp:420
+msgid "Socket type not supported"
+msgstr "Typ Socketu nie je podporovaný"
+
+#: src/error.cpp:422
+msgid "Operation not supported"
+msgstr "Operácia nie je podporovaná"
+
+#: src/error.cpp:424
+msgid "Protocol family not supported"
+msgstr "Rodina protokolu nepodporovaná"
+
+#: src/error.cpp:426
+msgid "Address family not supported"
+msgstr "Rodina adries nepodporovaná"
+
+#: src/error.cpp:428
+msgid "Address is already in use"
+msgstr "Adresa už je používaná"
+
+#: src/error.cpp:430
+msgid "Cannot assign requested address"
+msgstr "Nemôžem prideliť požadovanú adresu"
+
+#: src/error.cpp:432
+msgid "Network is down"
+msgstr "Sieť je vypnutá"
+
+#: src/error.cpp:434
+msgid "Network is unreachable"
+msgstr "Sieť je nedostupná"
+
+#: src/error.cpp:436
+msgid "Network dropped connection on reset"
+msgstr "Sieť prerušila spojenie pri reštarte"
+
+#: src/error.cpp:438
+msgid "Software caused connection abort"
+msgstr "Softvér spôsobil ukončenie spojenia"
+
+#: src/error.cpp:440
+msgid "Connection reset by peer"
+msgstr "Spojenie zrušené druhou stranou"
+
+#: src/error.cpp:442
+msgid "No buffer space available"
+msgstr "Nedostatok miesta v bufferi"
+
+#: src/error.cpp:444
+msgid "Socket is already connected"
+msgstr "Socket už je pripojený"
+
+#: src/error.cpp:446
+msgid "Socket is not connected"
+msgstr "Socket nepripojený"
+
+#: src/error.cpp:448
+msgid "Cannot send after socket shutdown"
+msgstr ""
+
+#: src/error.cpp:450
+msgid "Connection timed out"
+msgstr "Vypršal čas spojenia"
+
+#: src/error.cpp:452
+msgid "Connection refused"
+msgstr "Spojenie odmietnuté"
+
+#: src/error.cpp:454
+msgid "Host is down"
+msgstr "Hostiteľ je vypnutý"
+
+#: src/error.cpp:456
+msgid "No route to host"
+msgstr "Cesta k hostiteľovi neexistuje"
+
+#: src/error.cpp:458
+msgid "Too many processes"
+msgstr "Príliš veľa procesov"
+
+#: src/error.cpp:460
+msgid "Network subsystem is unavailable"
+msgstr ""
+
+#: src/error.cpp:462
+msgid "Winsock.dll version out of range"
+msgstr ""
+
+#: src/error.cpp:464
+msgid "Successful WSAStartup not yet performed"
+msgstr ""
+
+#: src/error.cpp:466
+msgid "Graceful shutdown in progress"
+msgstr ""
+
+#: src/error.cpp:468
+msgid "Class type not found"
+msgstr ""
+
+#: src/error.cpp:470
+msgid "Host not found"
+msgstr "Hostiteľ nenájdený"
+
+#: src/error.cpp:472
+msgid "Nonauthoritative host not found"
+msgstr ""
+
+#: src/error.cpp:474
+msgid "No data record of requested type"
+msgstr ""
+
+#: src/error.cpp:476
+msgid "Specified event object handle is invalid"
+msgstr ""
+
+#: src/error.cpp:478
+msgid "One or more parameters are invalid"
+msgstr "Jeden alebo viac parametrov je nesprávnych"
+
+#: src/error.cpp:480
+msgid "No more memory is available"
+msgstr "Nie je dostupná žiadna ďalšia pamäť"
+
+#: src/error.cpp:482
+msgid "Broken pipe"
+msgstr ""
+
+#: src/error.cpp:484
+msgid "No such device"
+msgstr "Nejestvuje takéto zariadenie"
+
+#: src/error.cpp:486
+msgid "Decryption has failed"
+msgstr "Dešifrovanie zlyhalo"
+
+#: src/error.cpp:488
+msgid ""
+"The Diffie Hellman prime sent by the server is not acceptable (not long "
+"enough)"
+msgstr ""
+
+#: src/error.cpp:491
+msgid "Encryption has failed"
+msgstr "Šifrovanie zlyhalo"
+
+#: src/error.cpp:493
+msgid "TLS Application data were received, while expecting handshake data"
+msgstr ""
+
+#: src/error.cpp:496
+msgid "Insufficient credentials for that request"
+msgstr ""
+
+#: src/error.cpp:498
+msgid "The request is invalid"
+msgstr "Požiadavka je nesprávna"
+
+#: src/error.cpp:500
+msgid "Key usage violation in certificate has been detected"
+msgstr ""
+
+#: src/error.cpp:503
+msgid "The Message Authentication Code verification failed"
+msgstr ""
+
+#: src/error.cpp:506
+msgid "The peer did not send any certificate"
+msgstr ""
+
+#: src/error.cpp:508
+msgid "No temporary DH parameters were found"
+msgstr ""
+
+#: src/error.cpp:510
+msgid "No temporary RSA parameters were found"
+msgstr ""
+
+#: src/error.cpp:512
+msgid "Error in the pull function"
+msgstr ""
+
+#: src/error.cpp:514
+msgid "Error in the push function"
+msgstr ""
+
+#: src/error.cpp:516
+msgid "Failed to acquire random data"
+msgstr ""
+
+#: src/error.cpp:518
+msgid "Rehandshake was requested by the peer"
+msgstr ""
+
+#: src/error.cpp:520
+msgid "An unexpected TLS handshake packet was received"
+msgstr ""
+
+#: src/error.cpp:523
+msgid "An unexpected TLS packet was received"
+msgstr ""
+
+#: src/error.cpp:525
+msgid "A TLS packet with unexpected length was received."
+msgstr ""
+
+#: src/error.cpp:528
+msgid "A nonrecoverable error has occured"
+msgstr ""

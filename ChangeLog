@@ -1,5 +1,11 @@
 2009-08-24  Philipp Kern  <phil@0x539.de>
 
+	* po/{he,nb,pt_BR,ru,sk,zh_CN}.po: Import Hebrew, Norwegian Bokmal,
+	  Brazilian Portuguese, Russian, Slovak and Simplified Chinese
+	  from Ubuntu Jaunty's translation branch.
+
+2009-08-24  Philipp Kern  <phil@0x539.de>
+
         * po/{es,fr,it,pt}.po: Update existing transitions from Ubuntu
           Jaunty's translation branch.
 
