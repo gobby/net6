@@ -1,0 +1,300 @@
+# Copyright (C) YEAR 0x539 dev group
+# This file is distributed under the same license as the net6 package.
+#
+# Yuri Chornoivan <yurchor@ukr.net>, 2009.
+msgid ""
+msgstr ""
+"Project-Id-Version: net6_uk\n"
+"Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
+"POT-Creation-Date: 2007-12-01 14:45+0100\n"
+"PO-Revision-Date: 2009-10-11 13:40+0300\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"Language-Team: Ukrainian <translation@linux.org.ua>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 0.3\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/error.cpp:42
+msgid "Invalid name"
+msgstr "Некоректне ім’я"
+
+#: src/error.cpp:44
+msgid "Name is already in use"
+msgstr "Це ім’я вже кимось використано"
+
+#: src/error.cpp:46
+msgid "An unknown login error occured"
+msgstr "Сталася невизначена помилка реєстрації"
+
+#: src/error.cpp:394
+msgid "Interrupted function call"
+msgstr "Перерваний виклик функції"
+
+#: src/error.cpp:396
+msgid "Access denied"
+msgstr "Доступ заборонено"
+
+#: src/error.cpp:398
+msgid "Bad address"
+msgstr "Неправильна адреса"
+
+#: src/error.cpp:400
+msgid "Invalid argument"
+msgstr "Некоректний аргумент"
+
+#: src/error.cpp:402
+msgid "Too many open files"
+msgstr "Забагато відкритих файлів"
+
+#: src/error.cpp:404
+msgid "Resource temporarily unavailable"
+msgstr "Ресурс тимчасово недоступний"
+
+#: src/error.cpp:406
+msgid "Operation already in progress"
+msgstr "Дія вже виконується"
+
+#: src/error.cpp:408
+msgid "Socket operation on non-socket"
+msgstr "Дія на об'єкті, який не є сокетом"
+
+#: src/error.cpp:410
+msgid "Destination address required"
+msgstr "Слід вказати адресу призначення"
+
+#: src/error.cpp:412
+msgid "Message too long"
+msgstr "Задовге повідомлення"
+
+#: src/error.cpp:414
+msgid "Protocol wrong type for socket"
+msgstr "Помилковий тип протоколу сокета"
+
+#: src/error.cpp:416
+msgid "Bad protocol option"
+msgstr "Неправильний параметр протоколу"
+
+#: src/error.cpp:418
+msgid "Protocol not supported"
+msgstr "Протокол не підтримується"
+
+#: src/error.cpp:420
+msgid "Socket type not supported"
+msgstr "Тип сокета не підтримується"
+
+#: src/error.cpp:422
+msgid "Operation not supported"
+msgstr "Дія не підтримується"
+
+#: src/error.cpp:424
+msgid "Protocol family not supported"
+msgstr "Сімейство протоколів не підтримується"
+
+#: src/error.cpp:426
+msgid "Address family not supported"
+msgstr "Сімейство адрес не підтримується"
+
+#: src/error.cpp:428
+msgid "Address is already in use"
+msgstr "Адреса вже використовується"
+
+#: src/error.cpp:430
+msgid "Cannot assign requested address"
+msgstr "Не вдалося призначити вказану адресу"
+
+#: src/error.cpp:432
+msgid "Network is down"
+msgstr "Мережу вимкнено"
+
+#: src/error.cpp:434
+msgid "Network is unreachable"
+msgstr "Не вдалося отримати доступ до мережі"
+
+#: src/error.cpp:436
+msgid "Network dropped connection on reset"
+msgstr "Під час перезапуску з’єднання було розірвано"
+
+#: src/error.cpp:438
+msgid "Software caused connection abort"
+msgstr "З’єднання розірвано програмним забезпеченням"
+
+#: src/error.cpp:440
+msgid "Connection reset by peer"
+msgstr "Вузол розірвав з’єднання"
+
+#: src/error.cpp:442
+msgid "No buffer space available"
+msgstr "У буфері не залишилося місця"
+
+#: src/error.cpp:444
+msgid "Socket is already connected"
+msgstr "Сокет вже з’єднано"
+
+#: src/error.cpp:446
+msgid "Socket is not connected"
+msgstr "Сокет не з'єднано"
+
+#: src/error.cpp:448
+msgid "Cannot send after socket shutdown"
+msgstr "Не вдалося надіслати дані після завершення роботи сокетом"
+
+#: src/error.cpp:450
+msgid "Connection timed out"
+msgstr "Перевищено інтервал очікування з'єднання"
+
+#: src/error.cpp:452
+msgid "Connection refused"
+msgstr "У з'єднанні відмовлено"
+
+#: src/error.cpp:454
+msgid "Host is down"
+msgstr "Вузол вимкнено"
+
+#: src/error.cpp:456
+msgid "No route to host"
+msgstr "Немає маршруту до вузла"
+
+#: src/error.cpp:458
+msgid "Too many processes"
+msgstr "Забагато процесів"
+
+#: src/error.cpp:460
+msgid "Network subsystem is unavailable"
+msgstr "Немає доступу до підсистеми мережі"
+
+#: src/error.cpp:462
+msgid "Winsock.dll version out of range"
+msgstr "Некоректна версія winsock.dll"
+
+#: src/error.cpp:464
+msgid "Successful WSAStartup not yet performed"
+msgstr "Ще не завершено виконання WSAStartup"
+
+#: src/error.cpp:466
+msgid "Graceful shutdown in progress"
+msgstr "Виконується дія з завершення роботи"
+
+#: src/error.cpp:468
+msgid "Class type not found"
+msgstr "Тип класу не знайдено"
+
+#: src/error.cpp:470
+msgid "Host not found"
+msgstr "Вузол не знайдено"
+
+#: src/error.cpp:472
+msgid "Nonauthoritative host not found"
+msgstr "Непідконтрольного вузла не знайдено"
+
+#: src/error.cpp:474
+msgid "No data record of requested type"
+msgstr "Не знайдено запису даних вказаного типу"
+
+#: src/error.cpp:476
+msgid "Specified event object handle is invalid"
+msgstr "Вказане керування об’єктом події є некоректним"
+
+#: src/error.cpp:478
+msgid "One or more parameters are invalid"
+msgstr "Один або декілька параметрів є некоректними"
+
+#: src/error.cpp:480
+msgid "No more memory is available"
+msgstr "Вичерпано доступну пам’ять"
+
+#: src/error.cpp:482
+msgid "Broken pipe"
+msgstr "Помилка на каналі даних"
+
+#: src/error.cpp:484
+msgid "No such device"
+msgstr "Пристрою не знайдено"
+
+#: src/error.cpp:486
+msgid "Decryption has failed"
+msgstr "Спроба розшифрування була невдалою"
+
+#: src/error.cpp:488
+msgid ""
+"The Diffie Hellman prime sent by the server is not acceptable (not long "
+"enough)"
+msgstr ""
+"Надіслане сервером просте число Діффі-Гелмана є неприйнятним (занадто "
+"коротким)"
+
+#: src/error.cpp:491
+msgid "Encryption has failed"
+msgstr "Спроба шифрування зазнала невдачі"
+
+#: src/error.cpp:493
+msgid "TLS Application data were received, while expecting handshake data"
+msgstr ""
+"Було отримано дані застосування TLS, слід було отримати дані "
+"підтвердження з’єднання"
+
+#: src/error.cpp:496
+msgid "Insufficient credentials for that request"
+msgstr "Недостатні реєстраційні дані для цього запиту"
+
+#: src/error.cpp:498
+msgid "The request is invalid"
+msgstr "Некоректний запит"
+
+#: src/error.cpp:500
+msgid "Key usage violation in certificate has been detected"
+msgstr "Виявлено порушення правил використання ключів сертифіката"
+
+#: src/error.cpp:503
+msgid "The Message Authentication Code verification failed"
+msgstr "Спроба перевірки коду розпізнавання повідомлення була невдалою"
+
+#: src/error.cpp:506
+msgid "The peer did not send any certificate"
+msgstr "Вузлом не було надіслано жодного сертифіката"
+
+#: src/error.cpp:508
+msgid "No temporary DH parameters were found"
+msgstr "Не було виявлено тимчасових параметрів DH"
+
+#: src/error.cpp:510
+msgid "No temporary RSA parameters were found"
+msgstr "Не було виявлено тимчасових параметрів RSA"
+
+#: src/error.cpp:512
+msgid "Error in the pull function"
+msgstr "Помилка у функції pull"
+
+#: src/error.cpp:514
+msgid "Error in the push function"
+msgstr "Помилка у функції push"
+
+#: src/error.cpp:516
+msgid "Failed to acquire random data"
+msgstr "Не вдалося отримати випадкові дані"
+
+#: src/error.cpp:518
+msgid "Rehandshake was requested by the peer"
+msgstr ""
+"Вузол надіслав запит на повторне надсилання даних підтвердження "
+"з’єднання"
+
+#: src/error.cpp:520
+msgid "An unexpected TLS handshake packet was received"
+msgstr ""
+"Було отримано неочікуваний пакет даних підтвердження з’єднання TLS"
+
+#: src/error.cpp:523
+msgid "An unexpected TLS packet was received"
+msgstr "Було отримано неочікуваний пакет TLS"
+
+#: src/error.cpp:525
+msgid "A TLS packet with unexpected length was received."
+msgstr "Було отримано пакет TLS з неочікуваною довжиною."
+
+#: src/error.cpp:528
+msgid "A nonrecoverable error has occured"
+msgstr "Сталася помилка, наслідки якої не можна виправити"
+
