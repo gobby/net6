@@ -1,3 +1,9 @@
+2009-10-20  Armin Burgmeier  <armin@0x539.de>
+
+	* src/connection.cpp (do_handshake): After TLS handshake, make also
+	sure to call send() as a re-enabling function if we have data to send,
+	on Windows. This can prevent a lockup after the TLS negotiation.
+
 2009-10-12  Armin Burgmeier  <armin@0x539.de>
 
 	* po/uk.po: Added Ukrainian translation by Yuri Chornoivan. Bug #479.

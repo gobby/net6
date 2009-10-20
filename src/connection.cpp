@@ -510,6 +510,8 @@ void net6::connection_base::do_handshake()
 		// TODO: We should not do this when the
 		// socket is in blocking mode!
 		on_sock_event(IO_INCOMING);
+		if(sendqueue.get_size() > 0)
+			on_sock_event(IO_OUTGOING);
 #endif
 	}
 	else
