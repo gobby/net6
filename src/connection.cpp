@@ -233,14 +233,11 @@ void net6::connection_base::on_sock_event(io_condition io)
 	}
 	catch(net6::error& e)
 	{
-		// Asynchronous send/recv on WIN32 requires that one
-		// reads/writes from/to the socket until WSAEWOULDBLOCK
-		// occurs. We catch this case here to allow
-		// asynchronous selection on WIN32.
-#ifdef WIN32
+		// Allow users to set sockets to non-blocking in which case
+		// we might get EAGAIN here.
 		if(e.get_code() == error::WOULD_BLOCK)
 			return;
-#endif
+
 		// We should not throw any error here because it would fall
 		// through to the selector. If something went wrong, then
 		// we have to handle it here.

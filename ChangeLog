@@ -1,3 +1,10 @@
+2009-12-21  Armin Burgmeier  <armin@arbur.net>
+
+	* src/connection.cpp (on_sock_event): Allow non-blocking sockets by
+	not closing the connection on EAGAIN. We did that for Windows already,
+	since Windows requires sockets to be non-blocking when using
+	WSAEventSelect.
+
 2009-12-07  Philipp Kern  <phil@0x539.de>
 
 	* configure.ac:
