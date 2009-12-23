@@ -1,6 +1,9 @@
 net6
 ====
 
+Version 1.3.12:
+ * Allow non-blocking sockets on *nix.
+
 Version 1.3.11:
  * Fix possible TLS lockup on Windows.
  * New translation:
