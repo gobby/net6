@@ -1,0 +1,292 @@
+# Korean translation for net6
+# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
+# This file is distributed under the same license as the net6 package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: net6\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2007-12-01 14:45+0100\n"
+"PO-Revision-Date: 2009-09-29 21:13+0000\n"
+"Last-Translator: sungyup nham <Unknown>\n"
+"Language-Team: Korean <ko@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2009-12-23 14:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: src/error.cpp:42
+msgid "Invalid name"
+msgstr "잘못된 이름"
+
+#: src/error.cpp:44
+msgid "Name is already in use"
+msgstr "이미 사용되고 있는 이름"
+
+#: src/error.cpp:46
+msgid "An unknown login error occured"
+msgstr "알 수 없는 로그인 오류 발생"
+
+#: src/error.cpp:394
+msgid "Interrupted function call"
+msgstr "인터럽트 함수 호출"
+
+#: src/error.cpp:396
+msgid "Access denied"
+msgstr "접근이 거부됨"
+
+#: src/error.cpp:398
+msgid "Bad address"
+msgstr "잘못된 주소"
+
+#: src/error.cpp:400
+msgid "Invalid argument"
+msgstr "잘못된 인자값"
+
+#: src/error.cpp:402
+msgid "Too many open files"
+msgstr "너무 많은 파일을 엽니다"
+
+#: src/error.cpp:404
+msgid "Resource temporarily unavailable"
+msgstr "일시적으로 사용할 수 없는 리소스"
+
+#: src/error.cpp:406
+msgid "Operation already in progress"
+msgstr "이미 진행중인 동작"
+
+#: src/error.cpp:408
+msgid "Socket operation on non-socket"
+msgstr "non-소켓에서의 소켓 동작"
+
+#: src/error.cpp:410
+msgid "Destination address required"
+msgstr "목적지 주소 필요"
+
+#: src/error.cpp:412
+msgid "Message too long"
+msgstr "너무 긴 메시지"
+
+#: src/error.cpp:414
+msgid "Protocol wrong type for socket"
+msgstr "소켓에 부적합한 프로토콜 타입"
+
+#: src/error.cpp:416
+msgid "Bad protocol option"
+msgstr "잘못된 프로토콜 옵션"
+
+#: src/error.cpp:418
+msgid "Protocol not supported"
+msgstr "지원되지 않는 프로토콜"
+
+#: src/error.cpp:420
+msgid "Socket type not supported"
+msgstr "지원되지 않는 소켓 형식"
+
+#: src/error.cpp:422
+msgid "Operation not supported"
+msgstr "지원되지 않는 동작"
+
+#: src/error.cpp:424
+msgid "Protocol family not supported"
+msgstr "지원되지 않는 프로토콜 체계"
+
+#: src/error.cpp:426
+msgid "Address family not supported"
+msgstr "지원되지 않는 주소 체계"
+
+#: src/error.cpp:428
+msgid "Address is already in use"
+msgstr "이미 사용되고 있는 주소"
+
+#: src/error.cpp:430
+msgid "Cannot assign requested address"
+msgstr "요구한 주소를 할당할 수 없음"
+
+#: src/error.cpp:432
+msgid "Network is down"
+msgstr "네트워크 멈춤"
+
+#: src/error.cpp:434
+msgid "Network is unreachable"
+msgstr "접근할 수 없는 네트워크"
+
+#: src/error.cpp:436
+msgid "Network dropped connection on reset"
+msgstr "네트워크 연결이 끊어짐"
+
+#: src/error.cpp:438
+msgid "Software caused connection abort"
+msgstr "소프트웨어로 인한 접속 취소"
+
+#: src/error.cpp:440
+msgid "Connection reset by peer"
+msgstr "Peer에 의해 연결이 초기화 됨"
+
+#: src/error.cpp:442
+msgid "No buffer space available"
+msgstr "가용한 버퍼 공간 없음"
+
+#: src/error.cpp:444
+msgid "Socket is already connected"
+msgstr "이미 접속된 소켓"
+
+#: src/error.cpp:446
+msgid "Socket is not connected"
+msgstr "접속 할 수 없는 소켓"
+
+#: src/error.cpp:448
+msgid "Cannot send after socket shutdown"
+msgstr "소켓 폐쇄 이후에 보낼 수 없음"
+
+#: src/error.cpp:450
+msgid "Connection timed out"
+msgstr "연결 시간 초과"
+
+#: src/error.cpp:452
+msgid "Connection refused"
+msgstr "연결 거부됨"
+
+#: src/error.cpp:454
+msgid "Host is down"
+msgstr "호스트 멈춤"
+
+#: src/error.cpp:456
+msgid "No route to host"
+msgstr "호스트를 위한 경로 없음"
+
+#: src/error.cpp:458
+msgid "Too many processes"
+msgstr "너무 많은 프로세스"
+
+#: src/error.cpp:460
+msgid "Network subsystem is unavailable"
+msgstr "네트워크 서브 시스템을 사용할 수 없음"
+
+#: src/error.cpp:462
+msgid "Winsock.dll version out of range"
+msgstr "Winsock.dll 버전의 범위를 벗어남"
+
+#: src/error.cpp:464
+msgid "Successful WSAStartup not yet performed"
+msgstr "성공적인 WSAStartup이 아직 수행되지 않음"
+
+#: src/error.cpp:466
+msgid "Graceful shutdown in progress"
+msgstr "진행 중 적절한 폐쇄"
+
+#: src/error.cpp:468
+msgid "Class type not found"
+msgstr "클래스 타입을 찾을 수 없음"
+
+#: src/error.cpp:470
+msgid "Host not found"
+msgstr "호스트를 찾을 수 없음"
+
+#: src/error.cpp:472
+msgid "Nonauthoritative host not found"
+msgstr "미인증 호스트를 찾을 수 없음"
+
+#: src/error.cpp:474
+msgid "No data record of requested type"
+msgstr "요청된 형식의 데이터 레코드 없음"
+
+#: src/error.cpp:476
+msgid "Specified event object handle is invalid"
+msgstr "정의 된 이벤트 객체 핸들이 유효하지 않음"
+
+#: src/error.cpp:478
+msgid "One or more parameters are invalid"
+msgstr "하나 또는 그 이상의 유효하지 않은 매개변수"
+
+#: src/error.cpp:480
+msgid "No more memory is available"
+msgstr "가용한 메모리 없음"
+
+#: src/error.cpp:482
+msgid "Broken pipe"
+msgstr "깨어진 파이프"
+
+#: src/error.cpp:484
+msgid "No such device"
+msgstr "장치를 찾을 수 없음"
+
+#: src/error.cpp:486
+msgid "Decryption has failed"
+msgstr "복호화 실패"
+
+#: src/error.cpp:488
+msgid ""
+"The Diffie Hellman prime sent by the server is not acceptable (not long "
+"enough)"
+msgstr ""
+
+#: src/error.cpp:491
+msgid "Encryption has failed"
+msgstr "암호화 실패"
+
+#: src/error.cpp:493
+msgid "TLS Application data were received, while expecting handshake data"
+msgstr ""
+
+#: src/error.cpp:496
+msgid "Insufficient credentials for that request"
+msgstr ""
+
+#: src/error.cpp:498
+msgid "The request is invalid"
+msgstr "해당 요청은 타당하지 않습니다"
+
+#: src/error.cpp:500
+msgid "Key usage violation in certificate has been detected"
+msgstr ""
+
+#: src/error.cpp:503
+msgid "The Message Authentication Code verification failed"
+msgstr ""
+
+#: src/error.cpp:506
+msgid "The peer did not send any certificate"
+msgstr ""
+
+#: src/error.cpp:508
+msgid "No temporary DH parameters were found"
+msgstr "임시 DH 파라미터를 찾을 수 없음"
+
+#: src/error.cpp:510
+msgid "No temporary RSA parameters were found"
+msgstr "임시 RSA 파라미터를 찾을 수 없음"
+
+#: src/error.cpp:512
+msgid "Error in the pull function"
+msgstr "Pull 함수안의 오류"
+
+#: src/error.cpp:514
+msgid "Error in the push function"
+msgstr "Push 함수안의 오류"
+
+#: src/error.cpp:516
+msgid "Failed to acquire random data"
+msgstr "랜덤 데이터를 얻는데 실패 함"
+
+#: src/error.cpp:518
+msgid "Rehandshake was requested by the peer"
+msgstr "Peer에 의해 Rehandshake(재 신호변경)이 요청 됨"
+
+#: src/error.cpp:520
+msgid "An unexpected TLS handshake packet was received"
+msgstr "예기치 않은 TLS 핸드쉐이크(신호변경) 패킷이 수신 됨"
+
+#: src/error.cpp:523
+msgid "An unexpected TLS packet was received"
+msgstr "예기치 않은 TLS 패킷이 수신 됨"
+
+#: src/error.cpp:525
+msgid "A TLS packet with unexpected length was received."
+msgstr "예기치 않은 길이의 TLS 패킷이 수신 됨"
+
+#: src/error.cpp:528
+msgid "A nonrecoverable error has occured"
+msgstr "치명적인 에러 발생"

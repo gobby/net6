@@ -1,5 +1,13 @@
 2009-12-23  Philipp Kern  <phil@0x539.de>
 
+	* NEWS:
+	* po/LINGUAS:
+	* po/en_GB.po:
+	* po/ko.po: new translations from Launchpad: Korean and English
+	(Great Britain)
+
+2009-12-23  Philipp Kern  <phil@0x539.de>
+
 	* configure.ac:
 	* NEWS: bump version to 1.3.12 and document the changes
 
