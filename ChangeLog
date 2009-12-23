@@ -1,5 +1,9 @@
 2009-12-23  Philipp Kern  <phil@0x539.de>
 
+	* configure.ac: add AC_CONFIG_MACRO_DIR for libtoolize
+
+2009-12-23  Philipp Kern  <phil@0x539.de>
+
 	* NEWS:
 	* po/LINGUAS:
 	* po/en_GB.po:

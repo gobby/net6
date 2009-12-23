@@ -7,6 +7,7 @@ AM_INIT_AUTOMAKE(1.9 check-news)
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([inc/main.hpp])
 AC_CONFIG_HEADER([inc/config.hpp])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Extract host information.
 AC_CANONICAL_HOST
