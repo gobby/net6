@@ -1,3 +1,7 @@
+2011-04-14  Philipp Kern  <phil@0x539.de>
+
+	* po/*.po: refreshed from Launchpad
+
 2009-12-23  Philipp Kern  <phil@0x539.de>
 
 	* configure.ac: add AC_CONFIG_MACRO_DIR for libtoolize

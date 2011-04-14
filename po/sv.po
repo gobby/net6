@@ -14,45 +14,17 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-07-02 07:40+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-04-14 12:04+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 "X-Rosetta-Version: 0.1\n"
-
-#: src/error.cpp:42
-msgid "Invalid name"
-msgstr "Ogiltigt namn"
-
-#: src/error.cpp:44
-msgid "Name is already in use"
-msgstr "Namnet används redan"
 
 #: src/error.cpp:46
 msgid "An unknown login error occured"
 msgstr "Ett okänt inloggningsfel inträffade"
 
-#: src/error.cpp:394
-msgid "Interrupted function call"
-msgstr "Avbrutet funktionsanrop"
-
-#: src/error.cpp:396
-msgid "Access denied"
-msgstr "Åtkomst nekad"
-
 #: src/error.cpp:398
 msgid "Bad address"
 msgstr "Felaktig adress"
-
-#: src/error.cpp:400
-msgid "Invalid argument"
-msgstr "Ogiltigt argument"
-
-#: src/error.cpp:402
-msgid "Too many open files"
-msgstr "För många öppna filer"
-
-#: src/error.cpp:404
-msgid "Resource temporarily unavailable"
-msgstr "Resurs temporärt otillgänglig"
 
 #: src/error.cpp:406
 msgid "Operation already in progress"
@@ -66,10 +38,6 @@ msgstr "Uttagsoperation på icke-uttag"
 msgid "Destination address required"
 msgstr "Destinationsadress krävs"
 
-#: src/error.cpp:412
-msgid "Message too long"
-msgstr "Meddelandet för långt"
-
 #: src/error.cpp:414
 msgid "Protocol wrong type for socket"
 msgstr "Protokollet är fel typ för uttag"
@@ -78,21 +46,9 @@ msgstr "Protokollet är fel typ för uttag"
 msgid "Bad protocol option"
 msgstr "Fel protokollflagga"
 
-#: src/error.cpp:418
-msgid "Protocol not supported"
-msgstr "Protokollet stöds inte"
-
 #: src/error.cpp:420
 msgid "Socket type not supported"
 msgstr "Uttagstypen stöds inte"
-
-#: src/error.cpp:422
-msgid "Operation not supported"
-msgstr "Operationen stöds inte"
-
-#: src/error.cpp:424
-msgid "Protocol family not supported"
-msgstr "Protokollfamiljen stöds inte"
 
 #: src/error.cpp:426
 msgid "Address family not supported"
@@ -106,10 +62,6 @@ msgstr "Adressen används redan"
 msgid "Cannot assign requested address"
 msgstr "Kan inte tilldela begärd adress"
 
-#: src/error.cpp:432
-msgid "Network is down"
-msgstr "Nätverket är nere"
-
 #: src/error.cpp:434
 msgid "Network is unreachable"
 msgstr "Nätverket är inte nåbart"
@@ -121,14 +73,6 @@ msgstr "Nätverket tappade anslutningen vid nollställning"
 #: src/error.cpp:438
 msgid "Software caused connection abort"
 msgstr "Programvaran orsakade att anslutningen bröts"
-
-#: src/error.cpp:440
-msgid "Connection reset by peer"
-msgstr "Anslutningen nollställdes av motparten"
-
-#: src/error.cpp:442
-msgid "No buffer space available"
-msgstr "Inget buffertutrymme tillgängligt"
 
 #: src/error.cpp:444
 msgid "Socket is already connected"
@@ -142,37 +86,17 @@ msgstr "Uttaget är inte anslutet"
 msgid "Cannot send after socket shutdown"
 msgstr "Kan inte skicka efter nedstängning av uttag"
 
-#: src/error.cpp:450
-msgid "Connection timed out"
-msgstr "Anslutningen överskred tidsgräns"
-
 #: src/error.cpp:452
 msgid "Connection refused"
 msgstr "Anslutningen nekades"
-
-#: src/error.cpp:454
-msgid "Host is down"
-msgstr "Värdsystemet är nere"
 
 #: src/error.cpp:456
 msgid "No route to host"
 msgstr "Ingen väg till värden"
 
-#: src/error.cpp:458
-msgid "Too many processes"
-msgstr "För många processer"
-
-#: src/error.cpp:460
-msgid "Network subsystem is unavailable"
-msgstr "Nätverksundersystemet är otillgängligt"
-
 #: src/error.cpp:462
 msgid "Winsock.dll version out of range"
 msgstr "Winsock.dll version utanför intervallet"
-
-#: src/error.cpp:464
-msgid "Successful WSAStartup not yet performed"
-msgstr "Korrekt WSAStartup ännu inte genomförd"
 
 #: src/error.cpp:466
 msgid "Graceful shutdown in progress"
@@ -193,6 +117,82 @@ msgstr "Icke-aktoritär värd hittades inte"
 #: src/error.cpp:474
 msgid "No data record of requested type"
 msgstr "Ingen datapost för begärd typ"
+
+#: src/error.cpp:42
+msgid "Invalid name"
+msgstr "Ogiltigt namn"
+
+#: src/error.cpp:44
+msgid "Name is already in use"
+msgstr "Namnet används redan"
+
+#: src/error.cpp:394
+msgid "Interrupted function call"
+msgstr "Avbrutet funktionsanrop"
+
+#: src/error.cpp:396
+msgid "Access denied"
+msgstr "Åtkomst nekad"
+
+#: src/error.cpp:400
+msgid "Invalid argument"
+msgstr "Ogiltigt argument"
+
+#: src/error.cpp:402
+msgid "Too many open files"
+msgstr "För många öppna filer"
+
+#: src/error.cpp:404
+msgid "Resource temporarily unavailable"
+msgstr "Resurs temporärt otillgänglig"
+
+#: src/error.cpp:412
+msgid "Message too long"
+msgstr "Meddelandet för långt"
+
+#: src/error.cpp:418
+msgid "Protocol not supported"
+msgstr "Protokollet stöds inte"
+
+#: src/error.cpp:422
+msgid "Operation not supported"
+msgstr "Operationen stöds inte"
+
+#: src/error.cpp:424
+msgid "Protocol family not supported"
+msgstr "Protokollfamiljen stöds inte"
+
+#: src/error.cpp:432
+msgid "Network is down"
+msgstr "Nätverket är nere"
+
+#: src/error.cpp:440
+msgid "Connection reset by peer"
+msgstr "Anslutningen nollställdes av motparten"
+
+#: src/error.cpp:442
+msgid "No buffer space available"
+msgstr "Inget buffertutrymme tillgängligt"
+
+#: src/error.cpp:450
+msgid "Connection timed out"
+msgstr "Anslutningen överskred tidsgräns"
+
+#: src/error.cpp:454
+msgid "Host is down"
+msgstr "Värdsystemet är nere"
+
+#: src/error.cpp:458
+msgid "Too many processes"
+msgstr "För många processer"
+
+#: src/error.cpp:460
+msgid "Network subsystem is unavailable"
+msgstr "Nätverksundersystemet är otillgängligt"
+
+#: src/error.cpp:464
+msgid "Successful WSAStartup not yet performed"
+msgstr "Korrekt WSAStartup ännu inte genomförd"
 
 #: src/error.cpp:476
 msgid "Specified event object handle is invalid"

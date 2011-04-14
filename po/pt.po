@@ -8,14 +8,38 @@ msgstr ""
 "Project-Id-Version: net6\n"
 "Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
 "POT-Creation-Date: 2007-12-01 14:45+0100\n"
-"PO-Revision-Date: 2009-03-17 17:47+0000\n"
-"Last-Translator: João Mouro <Unknown>\n"
+"PO-Revision-Date: 2009-08-24 19:23+0000\n"
+"Last-Translator: Philipp Kern <phil+launchpad@philkern.de>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-24 12:28+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-04-14 12:04+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
+
+#: src/error.cpp:408
+msgid "Socket operation on non-socket"
+msgstr "Operação de socket em algo que não é um socket"
+
+#: src/error.cpp:414
+msgid "Protocol wrong type for socket"
+msgstr "Tipo de protocolo errado para o socket"
+
+#: src/error.cpp:424
+msgid "Protocol family not supported"
+msgstr "Familia de protocolo não suportada"
+
+#: src/error.cpp:430
+msgid "Cannot assign requested address"
+msgstr "Não foi possível atribuir o endereço requerido"
+
+#: src/error.cpp:470
+msgid "Host not found"
+msgstr "Servidor não encontrado"
+
+#: src/error.cpp:484
+msgid "No such device"
+msgstr "Dispositivo inexistente"
 
 #: src/error.cpp:42
 msgid "Invalid name"
@@ -57,10 +81,6 @@ msgstr "Recurso indisponível temporariamente"
 msgid "Operation already in progress"
 msgstr "Operação já em progresso"
 
-#: src/error.cpp:408
-msgid "Socket operation on non-socket"
-msgstr "Operação de socket em algo que não é um socket"
-
 #: src/error.cpp:410
 msgid "Destination address required"
 msgstr "Endereço de destino necessário"
@@ -68,10 +88,6 @@ msgstr "Endereço de destino necessário"
 #: src/error.cpp:412
 msgid "Message too long"
 msgstr "Mensagem demasiado longa"
-
-#: src/error.cpp:414
-msgid "Protocol wrong type for socket"
-msgstr "Tipo de protocolo errado para o socket"
 
 #: src/error.cpp:416
 msgid "Bad protocol option"
@@ -89,10 +105,6 @@ msgstr "Tipo de socket não suportado"
 msgid "Operation not supported"
 msgstr "Operação não suportada"
 
-#: src/error.cpp:424
-msgid "Protocol family not supported"
-msgstr "Familia de protocolo não suportada"
-
 #: src/error.cpp:426
 msgid "Address family not supported"
 msgstr "Endereço da família não suportado"
@@ -100,10 +112,6 @@ msgstr "Endereço da família não suportado"
 #: src/error.cpp:428
 msgid "Address is already in use"
 msgstr "Endereço já em uso"
-
-#: src/error.cpp:430
-msgid "Cannot assign requested address"
-msgstr "Não foi possível atribuir o endereço requerido"
 
 #: src/error.cpp:432
 msgid "Network is down"
@@ -181,10 +189,6 @@ msgstr "Encerramento em progresso"
 msgid "Class type not found"
 msgstr "Tipo de classe não encontrado"
 
-#: src/error.cpp:470
-msgid "Host not found"
-msgstr "Servidor não encontrado"
-
 #: src/error.cpp:472
 msgid "Nonauthoritative host not found"
 msgstr ""
@@ -208,10 +212,6 @@ msgstr "Não há mais memória disponível"
 #: src/error.cpp:482
 msgid "Broken pipe"
 msgstr "Canal interrompido"
-
-#: src/error.cpp:484
-msgid "No such device"
-msgstr "Dispositivo inexistente"
 
 #: src/error.cpp:486
 msgid "Decryption has failed"
@@ -292,4 +292,4 @@ msgstr "Foi recebido um pacote TLS com comprimento inesperado."
 
 #: src/error.cpp:528
 msgid "A nonrecoverable error has occured"
-msgstr ""
+msgstr "Ocorreu um erro irrecuperável"
