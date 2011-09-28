@@ -202,7 +202,9 @@ net6::tcp_encrypted_socket_base::
 	);
 #endif
 
+#if GNUTLS_VERSION_NUMBER < 0x030003
 	gnutls_transport_set_lowat(session, 0);
+#endif
 }
 
 net6::tcp_encrypted_socket_base::~tcp_encrypted_socket_base()
