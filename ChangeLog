@@ -1,3 +1,11 @@
+2011-10-30  Armin Burgmeier  <armin@arbur.net>
+
+	* inc/server.hpp:
+	* inc/host.hpp: Choose the lowest possible user ID when a new user
+	joins instead of increasing the ID counter. This prevents possible
+	duplicate IDs in the case of an unsigned integer overflow (Vasiliy
+	Kulikov).
+
 2011-09-05  Vincent Untz  <vuntz@opensuse.org>
 
 	* inc/encrypt.hpp:

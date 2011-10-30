@@ -82,7 +82,7 @@ basic_host<selector_type>::basic_host(const std::string& username, bool ipv6)
  : basic_object<selector_type>(),
    basic_local<selector_type>(),
    basic_server<selector_type>(ipv6),
-   self(new user(++ basic_server<selector_type>::id_counter, NULL) )
+   self(new user(1, NULL) )
 {
 	self->login(username);
 	basic_object<selector_type>::user_add(self);
@@ -94,7 +94,7 @@ basic_host<selector_type>::
  : basic_object<selector_type>(),
    basic_local<selector_type>(),
    basic_server<selector_type>(port, ipv6),
-   self(new user(++ basic_server<selector_type>::id_counter, NULL) )
+   self(new user(1, NULL) )
 {
 	self->login(username);
 	basic_object<selector_type>::user_add(self);

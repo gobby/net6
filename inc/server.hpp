@@ -225,7 +225,6 @@ protected:
 	std::auto_ptr<tcp_server_socket> serv6_sock;
 
 	bool use_ipv6;
-	unsigned int id_counter;
 
 	dh_params params;
 
@@ -247,13 +246,13 @@ typedef basic_server<selector> server;
 
 template<typename selector_type>
 basic_server<selector_type>::basic_server(bool ipv6)
- : id_counter(0), use_ipv6(ipv6)
+ : use_ipv6(ipv6)
 {
 }
 
 template<typename selector_type>
 basic_server<selector_type>::basic_server(unsigned int port, bool ipv6)
- : id_counter(0), use_ipv6(ipv6)
+ : use_ipv6(ipv6)
 {
 	reopen_impl(port, ipv6);
 }
@@ -408,10 +407,19 @@ template<typename selector_type>
 void basic_server<selector_type>::on_accept_event(tcp_server_socket& sock,
                                                   io_condition io)
 {
+	// Find a unique user ID
+	unsigned int last_id = 0;
+	for(typename basic_object<selector_type>::user_map::iterator iter = this->users.begin(); iter != this->users.end(); ++iter)
+	{
+		if(iter->second->get_id() != last_id + 1)
+			break;
+		last_id = iter->second->get_id();
+	}
+
 	// Get selector from base class
 	selector_type& selector = basic_object<selector_type>::get_selector();
 	connection_type* conn = new connection_type(selector);
-	std::auto_ptr<user> client(new user(++ id_counter, conn) );
+	std::auto_ptr<user> client(new user(last_id + 1, conn) );
 
 	conn->recv_event().connect(
 		sigc::bind(
