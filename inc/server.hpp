@@ -570,12 +570,22 @@ void basic_server<selector_type>::
 	const std::string& name =
 		pack.get_param(0).parameter::as<std::string>();
 
+	login::error reason;
+
 	// Check for valid user name
 	if(name.empty() )
 	{
 		packet pack("net6_login_failed");
 		pack << static_cast<int>(login::ERROR_NAME_INVALID);
 		send(pack, user);
+	}
+	// Check for login_auth
+	else if(!on_login_auth(user, pack, reason))
+	{
+		packet pack("net6_login_failed");
+		pack << static_cast<int>(reason);
+		send(pack, user);
+		return;
 	}
 	// Check for existing user name
 	else if(basic_object<selector_type>::user_find(name) != NULL)
@@ -586,16 +596,6 @@ void basic_server<selector_type>::
 	}
 	else
 	{
-		// Check for login_auth
-		login::error reason;
-		if(!on_login_auth(user, pack, reason) )
-		{
-			packet pack("net6_login_failed");
-			pack << static_cast<int>(reason);
-			send(pack, user);
-			return;
-		}
-
 		// Login succeeded
 		user.login(name);
 		on_login(user, pack);

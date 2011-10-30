@@ -1,5 +1,11 @@
 2011-10-30  Armin Burgmeier  <armin@arbur.net>
 
+	* inc/server.hpp: Run custom authentication before checking for the
+	user name, to prevent unauthorized clients from gathering information
+	about logged in users (Vasiliy Kulikov).
+
+2011-10-30  Armin Burgmeier  <armin@arbur.net>
+
 	* inc/server.hpp:
 	* inc/host.hpp: Choose the lowest possible user ID when a new user
 	joins instead of increasing the ID counter. This prevents possible
