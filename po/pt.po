@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: net6\n"
 "Report-Msgid-Bugs-To: http://gobby.0x539.de/trac/\n"
-"POT-Creation-Date: 2007-12-01 14:45+0100\n"
+"POT-Creation-Date: 2011-04-14 18:46+0200\n"
 "PO-Revision-Date: 2009-08-24 19:23+0000\n"
 "Last-Translator: Philipp Kern <phil+launchpad@philkern.de>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-14 12:04+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-10-30 15:16+0000\n"
+"X-Generator: Launchpad (build 14197)\n"
 
 #: src/error.cpp:408
 msgid "Socket operation on non-socket"
@@ -47,7 +47,7 @@ msgstr "Nome inválido"
 
 #: src/error.cpp:44
 msgid "Name is already in use"
-msgstr "Nome em uso"
+msgstr "O nome já está em uso"
 
 #: src/error.cpp:46
 msgid "An unknown login error occured"
