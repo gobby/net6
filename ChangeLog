@@ -12,6 +12,10 @@
 	duplicate IDs in the case of an unsigned integer overflow (Vasiliy
 	Kulikov).
 
+2011-09-28  Vincent Untz  <vuntz@opensuse.org>
+
+	* src/encrypt.cpp: fix build failure with gnutls 3.0.3 and above
+
 2011-09-05  Vincent Untz  <vuntz@opensuse.org>
 
 	* inc/encrypt.hpp:
