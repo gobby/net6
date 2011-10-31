@@ -1,3 +1,7 @@
+2011-10-31  Philipp Kern  <phil@0x539.de>
+
+	* NEWS: add CVE numbers
+
 2011-10-30  Philipp Kern  <phil@0x539.de>
 
 	* configure.ac:
